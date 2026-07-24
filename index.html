@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="theme-color" content="#08120f">
+  <meta name="theme-color" content="#081510">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="VS Planner">
@@ -15,187 +15,165 @@
 <body>
   <div class="app-shell">
     <header class="hero">
-      <div>
+      <div class="hero-main">
         <p class="eyebrow">LAST WAR · ALLIANCE DUEL</p>
         <h1>GoMo VS Planner</h1>
-        <p class="hero-copy">Calcule quoi utiliser pour atteindre 7,2 M avec une petite marge, sans gaspiller ton stock.</p>
+        <p class="hero-copy" data-i18n="heroCopy"></p>
       </div>
-      <div class="save-state" id="saveState">Sauvegarde automatique active</div>
+      <div class="hero-tools">
+        <label class="language-label">
+          <span data-i18n="language"></span>
+          <select id="languageSelect" aria-label="Language"></select>
+        </label>
+        <div class="save-state" id="saveState" data-i18n="autoSave"></div>
+      </div>
     </header>
 
-    <nav class="main-nav" aria-label="Navigation principale">
-      <button class="nav-btn active" data-view="planner">Calculateur</button>
-      <button class="nav-btn" data-view="guide">Guide semaine</button>
-      <button class="nav-btn" data-view="settings">Réglages</button>
+    <nav class="main-nav" aria-label="Navigation">
+      <button class="nav-btn active" data-view="planner" data-i18n="calculator"></button>
+      <button class="nav-btn" data-view="scanner" data-ocr-i18n="scanner"></button>
+      <button class="nav-btn" data-view="guide" data-i18n="weekGuide"></button>
+      <button class="nav-btn" data-view="settings" data-i18n="settings"></button>
     </nav>
 
     <main>
       <section id="plannerView" class="view active">
-        <section class="panel compact-panel profile-panel">
+        <section class="panel profile-panel">
           <div class="field-grid profile-grid">
-            <label>
-              Joueur
-              <input id="playerName" type="text" autocomplete="name" placeholder="Nom du joueur">
-            </label>
-            <label>
-              Objectif minimum
-              <input id="targetPoints" type="number" inputmode="numeric" min="0" step="10000">
-            </label>
-            <label>
-              Petite marge
-              <input id="marginPoints" type="number" inputmode="numeric" min="0" step="10000">
-            </label>
-            <label>
-              Bonus recherche VS
-              <div class="suffix-input"><input id="bonusPct" type="number" inputmode="decimal" min="0" max="500" step="1"><span>%</span></div>
-            </label>
+            <label><span data-i18n="player"></span><input id="playerName" type="text" autocomplete="name" data-i18n-placeholder="playerPlaceholder"></label>
+            <label><span data-i18n="minimumTarget"></span><input id="targetPoints" type="number" inputmode="numeric" min="0" step="10000"></label>
+            <label><span data-i18n="safetyMargin"></span><input id="marginPoints" type="number" inputmode="numeric" min="0" step="10000"></label>
+            <label><span data-i18n="vsBonus"></span><div class="suffix-input"><input id="bonusPct" type="number" inputmode="decimal" min="0" max="500" step="1"><span>%</span></div></label>
           </div>
         </section>
 
-        <section class="day-strip" id="dayStrip" aria-label="Jour du duel"></section>
+        <section class="day-controls panel">
+          <label class="toggle-line"><input id="autoDay" type="checkbox"><span data-i18n="automaticDay"></span></label>
+          <button class="secondary-btn" id="nextDayBtn" data-i18n="nextDay"></button>
+        </section>
 
-        <section class="summary-grid" aria-label="Résumé des points">
-          <article class="summary-card">
-            <span>Objectif conseillé</span>
-            <strong id="recommendedTarget">7 350 000</strong>
-          </article>
-          <article class="summary-card">
-            <span>Déjà obtenu</span>
-            <strong id="currentPointsSummary">0</strong>
-          </article>
-          <article class="summary-card">
-            <span>Encore nécessaire</span>
-            <strong id="missingPointsSummary">7 350 000</strong>
-          </article>
-          <article class="summary-card">
-            <span>Potentiel disponible</span>
-            <strong id="potentialPointsSummary">0</strong>
-          </article>
+        <section class="day-strip" id="dayStrip" aria-label="VS day"></section>
+
+        <section class="summary-grid">
+          <article class="summary-card"><span data-i18n="recommendedTarget"></span><strong id="recommendedTarget">7 500 000</strong></article>
+          <article class="summary-card"><span data-i18n="alreadyEarned"></span><strong id="currentPointsSummary">0</strong></article>
+          <article class="summary-card"><span data-i18n="stillNeeded"></span><strong id="missingPointsSummary">7 500 000</strong></article>
+          <article class="summary-card"><span data-i18n="availablePotential"></span><strong id="potentialPointsSummary">0</strong></article>
         </section>
 
         <section class="panel day-info-panel">
           <div>
-            <p class="eyebrow" id="dayEyebrow">JOUR 1</p>
-            <h2 id="dayTitle">Lundi · Entraînement radar</h2>
+            <p class="eyebrow" id="dayEyebrow"></p>
+            <h2 id="dayTitle"></h2>
             <p id="dayDescription"></p>
           </div>
           <div class="do-save-grid">
-            <div><strong>À utiliser</strong><p id="useToday"></p></div>
-            <div><strong>À garder</strong><p id="saveForLater"></p></div>
+            <div><strong data-i18n="useToday"></strong><p id="useToday"></p></div>
+            <div><strong data-i18n="saveForLater"></strong><p id="saveForLater"></p></div>
           </div>
         </section>
 
-        <section class="panel compact-panel">
+        <section class="panel">
           <div class="field-grid plan-grid">
-            <label>
-              Points déjà gagnés aujourd’hui
-              <input id="currentPoints" type="number" inputmode="numeric" min="0" step="10000">
-            </label>
-            <label>
-              Stratégie
-              <select id="strategy">
-                <option value="economy">Économie maximale</option>
-                <option value="progress">Progression maximale</option>
-                <option value="score">Gros score VS</option>
-                <option value="prudent">Mode prudent</option>
-              </select>
-            </label>
-            <label>
-              Limite d’accélérateurs par calcul
-              <div class="suffix-input"><input id="speedupLimitDays" type="number" inputmode="decimal" min="0" max="365" step="0.5"><span>jours</span></div>
-            </label>
+            <label><span data-i18n="pointsToday"></span><input id="currentPoints" type="number" inputmode="numeric" min="0" step="10000"></label>
+            <label><span data-i18n="strategy"></span><select id="strategy"></select></label>
+            <label><span data-i18n="speedLimit"></span><div class="suffix-input"><input id="speedupLimitDays" type="number" inputmode="decimal" min="0" max="365" step="0.5"><span data-i18n="daysUnit"></span></div></label>
           </div>
           <p class="help-text" id="strategyHelp"></p>
         </section>
 
         <div class="section-heading">
-          <div>
-            <p class="eyebrow">STOCK DU JOUEUR</p>
-            <h2>Ressources disponibles</h2>
-          </div>
-          <button class="secondary-btn" id="clearDayBtn">Effacer les quantités du jour</button>
+          <div><p class="eyebrow" data-i18n="playerStock"></p><h2 data-i18n="availableResources"></h2></div>
+          <button class="secondary-btn" id="clearDayBtn" data-i18n="clearDay"></button>
         </div>
-
+        <p class="points-warning" data-i18n="editablePointsWarning"></p>
         <section id="resourceList" class="resource-list"></section>
 
-        <section class="sticky-actions" aria-label="Actions du calculateur">
-          <button class="primary-btn" id="analyzeBtn">Calculer mon plan</button>
-          <button class="secondary-btn" id="demoBtn">Exemple automatique</button>
+        <section class="sticky-actions">
+          <button class="primary-btn" id="analyzeBtn" data-i18n="calculatePlan"></button>
+          <button class="secondary-btn" id="demoBtn" data-i18n="automaticExample"></button>
         </section>
 
         <section class="panel result-panel hidden" id="resultPanel" aria-live="polite">
-          <div class="result-header">
-            <div>
-              <p class="eyebrow">DÉBRIEF AUTOMATIQUE</p>
-              <h2 id="resultTitle">Plan conseillé</h2>
-            </div>
-            <span class="result-badge" id="resultBadge"></span>
-          </div>
+          <div class="result-header"><div><p class="eyebrow" data-i18n="automaticDebrief"></p><h2 id="resultTitle"></h2></div><span class="result-badge" id="resultBadge"></span></div>
           <div class="result-metrics" id="resultMetrics"></div>
           <ol class="plan-steps" id="planSteps"></ol>
           <div class="result-note" id="resultNote"></div>
           <div class="result-actions">
-            <button class="primary-btn" id="applyPlanBtn">Marquer ce plan comme utilisé</button>
-            <button class="secondary-btn" id="copyDebriefBtn">Copier le débrief</button>
+            <button class="primary-btn" id="applyPlanBtn" data-i18n="markUsed"></button>
+            <button class="secondary-btn" id="copyDebriefBtn" data-i18n="copyDebrief"></button>
           </div>
+        </section>
+      </section>
+
+
+      <section id="scannerView" class="view">
+        <section class="panel scanner-intro">
+          <div>
+            <p class="eyebrow" data-ocr-i18n="scannerEyebrow"></p>
+            <h2 data-ocr-i18n="scannerTitle"></h2>
+            <p data-ocr-i18n="scannerIntro"></p>
+          </div>
+          <div class="scanner-day-chip"><span data-ocr-i18n="scanDay"></span><strong id="scannerDayLabel"></strong></div>
+        </section>
+
+        <section class="panel scanner-upload-panel">
+          <div class="scanner-actions">
+            <label class="primary-btn file-btn scanner-file-btn"><span data-ocr-i18n="importScreenshots"></span><input id="ocrInput" type="file" accept="image/*" multiple></label>
+            <label class="secondary-btn file-btn scanner-file-btn"><span data-ocr-i18n="takePhoto"></span><input id="ocrCameraInput" type="file" accept="image/*" capture="environment"></label>
+            <button class="secondary-btn" id="ocrStartBtn" data-ocr-i18n="startReading" disabled></button>
+            <button class="secondary-btn" id="ocrClearBtn" data-ocr-i18n="clearScreenshots" disabled></button>
+          </div>
+          <p class="help-text" data-ocr-i18n="firstScanNote"></p>
+          <div id="ocrPreviewList" class="ocr-preview-list"></div>
+          <div id="ocrProgressBox" class="ocr-progress-box hidden" aria-live="polite">
+            <div class="ocr-progress-top"><strong id="ocrProgressLabel"></strong><span id="ocrProgressPct">0%</span></div>
+            <progress id="ocrProgress" max="100" value="0"></progress>
+          </div>
+        </section>
+
+        <section class="panel privacy-panel">
+          <p class="eyebrow" data-ocr-i18n="privacyTitle"></p>
+          <p data-ocr-i18n="privacyText"></p>
+        </section>
+
+        <section class="panel hidden" id="ocrReviewPanel">
+          <div class="section-heading scanner-review-heading">
+            <div><p class="eyebrow" data-ocr-i18n="reviewEyebrow"></p><h2 data-ocr-i18n="reviewTitle"></h2></div>
+            <span class="result-badge" id="ocrResultBadge"></span>
+          </div>
+          <p class="help-text" data-ocr-i18n="reviewIntro"></p>
+          <div class="ocr-mode-row">
+            <label><input type="radio" name="ocrApplyMode" value="replace" checked><span data-ocr-i18n="replaceValues"></span></label>
+            <label><input type="radio" name="ocrApplyMode" value="add"><span data-ocr-i18n="addValues"></span></label>
+          </div>
+          <div class="ocr-review-list" id="ocrReviewList"></div>
+          <div class="result-actions">
+            <button class="primary-btn" id="ocrApplyBtn" data-ocr-i18n="applyValues"></button>
+          </div>
+          <details class="ocr-raw-details"><summary data-ocr-i18n="rawText"></summary><pre id="ocrRawText"></pre></details>
         </section>
       </section>
 
       <section id="guideView" class="view">
-        <section class="panel guide-intro">
-          <p class="eyebrow">RÈGLE PRINCIPALE</p>
-          <h2>Utiliser chaque ressource le bon jour</h2>
-          <p>Le site vise les coffres jusqu’à 7,2 M et ajoute la marge choisie. Une fois l’objectif atteint, il conseille de garder le reste pour la semaine suivante, sauf consigne de l’alliance.</p>
-        </section>
+        <section class="panel guide-intro"><p class="eyebrow" data-i18n="mainRule"></p><h2 data-i18n="rightResourceRightDay"></h2><p data-i18n="guideIntro"></p></section>
         <section id="weeklyGuide" class="weekly-guide"></section>
       </section>
 
       <section id="settingsView" class="view">
-        <section class="panel">
-          <p class="eyebrow">SAUVEGARDE</p>
-          <h2>Données conservées sur cet appareil</h2>
-          <p>Les stocks, réserves, valeurs de points et réglages sont enregistrés automatiquement dans le navigateur. Aucun compte ni base de données n’est nécessaire.</p>
-          <div class="settings-actions">
-            <button class="secondary-btn" id="exportBtn">Exporter une sauvegarde</button>
-            <label class="secondary-btn file-btn">Importer une sauvegarde<input id="importInput" type="file" accept="application/json"></label>
-          </div>
-        </section>
-
-        <section class="panel">
-          <p class="eyebrow">VALEURS DE POINTS</p>
-          <h2>Valeurs modifiables</h2>
-          <p>Les valeurs proposées sont des valeurs de base. Le bonus de recherche VS est appliqué automatiquement. Modifie une valeur directement dans une fiche ressource si ton écran de jeu affiche autre chose.</p>
-          <button class="secondary-btn" id="restorePointsBtn">Restaurer toutes les valeurs de base</button>
-        </section>
-
-        <section class="panel">
-          <p class="eyebrow">IPHONE</p>
-          <h2>Ajouter le site à l’écran d’accueil</h2>
-          <p>Dans Safari : bouton Partager, puis « Sur l’écran d’accueil ». Le calculateur s’ouvrira ensuite comme une application.</p>
-        </section>
-
-        <section class="danger-panel panel">
-          <p class="eyebrow">RÉINITIALISATION</p>
-          <h2>Effacer toutes les données</h2>
-          <p>Cette action supprime les stocks, réserves, résultats et réglages enregistrés sur cet appareil.</p>
-          <button class="danger-btn" id="resetAllBtn">Réinitialiser complètement</button>
-        </section>
+        <section class="panel"><p class="eyebrow" data-i18n="backup"></p><h2 data-i18n="savedOnDevice"></h2><p data-i18n="storageInfo"></p><div class="settings-actions"><button class="secondary-btn" id="exportBtn" data-i18n="exportBackup"></button><label class="secondary-btn file-btn"><span data-i18n="importBackup"></span><input id="importInput" type="file" accept="application/json"></label></div></section>
+        <section class="panel"><p class="eyebrow" data-i18n="pointValues"></p><h2 data-i18n="editableValues"></h2><p data-i18n="pointInfo"></p><button class="secondary-btn" id="restorePointsBtn" data-i18n="restoreBaseValues"></button></section>
+        <section class="panel"><p class="eyebrow">IPHONE</p><h2 data-i18n="addHomeScreen"></h2><p data-i18n="iphoneInfo"></p></section>
+        <section class="danger-panel panel"><p class="eyebrow" data-i18n="reset"></p><h2 data-i18n="eraseAllData"></h2><p data-i18n="resetInfo"></p><button class="danger-btn" id="resetAllBtn" data-i18n="fullReset"></button></section>
       </section>
     </main>
   </div>
 
   <div class="modal-backdrop hidden" id="confirmModal" role="dialog" aria-modal="true" aria-labelledby="confirmTitle">
-    <div class="modal-card">
-      <h2 id="confirmTitle">Confirmer l’action</h2>
-      <p id="confirmMessage"></p>
-      <div class="modal-actions">
-        <button class="secondary-btn" id="confirmCancel">Annuler</button>
-        <button class="danger-btn" id="confirmOk">Confirmer</button>
-      </div>
-    </div>
+    <div class="modal-card"><h2 id="confirmTitle"></h2><p id="confirmMessage"></p><div class="modal-actions"><button class="secondary-btn" id="confirmCancel" data-i18n="cancel"></button><button class="danger-btn" id="confirmOk" data-i18n="confirm"></button></div></div>
   </div>
-
   <div class="toast hidden" id="toast" role="status"></div>
   <script src="app.js"></script>
 </body>
 </html>
+
