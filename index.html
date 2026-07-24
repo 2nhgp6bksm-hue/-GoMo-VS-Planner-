@@ -30,14 +30,108 @@
     </header>
 
     <nav class="main-nav" aria-label="Navigation">
-      <button class="nav-btn active" data-view="planner" data-i18n="calculator"></button>
-      <button class="nav-btn" data-view="scanner" data-ocr-i18n="scanner"></button>
+      <button class="nav-btn active" data-view="scanner" data-simple-i18n="assistantNav"></button>
+      <button class="nav-btn" data-view="planner" data-i18n="calculator"></button>
       <button class="nav-btn" data-view="guide" data-i18n="weekGuide"></button>
       <button class="nav-btn" data-view="settings" data-i18n="settings"></button>
     </nav>
 
     <main>
-      <section id="plannerView" class="view active">
+      <section id="scannerView" class="view active">
+        <section class="assistant-steps" aria-label="Étapes">
+          <article><span>1</span><div><strong data-simple-i18n="step1"></strong><p data-simple-i18n="step1Text"></p></div></article>
+          <article><span>2</span><div><strong data-simple-i18n="step2"></strong><p data-simple-i18n="step2Text"></p></div></article>
+          <article><span>3</span><div><strong data-simple-i18n="step3"></strong><p data-simple-i18n="step3Text"></p></div></article>
+        </section>
+
+        <section class="panel assistant-day-panel">
+          <div class="assistant-day-heading">
+            <div>
+              <p class="eyebrow" data-simple-i18n="chooseDay"></p>
+              <h2 id="assistantDayTitle"></h2>
+            </div>
+            <label class="toggle-line compact-toggle"><input id="quickAutoDay" type="checkbox"><span data-i18n="automaticDay"></span></label>
+          </div>
+          <section class="day-strip" id="assistantDayStrip" aria-label="VS day"></section>
+          <button class="secondary-btn full-mobile" id="quickNextDayBtn" data-i18n="nextDay"></button>
+        </section>
+
+        <section class="panel scanner-intro">
+          <div>
+            <p class="eyebrow" data-simple-i18n="simpleMode"></p>
+            <h2 data-simple-i18n="assistantTitle"></h2>
+            <p data-simple-i18n="assistantIntro"></p>
+          </div>
+          <div class="scanner-day-chip"><span data-ocr-i18n="scanDay"></span><strong id="scannerDayLabel"></strong></div>
+        </section>
+
+        <section class="panel quick-score-panel">
+          <label>
+            <span data-i18n="pointsToday"></span>
+            <input id="quickCurrentPoints" type="number" inputmode="numeric" min="0" step="10000" value="0">
+          </label>
+          <div class="quick-target-card">
+            <span data-simple-i18n="targetWithMargin"></span>
+            <strong id="quickRecommendedTarget">7 500 000</strong>
+          </div>
+        </section>
+
+        <section class="panel scanner-upload-panel">
+          <div class="scanner-actions simplified-actions">
+            <label class="primary-btn file-btn scanner-file-btn"><span data-ocr-i18n="importScreenshots"></span><input id="ocrInput" type="file" accept="image/*" multiple></label>
+            <label class="secondary-btn file-btn scanner-file-btn"><span data-ocr-i18n="takePhoto"></span><input id="ocrCameraInput" type="file" accept="image/*" capture="environment"></label>
+            <button class="secondary-btn" id="ocrStartBtn" data-ocr-i18n="startReading" disabled></button>
+            <button class="secondary-btn" id="ocrClearBtn" data-ocr-i18n="clearScreenshots" disabled></button>
+          </div>
+          <p class="help-text" data-simple-i18n="photoHelp"></p>
+          <div id="ocrPreviewList" class="ocr-preview-list"></div>
+          <div id="ocrProgressBox" class="ocr-progress-box hidden" aria-live="polite">
+            <div class="ocr-progress-top"><strong id="ocrProgressLabel"></strong><span id="ocrProgressPct">0%</span></div>
+            <progress id="ocrProgress" max="100" value="0"></progress>
+          </div>
+        </section>
+
+        <section class="panel hidden" id="ocrReviewPanel">
+          <div class="section-heading scanner-review-heading">
+            <div><p class="eyebrow" data-ocr-i18n="reviewEyebrow"></p><h2 data-simple-i18n="quickReviewTitle"></h2></div>
+            <span class="result-badge" id="ocrResultBadge"></span>
+          </div>
+          <p class="help-text" data-simple-i18n="quickReviewIntro"></p>
+          <div class="ocr-review-list" id="ocrReviewList"></div>
+          <div class="result-actions assistant-primary-action">
+            <button class="primary-btn" id="ocrApplyBtn" data-ocr-i18n="applyValues"></button>
+          </div>
+          <details class="ocr-raw-details"><summary data-ocr-i18n="rawText"></summary><pre id="ocrRawText"></pre></details>
+        </section>
+
+        <section class="panel result-panel hidden quick-result-panel" id="quickResultPanel" aria-live="polite">
+          <div class="result-header">
+            <div><p class="eyebrow" data-simple-i18n="yourPlan"></p><h2 id="quickResultTitle"></h2></div>
+            <span class="result-badge" id="quickResultBadge"></span>
+          </div>
+          <div class="result-metrics" id="quickResultMetrics"></div>
+          <ol class="plan-steps" id="quickPlanSteps"></ol>
+          <div class="result-note" id="quickResultNote"></div>
+          <div class="result-actions">
+            <button class="primary-btn" id="quickApplyPlanBtn" data-i18n="markUsed"></button>
+            <button class="secondary-btn" id="quickCopyDebriefBtn" data-i18n="copyDebrief"></button>
+          </div>
+        </section>
+
+        <details class="panel privacy-panel compact-details">
+          <summary data-simple-i18n="privacyAndInternet"></summary>
+          <p data-ocr-i18n="privacyText"></p>
+          <p class="help-text" data-ocr-i18n="firstScanNote"></p>
+        </details>
+      </section>
+
+      <section id="plannerView" class="view">
+        <section class="panel manual-intro">
+          <p class="eyebrow" data-simple-i18n="manualMode"></p>
+          <h2 data-simple-i18n="manualTitle"></h2>
+          <p data-simple-i18n="manualIntro"></p>
+        </section>
+
         <section class="panel profile-panel">
           <div class="field-grid profile-grid">
             <label><span data-i18n="player"></span><input id="playerName" type="text" autocomplete="name" data-i18n-placeholder="playerPlaceholder"></label>
@@ -106,55 +200,6 @@
         </section>
       </section>
 
-
-      <section id="scannerView" class="view">
-        <section class="panel scanner-intro">
-          <div>
-            <p class="eyebrow" data-ocr-i18n="scannerEyebrow"></p>
-            <h2 data-ocr-i18n="scannerTitle"></h2>
-            <p data-ocr-i18n="scannerIntro"></p>
-          </div>
-          <div class="scanner-day-chip"><span data-ocr-i18n="scanDay"></span><strong id="scannerDayLabel"></strong></div>
-        </section>
-
-        <section class="panel scanner-upload-panel">
-          <div class="scanner-actions">
-            <label class="primary-btn file-btn scanner-file-btn"><span data-ocr-i18n="importScreenshots"></span><input id="ocrInput" type="file" accept="image/*" multiple></label>
-            <label class="secondary-btn file-btn scanner-file-btn"><span data-ocr-i18n="takePhoto"></span><input id="ocrCameraInput" type="file" accept="image/*" capture="environment"></label>
-            <button class="secondary-btn" id="ocrStartBtn" data-ocr-i18n="startReading" disabled></button>
-            <button class="secondary-btn" id="ocrClearBtn" data-ocr-i18n="clearScreenshots" disabled></button>
-          </div>
-          <p class="help-text" data-ocr-i18n="firstScanNote"></p>
-          <div id="ocrPreviewList" class="ocr-preview-list"></div>
-          <div id="ocrProgressBox" class="ocr-progress-box hidden" aria-live="polite">
-            <div class="ocr-progress-top"><strong id="ocrProgressLabel"></strong><span id="ocrProgressPct">0%</span></div>
-            <progress id="ocrProgress" max="100" value="0"></progress>
-          </div>
-        </section>
-
-        <section class="panel privacy-panel">
-          <p class="eyebrow" data-ocr-i18n="privacyTitle"></p>
-          <p data-ocr-i18n="privacyText"></p>
-        </section>
-
-        <section class="panel hidden" id="ocrReviewPanel">
-          <div class="section-heading scanner-review-heading">
-            <div><p class="eyebrow" data-ocr-i18n="reviewEyebrow"></p><h2 data-ocr-i18n="reviewTitle"></h2></div>
-            <span class="result-badge" id="ocrResultBadge"></span>
-          </div>
-          <p class="help-text" data-ocr-i18n="reviewIntro"></p>
-          <div class="ocr-mode-row">
-            <label><input type="radio" name="ocrApplyMode" value="replace" checked><span data-ocr-i18n="replaceValues"></span></label>
-            <label><input type="radio" name="ocrApplyMode" value="add"><span data-ocr-i18n="addValues"></span></label>
-          </div>
-          <div class="ocr-review-list" id="ocrReviewList"></div>
-          <div class="result-actions">
-            <button class="primary-btn" id="ocrApplyBtn" data-ocr-i18n="applyValues"></button>
-          </div>
-          <details class="ocr-raw-details"><summary data-ocr-i18n="rawText"></summary><pre id="ocrRawText"></pre></details>
-        </section>
-      </section>
-
       <section id="guideView" class="view">
         <section class="panel guide-intro"><p class="eyebrow" data-i18n="mainRule"></p><h2 data-i18n="rightResourceRightDay"></h2><p data-i18n="guideIntro"></p></section>
         <section id="weeklyGuide" class="weekly-guide"></section>
@@ -176,4 +221,3 @@
   <script src="app.js"></script>
 </body>
 </html>
-
