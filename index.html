@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#08120f">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="VS Planner">
+  <title>GoMo VS Planner</title>
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="apple-touch-icon" href="icon-192.png">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="app-shell">
+    <header class="hero">
+      <div>
+        <p class="eyebrow">LAST WAR · ALLIANCE DUEL</p>
+        <h1>GoMo VS Planner</h1>
+        <p class="hero-copy">Calcule quoi utiliser pour atteindre 7,2 M avec une petite marge, sans gaspiller ton stock.</p>
+      </div>
+      <div class="save-state" id="saveState">Sauvegarde automatique active</div>
+    </header>
+
+    <nav class="main-nav" aria-label="Navigation principale">
+      <button class="nav-btn active" data-view="planner">Calculateur</button>
+      <button class="nav-btn" data-view="guide">Guide semaine</button>
+      <button class="nav-btn" data-view="settings">Réglages</button>
+    </nav>
+
+    <main>
+      <section id="plannerView" class="view active">
+        <section class="panel compact-panel profile-panel">
+          <div class="field-grid profile-grid">
+            <label>
+              Joueur
+              <input id="playerName" type="text" autocomplete="name" placeholder="Nom du joueur">
+            </label>
+            <label>
+              Objectif minimum
+              <input id="targetPoints" type="number" inputmode="numeric" min="0" step="10000">
+            </label>
+            <label>
+              Petite marge
+              <input id="marginPoints" type="number" inputmode="numeric" min="0" step="10000">
+            </label>
+            <label>
+              Bonus recherche VS
+              <div class="suffix-input"><input id="bonusPct" type="number" inputmode="decimal" min="0" max="500" step="1"><span>%</span></div>
+            </label>
+          </div>
+        </section>
+
+        <section class="day-strip" id="dayStrip" aria-label="Jour du duel"></section>
+
+        <section class="summary-grid" aria-label="Résumé des points">
+          <article class="summary-card">
+            <span>Objectif conseillé</span>
+            <strong id="recommendedTarget">7 350 000</strong>
+          </article>
+          <article class="summary-card">
+            <span>Déjà obtenu</span>
+            <strong id="currentPointsSummary">0</strong>
+          </article>
+          <article class="summary-card">
+            <span>Encore nécessaire</span>
+            <strong id="missingPointsSummary">7 350 000</strong>
+          </article>
+          <article class="summary-card">
+            <span>Potentiel disponible</span>
+            <strong id="potentialPointsSummary">0</strong>
+          </article>
+        </section>
+
+        <section class="panel day-info-panel">
+          <div>
+            <p class="eyebrow" id="dayEyebrow">JOUR 1</p>
+            <h2 id="dayTitle">Lundi · Entraînement radar</h2>
+            <p id="dayDescription"></p>
+          </div>
+          <div class="do-save-grid">
+            <div><strong>À utiliser</strong><p id="useToday"></p></div>
+            <div><strong>À garder</strong><p id="saveForLater"></p></div>
+          </div>
+        </section>
+
+        <section class="panel compact-panel">
+          <div class="field-grid plan-grid">
+            <label>
+              Points déjà gagnés aujourd’hui
+              <input id="currentPoints" type="number" inputmode="numeric" min="0" step="10000">
+            </label>
+            <label>
+              Stratégie
+              <select id="strategy">
+                <option value="economy">Économie maximale</option>
+                <option value="progress">Progression maximale</option>
+                <option value="score">Gros score VS</option>
+                <option value="prudent">Mode prudent</option>
+              </select>
+            </label>
+            <label>
+              Limite d’accélérateurs par calcul
+              <div class="suffix-input"><input id="speedupLimitDays" type="number" inputmode="decimal" min="0" max="365" step="0.5"><span>jours</span></div>
+            </label>
+          </div>
+          <p class="help-text" id="strategyHelp"></p>
+        </section>
+
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">STOCK DU JOUEUR</p>
+            <h2>Ressources disponibles</h2>
+          </div>
+          <button class="secondary-btn" id="clearDayBtn">Effacer les quantités du jour</button>
+        </div>
+
+        <section id="resourceList" class="resource-list"></section>
+
+        <section class="sticky-actions" aria-label="Actions du calculateur">
+          <button class="primary-btn" id="analyzeBtn">Calculer mon plan</button>
+          <button class="secondary-btn" id="demoBtn">Exemple automatique</button>
+        </section>
+
+        <section class="panel result-panel hidden" id="resultPanel" aria-live="polite">
+          <div class="result-header">
+            <div>
+              <p class="eyebrow">DÉBRIEF AUTOMATIQUE</p>
+              <h2 id="resultTitle">Plan conseillé</h2>
+            </div>
+            <span class="result-badge" id="resultBadge"></span>
+          </div>
+          <div class="result-metrics" id="resultMetrics"></div>
+          <ol class="plan-steps" id="planSteps"></ol>
+          <div class="result-note" id="resultNote"></div>
+          <div class="result-actions">
+            <button class="primary-btn" id="applyPlanBtn">Marquer ce plan comme utilisé</button>
+            <button class="secondary-btn" id="copyDebriefBtn">Copier le débrief</button>
+          </div>
+        </section>
+      </section>
+
+      <section id="guideView" class="view">
+        <section class="panel guide-intro">
+          <p class="eyebrow">RÈGLE PRINCIPALE</p>
+          <h2>Utiliser chaque ressource le bon jour</h2>
+          <p>Le site vise les coffres jusqu’à 7,2 M et ajoute la marge choisie. Une fois l’objectif atteint, il conseille de garder le reste pour la semaine suivante, sauf consigne de l’alliance.</p>
+        </section>
+        <section id="weeklyGuide" class="weekly-guide"></section>
+      </section>
+
+      <section id="settingsView" class="view">
+        <section class="panel">
+          <p class="eyebrow">SAUVEGARDE</p>
+          <h2>Données conservées sur cet appareil</h2>
+          <p>Les stocks, réserves, valeurs de points et réglages sont enregistrés automatiquement dans le navigateur. Aucun compte ni base de données n’est nécessaire.</p>
+          <div class="settings-actions">
+            <button class="secondary-btn" id="exportBtn">Exporter une sauvegarde</button>
+            <label class="secondary-btn file-btn">Importer une sauvegarde<input id="importInput" type="file" accept="application/json"></label>
+          </div>
+        </section>
+
+        <section class="panel">
+          <p class="eyebrow">VALEURS DE POINTS</p>
+          <h2>Valeurs modifiables</h2>
+          <p>Les valeurs proposées sont des valeurs de base. Le bonus de recherche VS est appliqué automatiquement. Modifie une valeur directement dans une fiche ressource si ton écran de jeu affiche autre chose.</p>
+          <button class="secondary-btn" id="restorePointsBtn">Restaurer toutes les valeurs de base</button>
+        </section>
+
+        <section class="panel">
+          <p class="eyebrow">IPHONE</p>
+          <h2>Ajouter le site à l’écran d’accueil</h2>
+          <p>Dans Safari : bouton Partager, puis « Sur l’écran d’accueil ». Le calculateur s’ouvrira ensuite comme une application.</p>
+        </section>
+
+        <section class="danger-panel panel">
+          <p class="eyebrow">RÉINITIALISATION</p>
+          <h2>Effacer toutes les données</h2>
+          <p>Cette action supprime les stocks, réserves, résultats et réglages enregistrés sur cet appareil.</p>
+          <button class="danger-btn" id="resetAllBtn">Réinitialiser complètement</button>
+        </section>
+      </section>
+    </main>
+  </div>
+
+  <div class="modal-backdrop hidden" id="confirmModal" role="dialog" aria-modal="true" aria-labelledby="confirmTitle">
+    <div class="modal-card">
+      <h2 id="confirmTitle">Confirmer l’action</h2>
+      <p id="confirmMessage"></p>
+      <div class="modal-actions">
+        <button class="secondary-btn" id="confirmCancel">Annuler</button>
+        <button class="danger-btn" id="confirmOk">Confirmer</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast hidden" id="toast" role="status"></div>
+  <script src="app.js"></script>
+</body>
+</html>
