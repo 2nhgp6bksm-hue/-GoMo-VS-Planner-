@@ -1,718 +1,241 @@
 'use strict';
 
-const STORAGE_KEY = 'gomo_vs_planner_v1';
-const VERSION = '1.0.0';
-const fmt = new Intl.NumberFormat('fr-FR', { maximumFractionDigits: 0 });
+const STORAGE_KEY = 'gomo_vs_planner_v1_1';
+const VERSION = '1.2.0';
+const LANGS = { fr:'Français', en:'English', de:'Deutsch', ro:'Română', uk:'Українська', ko:'한국어', hr:'Hrvatski' };
+const LOCALES = { fr:'fr-FR', en:'en-GB', de:'de-DE', ro:'ro-RO', uk:'uk-UA', ko:'ko-KR', hr:'hr-HR' };
 
-const days = [
-  {
-    id: 1, short: 'Lun.', title: 'Lundi · Entraînement radar', label: 'Radar',
-    description: 'Jour idéal pour les radars, l’endurance, les ressources récoltées et les améliorations du drone.',
-    use: 'Radars préparés dimanche, endurance, données et pièces de drone, coffres de puces, récoltes.',
-    save: 'Accélérateurs de construction/recherche/entraînement, badges de bravoure, fragments et tickets héros.',
-    items: [
-      item('stamina', 'Endurance utilisée', 'point(s) d’endurance', 150, { scarcity: 1, progression: 1, eco: 1 }),
-      item('radarTasks', 'Missions radar terminées', 'mission(s)', 10000, { scarcity: 1, progression: 1, eco: 1 }),
-      item('heroExp', 'EXP de héros utilisée', 'EXP', 1 / 660, { scarcity: 3, progression: 5, eco: 4, quick: [660000, 6600000, 66000000] }),
-      item('droneData', 'Données de combat drone', 'donnée(s)', 3, { scarcity: 2, progression: 5, eco: 2, quick: [1000, 10000, 100000] }),
-      item('droneParts', 'Pièces de drone', 'pièce(s)', 2500, { scarcity: 4, progression: 5, eco: 4 }),
-      item('foodLots', 'Nourriture récoltée', 'lot(s) de 100', 20, { scarcity: 1, progression: 1, eco: 1, quick: [100, 1000, 10000] }),
-      item('ironLots', 'Fer récolté', 'lot(s) de 100', 20, { scarcity: 1, progression: 1, eco: 1, quick: [100, 1000, 10000] }),
-      item('coinLots', 'Pièces récoltées', 'lot(s) de 60', 20, { scarcity: 1, progression: 1, eco: 1, quick: [100, 1000, 10000] }),
-      item('skillChipPoints', 'Points de puce drone gagnés', 'point(s) de puce', 1000, { scarcity: 3, progression: 5, eco: 3 })
-    ]
-  },
-  {
-    id: 2, short: 'Mar.', title: 'Mardi · Expansion de la base', label: 'Base',
-    description: 'Jour de la construction, des bâtiments terminés, des camions UR, missions secrètes et survivants.',
-    use: 'Grosses constructions, accélérateurs construction, puissance bâtiment, camions UR, missions légendaires, survivants.',
-    save: 'Recherche pour mercredi, ressources héros pour jeudi, entraînement et universels pour vendredi.',
-    items: [
-      speedItem('constructionSpeed', 'Accélérateurs de construction', 50, { scarcity: 2, progression: 4, eco: 2 }),
-      speedItem('universalSpeed', 'Accélérateurs universels', 50, { scarcity: 4, progression: 4, eco: 5 }),
-      item('buildingPower', 'Puissance bâtiment prévue', 'point(s) de puissance', 10, { scarcity: 1, progression: 5, eco: 1, quick: [1000, 10000, 100000] }),
-      item('urTrucks', 'Camions commerciaux UR', 'camion(s)', 100000, { scarcity: 2, progression: 1, eco: 1 }),
-      item('legendTasks', 'Missions secrètes légendaires', 'mission(s)', 75000, { scarcity: 2, progression: 1, eco: 1 }),
-      item('survivorRecruit', 'Recrutements de survivants', 'recrutement(s)', 1500, { scarcity: 3, progression: 2, eco: 3, defaultReserve: 50 })
-    ]
-  },
-  {
-    id: 3, short: 'Mer.', title: 'Mercredi · Âge de la science', label: 'Science',
-    description: 'Jour de la recherche, des badges de bravoure et des coffres de composants de drone.',
-    use: 'Recherche longue, accélérateurs recherche, puissance technologie, badges de bravoure, composants drone.',
-    save: 'Fragments, EXP, médailles et tickets héros pour jeudi; entraînement et universels pour vendredi.',
-    items: [
-      speedItem('researchSpeed', 'Accélérateurs de recherche', 50, { scarcity: 2, progression: 5, eco: 2 }),
-      speedItem('universalSpeed', 'Accélérateurs universels', 50, { scarcity: 4, progression: 5, eco: 5 }),
-      item('techPower', 'Puissance technologie prévue', 'point(s) de puissance', 10, { scarcity: 1, progression: 5, eco: 1, quick: [1000, 10000, 100000] }),
-      item('valorBadges', 'Badges de bravoure', 'badge(s)', 300, { scarcity: 3, progression: 5, eco: 3, quick: [100, 1000, 10000] }),
-      item('radarTasks', 'Missions radar terminées', 'mission(s)', 10000, { scarcity: 1, progression: 1, eco: 1 }),
-      item('droneChest1', 'Coffres composant drone niveau 1', 'coffre(s)', 1100, { scarcity: 2, progression: 4, eco: 2 }),
-      item('droneChest2', 'Coffres composant drone niveau 2', 'coffre(s)', 3300, { scarcity: 2, progression: 4, eco: 2 }),
-      item('droneChest3', 'Coffres composant drone niveau 3', 'coffre(s)', 10000, { scarcity: 3, progression: 4, eco: 3 }),
-      item('droneChest4', 'Coffres composant drone niveau 4', 'coffre(s)', 30000, { scarcity: 3, progression: 4, eco: 3 }),
-      item('droneChest5', 'Coffres composant drone niveau 5', 'coffre(s)', 90000, { scarcity: 4, progression: 5, eco: 4 }),
-      item('droneChest6', 'Coffres composant drone niveau 6', 'coffre(s)', 270000, { scarcity: 4, progression: 5, eco: 4 }),
-      item('droneChest7', 'Coffres composant drone niveau 7', 'coffre(s)', 810000, { scarcity: 5, progression: 5, eco: 5 })
-    ]
-  },
-  {
-    id: 4, short: 'Jeu.', title: 'Jeudi · Entraîner les héros', label: 'Héros',
-    description: 'Jour réservé aux recrutements, EXP, fragments, médailles de compétence et armes exclusives.',
-    use: 'Tickets héros, EXP, fragments UR/SSR/R, médailles de compétence et fragments d’arme exclusive.',
-    save: 'Accélérateurs d’entraînement, de construction, de recherche et universels pour vendredi.',
-    items: [
-      item('eliteTickets', 'Tickets de recrutement héros', 'ticket(s)', 1500, { scarcity: 3, progression: 4, eco: 3, defaultReserve: 500 }),
-      item('heroExp', 'EXP de héros utilisée', 'EXP', 1 / 660, { scarcity: 2, progression: 5, eco: 2, quick: [660000, 6600000, 66000000] }),
-      item('urShards', 'Fragments de héros UR', 'fragment(s)', 10000, { scarcity: 5, progression: 5, eco: 5, defaultReserve: 200 }),
-      item('ssrShards', 'Fragments de héros SSR', 'fragment(s)', 3500, { scarcity: 3, progression: 4, eco: 3 }),
-      item('rareShards', 'Fragments de héros R', 'fragment(s)', 1000, { scarcity: 1, progression: 2, eco: 1 }),
-      item('skillMedals', 'Médailles de compétence', 'médaille(s)', 10, { scarcity: 3, progression: 5, eco: 3, quick: [1000, 10000, 100000] }),
-      item('weaponShards', 'Fragments d’arme exclusive', 'fragment(s)', 10000, { scarcity: 5, progression: 5, eco: 5 })
-    ]
-  },
-  {
-    id: 5, short: 'Ven.', title: 'Vendredi · Mobilisation totale', label: 'Mobilisation',
-    description: 'Le grand jour des accélérateurs et de l’entraînement. Garde les universels pour compléter précisément.',
-    use: 'Tous les accélérateurs utiles, puissance bâtiment/technologie, entraînement des troupes, radars restants.',
-    save: 'Garde seulement ce que tes réserves imposent. Prépare boucliers et soins pour samedi.',
-    items: [
-      item('radarTasks', 'Missions radar terminées', 'mission(s)', 10000, { scarcity: 1, progression: 1, eco: 1 }),
-      speedItem('constructionSpeed', 'Accélérateurs de construction', 50, { scarcity: 2, progression: 4, eco: 2 }),
-      speedItem('researchSpeed', 'Accélérateurs de recherche', 50, { scarcity: 2, progression: 5, eco: 2 }),
-      speedItem('trainingSpeed', 'Accélérateurs d’entraînement', 50, { scarcity: 2, progression: 5, eco: 1 }),
-      speedItem('universalSpeed', 'Accélérateurs universels', 50, { scarcity: 4, progression: 5, eco: 5 }),
-      item('buildingPower', 'Puissance bâtiment prévue', 'point(s) de puissance', 10, { scarcity: 1, progression: 5, eco: 1, quick: [1000, 10000, 100000] }),
-      item('techPower', 'Puissance technologie prévue', 'point(s) de puissance', 10, { scarcity: 1, progression: 5, eco: 1, quick: [1000, 10000, 100000] }),
-      ...Array.from({ length: 10 }, (_, i) => item(`trainT${i + 1}`, `Troupes niveau ${i + 1} entraînées`, 'troupe(s)', 20 + (i * 10), { scarcity: 1, progression: 4, eco: 2, quick: [100, 1000, 10000], advanced: i < 8 }))
-    ]
-  },
-  {
-    id: 6, short: 'Sam.', title: 'Samedi · Destruction ennemie', label: 'Combat',
-    description: 'Jour de combat. Les cibles de l’alliance adverse rapportent beaucoup plus. Le calcul reste une estimation.',
-    use: 'Camions UR, missions légendaires, soins, accélérateurs restants et combats coordonnés contre l’adversaire VS.',
-    save: 'Plus rien après samedi, sauf les réserves personnelles que tu as fixées.',
-    items: [
-      item('urTrucks', 'Camions commerciaux UR', 'camion(s)', 100000, { scarcity: 2, progression: 1, eco: 1 }),
-      item('legendTasks', 'Missions secrètes légendaires', 'mission(s)', 75000, { scarcity: 2, progression: 1, eco: 1 }),
-      speedItem('constructionSpeed', 'Accélérateurs de construction', 50, { scarcity: 2, progression: 4, eco: 2 }),
-      speedItem('researchSpeed', 'Accélérateurs de recherche', 50, { scarcity: 2, progression: 5, eco: 2 }),
-      speedItem('trainingSpeed', 'Accélérateurs d’entraînement', 50, { scarcity: 2, progression: 5, eco: 2 }),
-      speedItem('healingSpeed', 'Accélérateurs de soins', 50, { scarcity: 2, progression: 3, eco: 1 }),
-      speedItem('universalSpeed', 'Accélérateurs universels', 50, { scarcity: 4, progression: 4, eco: 5 }),
-      ...Array.from({ length: 10 }, (_, i) => item(`rivalKillT${i + 1}`, `Troupes adversaires VS niveau ${i + 1} éliminées`, 'troupe(s)', 10 + (i * 5), { scarcity: 1, progression: 1, eco: 1, quick: [100, 1000, 10000], advanced: i < 8 })),
-      ...Array.from({ length: 10 }, (_, i) => item(`otherKillT${i + 1}`, `Autres troupes niveau ${i + 1} éliminées`, 'troupe(s)', 2 + i, { scarcity: 2, progression: 1, eco: 3, quick: [100, 1000, 10000], advanced: true })),
-      ...Array.from({ length: 10 }, (_, i) => item(`lostT${i + 1}`, `Tes troupes niveau ${i + 1} perdues`, 'troupe(s)', 2 + i, { scarcity: 5, progression: 0, eco: 5, quick: [100, 1000, 10000], advanced: true }))
-    ]
-  }
+const OCR_TEXT = {
+fr:{scanner:'Captures',scannerEyebrow:'LECTURE AUTOMATIQUE',scannerTitle:'Importer les captures du joueur',scannerIntro:'Choisis une ou plusieurs captures de Last War. Le site lit les chiffres, propose les ressources correspondantes et te laisse tout vérifier avant de remplir le calculateur.',scanDay:'Jour analysé',importScreenshots:'Choisir des captures',takePhoto:'Prendre une photo',startReading:'Relancer la lecture',clearScreenshots:'Effacer les captures',firstScanNote:'La première lecture nécessite Internet pour charger le moteur OCR libre. Les lectures suivantes sont mises en cache par le navigateur.',privacyTitle:'CONFIDENTIALITÉ',privacyText:'Les images sont analysées dans le navigateur. Le site ne les envoie pas vers une base de données et ne les conserve pas après la fermeture ou l’actualisation de la page.',reviewEyebrow:'VÉRIFICATION',reviewTitle:'Valeurs reconnues',reviewIntro:'Vérifie chaque ligne. Corrige la valeur ou choisis la bonne ressource lorsque la reconnaissance n’est pas certaine.',replaceValues:'Remplacer les stocks actuels',addValues:'Ajouter aux stocks actuels',applyValues:'Valider et remplir le calculateur',rawText:'Voir le texte brut reconnu',currentScore:'Points déjà gagnés aujourd’hui',ignore:'Ne pas utiliser',targetField:'Ressource',detectedValue:'Valeur',source:'Capture et texte reconnu',confidence:'Fiabilité',reading:'Lecture en cours',preparing:'Préparation des images',loadingEngine:'Chargement du moteur OCR',readingImage:'Lecture de la capture {current}/{total}',done:'Lecture terminée',filesSelected:'{count} capture(s) prête(s)',noScreenshot:'Choisis au moins une capture.',ocrUnavailable:'Le moteur de lecture n’a pas pu être chargé. Vérifie la connexion Internet puis réessaie.',ocrFailed:'La lecture de cette capture a échoué.',noDetectedValue:'Aucune valeur exploitable n’a été reconnue. Essaie une capture plus nette ou recadrée.',detectedCount:'{count} valeur(s) proposée(s)',high:'Élevée',medium:'Moyenne',low:'Faible',confirmApplyScanTitle:'Appliquer les valeurs reconnues ?',confirmApplyScanMessage:'Les lignes cochées vont modifier les stocks du jour sélectionné. Tu pourras encore les corriger ensuite.',scanApplied:'Valeurs ajoutées au calculateur',scanCleared:'Captures effacées',applyNothing:'Aucune ligne valide n’est cochée.',screenshot:'Capture'},
+en:{scanner:'Screenshots',scannerEyebrow:'AUTOMATIC READING',scannerTitle:'Import player screenshots',scannerIntro:'Choose one or more Last War screenshots. The site reads the numbers, suggests matching resources and lets you verify everything before filling the calculator.',scanDay:'Day analysed',importScreenshots:'Choose screenshots',takePhoto:'Take a photo',startReading:'Run reading again',clearScreenshots:'Clear screenshots',firstScanNote:'The first scan needs Internet to load the open-source OCR engine. Later scans are cached by the browser.',privacyTitle:'PRIVACY',privacyText:'Images are analysed inside the browser. The site does not send them to a database and does not keep them after the page is closed or refreshed.',reviewEyebrow:'REVIEW',reviewTitle:'Recognised values',reviewIntro:'Check every row. Correct the value or choose the right resource whenever recognition is uncertain.',replaceValues:'Replace current stocks',addValues:'Add to current stocks',applyValues:'Confirm and fill calculator',rawText:'Show recognised raw text',currentScore:'Points already earned today',ignore:'Do not use',targetField:'Resource',detectedValue:'Value',source:'Screenshot and recognised text',confidence:'Confidence',reading:'Reading in progress',preparing:'Preparing images',loadingEngine:'Loading OCR engine',readingImage:'Reading screenshot {current}/{total}',done:'Reading complete',filesSelected:'{count} screenshot(s) ready',noScreenshot:'Choose at least one screenshot.',ocrUnavailable:'The OCR engine could not be loaded. Check the Internet connection and try again.',ocrFailed:'This screenshot could not be read.',noDetectedValue:'No usable value was recognised. Try a clearer or cropped screenshot.',detectedCount:'{count} suggested value(s)',high:'High',medium:'Medium',low:'Low',confirmApplyScanTitle:'Apply recognised values?',confirmApplyScanMessage:'Checked rows will change the stocks for the selected day. You can still correct them afterwards.',scanApplied:'Values added to the calculator',scanCleared:'Screenshots cleared',applyNothing:'No valid row is checked.',screenshot:'Screenshot'},
+de:{scanner:'Screenshots',scannerEyebrow:'AUTOMATISCHE ERKENNUNG',scannerTitle:'Screenshots des Spielers importieren',scannerIntro:'Wähle einen oder mehrere Last-War-Screenshots. Die Seite liest Zahlen, schlägt passende Ressourcen vor und lässt alles vor dem Eintragen prüfen.',scanDay:'Analysierter Tag',importScreenshots:'Screenshots auswählen',takePhoto:'Foto aufnehmen',startReading:'Erkennung wiederholen',clearScreenshots:'Screenshots löschen',firstScanNote:'Die erste Erkennung benötigt Internet, um die freie OCR-Engine zu laden. Weitere Erkennungen werden vom Browser zwischengespeichert.',privacyTitle:'DATENSCHUTZ',privacyText:'Die Bilder werden im Browser analysiert. Die Seite sendet sie nicht an eine Datenbank und speichert sie nicht nach Schließen oder Aktualisieren.',reviewEyebrow:'PRÜFUNG',reviewTitle:'Erkannte Werte',reviewIntro:'Prüfe jede Zeile. Korrigiere den Wert oder wähle die richtige Ressource, wenn die Erkennung unsicher ist.',replaceValues:'Aktuelle Bestände ersetzen',addValues:'Zu aktuellen Beständen addieren',applyValues:'Bestätigen und Rechner füllen',rawText:'Erkannten Rohtext anzeigen',currentScore:'Heute bereits erreichte Punkte',ignore:'Nicht verwenden',targetField:'Ressource',detectedValue:'Wert',source:'Screenshot und erkannter Text',confidence:'Sicherheit',reading:'Erkennung läuft',preparing:'Bilder werden vorbereitet',loadingEngine:'OCR-Engine wird geladen',readingImage:'Screenshot {current}/{total} wird gelesen',done:'Erkennung abgeschlossen',filesSelected:'{count} Screenshot(s) bereit',noScreenshot:'Wähle mindestens einen Screenshot.',ocrUnavailable:'Die OCR-Engine konnte nicht geladen werden. Prüfe die Internetverbindung und versuche es erneut.',ocrFailed:'Dieser Screenshot konnte nicht gelesen werden.',noDetectedValue:'Kein nutzbarer Wert erkannt. Versuche einen schärferen oder zugeschnittenen Screenshot.',detectedCount:'{count} Wert(e) vorgeschlagen',high:'Hoch',medium:'Mittel',low:'Niedrig',confirmApplyScanTitle:'Erkannte Werte anwenden?',confirmApplyScanMessage:'Markierte Zeilen ändern die Bestände des ausgewählten Tages. Du kannst sie danach weiter korrigieren.',scanApplied:'Werte zum Rechner hinzugefügt',scanCleared:'Screenshots gelöscht',applyNothing:'Keine gültige Zeile ist markiert.',screenshot:'Screenshot'},
+ro:{scanner:'Capturi',scannerEyebrow:'CITIRE AUTOMATĂ',scannerTitle:'Importă capturile jucătorului',scannerIntro:'Alege una sau mai multe capturi Last War. Site-ul citește numerele, propune resursele potrivite și permite verificarea înainte de completarea calculatorului.',scanDay:'Zi analizată',importScreenshots:'Alege capturi',takePhoto:'Fă o fotografie',startReading:'Repetă citirea',clearScreenshots:'Șterge capturile',firstScanNote:'Prima citire necesită Internet pentru motorul OCR liber. Citirile următoare sunt păstrate în memoria browserului.',privacyTitle:'CONFIDENȚIALITATE',privacyText:'Imaginile sunt analizate în browser. Site-ul nu le trimite într-o bază de date și nu le păstrează după închiderea sau reîncărcarea paginii.',reviewEyebrow:'VERIFICARE',reviewTitle:'Valori recunoscute',reviewIntro:'Verifică fiecare rând. Corectează valoarea sau alege resursa potrivită când recunoașterea este nesigură.',replaceValues:'Înlocuiește stocurile actuale',addValues:'Adaugă la stocurile actuale',applyValues:'Confirmă și completează calculatorul',rawText:'Arată textul brut recunoscut',currentScore:'Puncte obținute deja astăzi',ignore:'Nu utiliza',targetField:'Resursă',detectedValue:'Valoare',source:'Captură și text recunoscut',confidence:'Încredere',reading:'Citire în curs',preparing:'Pregătirea imaginilor',loadingEngine:'Încărcarea motorului OCR',readingImage:'Citirea capturii {current}/{total}',done:'Citire terminată',filesSelected:'{count} captură(i) pregătită(e)',noScreenshot:'Alege cel puțin o captură.',ocrUnavailable:'Motorul OCR nu a putut fi încărcat. Verifică Internetul și încearcă din nou.',ocrFailed:'Această captură nu a putut fi citită.',noDetectedValue:'Nu a fost recunoscută nicio valoare utilizabilă. Încearcă o captură mai clară sau decupată.',detectedCount:'{count} valoare(i) propusă(e)',high:'Ridicată',medium:'Medie',low:'Scăzută',confirmApplyScanTitle:'Aplici valorile recunoscute?',confirmApplyScanMessage:'Rândurile bifate vor modifica stocurile zilei selectate. Le poți corecta și după aceea.',scanApplied:'Valorile au fost adăugate în calculator',scanCleared:'Capturi șterse',applyNothing:'Niciun rând valid nu este bifat.',screenshot:'Captură'},
+uk:{scanner:'Знімки',scannerEyebrow:'АВТОМАТИЧНЕ ЗЧИТУВАННЯ',scannerTitle:'Імпорт знімків гравця',scannerIntro:'Виберіть один або кілька знімків Last War. Сайт зчитує числа, пропонує відповідні ресурси й дозволяє все перевірити перед заповненням калькулятора.',scanDay:'День аналізу',importScreenshots:'Вибрати знімки',takePhoto:'Зробити фото',startReading:'Повторити зчитування',clearScreenshots:'Очистити знімки',firstScanNote:'Для першого зчитування потрібен Інтернет, щоб завантажити відкритий OCR-двигун. Наступні зчитування кешуються браузером.',privacyTitle:'КОНФІДЕНЦІЙНІСТЬ',privacyText:'Зображення аналізуються у браузері. Сайт не надсилає їх у базу даних і не зберігає після закриття або оновлення сторінки.',reviewEyebrow:'ПЕРЕВІРКА',reviewTitle:'Розпізнані значення',reviewIntro:'Перевірте кожен рядок. Виправте значення або виберіть правильний ресурс, якщо розпізнавання неточне.',replaceValues:'Замінити поточні запаси',addValues:'Додати до поточних запасів',applyValues:'Підтвердити й заповнити калькулятор',rawText:'Показати розпізнаний текст',currentScore:'Уже набрані сьогодні очки',ignore:'Не використовувати',targetField:'Ресурс',detectedValue:'Значення',source:'Знімок і розпізнаний текст',confidence:'Надійність',reading:'Триває зчитування',preparing:'Підготовка зображень',loadingEngine:'Завантаження OCR-двигуна',readingImage:'Зчитування знімка {current}/{total}',done:'Зчитування завершено',filesSelected:'Готово знімків: {count}',noScreenshot:'Виберіть хоча б один знімок.',ocrUnavailable:'OCR-двигун не вдалося завантажити. Перевірте Інтернет і спробуйте ще раз.',ocrFailed:'Не вдалося прочитати цей знімок.',noDetectedValue:'Не знайдено придатних значень. Спробуйте чіткіший або обрізаний знімок.',detectedCount:'Запропоновано значень: {count}',high:'Висока',medium:'Середня',low:'Низька',confirmApplyScanTitle:'Застосувати розпізнані значення?',confirmApplyScanMessage:'Позначені рядки змінять запаси вибраного дня. Їх можна буде виправити й пізніше.',scanApplied:'Значення додано до калькулятора',scanCleared:'Знімки очищено',applyNothing:'Не позначено жодного дійсного рядка.',screenshot:'Знімок'},
+ko:{scanner:'스크린샷',scannerEyebrow:'자동 인식',scannerTitle:'플레이어 스크린샷 가져오기',scannerIntro:'Last War 스크린샷을 하나 이상 선택하세요. 사이트가 숫자를 읽고 해당 자원을 제안하며 계산기에 입력하기 전에 모두 확인할 수 있습니다.',scanDay:'분석 요일',importScreenshots:'스크린샷 선택',takePhoto:'사진 촬영',startReading:'다시 인식',clearScreenshots:'스크린샷 지우기',firstScanNote:'첫 인식 시 무료 OCR 엔진을 불러오기 위해 인터넷이 필요합니다. 이후에는 브라우저에 캐시됩니다.',privacyTitle:'개인정보 보호',privacyText:'이미지는 브라우저 안에서 분석됩니다. 사이트는 이미지를 데이터베이스로 보내지 않으며 페이지를 닫거나 새로 고치면 보관하지 않습니다.',reviewEyebrow:'확인',reviewTitle:'인식된 값',reviewIntro:'각 줄을 확인하세요. 인식이 확실하지 않으면 값을 수정하거나 올바른 자원을 선택하세요.',replaceValues:'현재 보유량 교체',addValues:'현재 보유량에 추가',applyValues:'확인 후 계산기에 입력',rawText:'인식된 원문 보기',currentScore:'오늘 이미 획득한 점수',ignore:'사용하지 않음',targetField:'자원',detectedValue:'값',source:'스크린샷 및 인식 문구',confidence:'신뢰도',reading:'인식 중',preparing:'이미지 준비 중',loadingEngine:'OCR 엔진 불러오는 중',readingImage:'스크린샷 {current}/{total} 인식 중',done:'인식 완료',filesSelected:'스크린샷 {count}개 준비됨',noScreenshot:'스크린샷을 하나 이상 선택하세요.',ocrUnavailable:'OCR 엔진을 불러오지 못했습니다. 인터넷 연결을 확인한 뒤 다시 시도하세요.',ocrFailed:'이 스크린샷을 읽지 못했습니다.',noDetectedValue:'사용 가능한 값을 인식하지 못했습니다. 더 선명하거나 잘라낸 스크린샷을 사용하세요.',detectedCount:'제안된 값 {count}개',high:'높음',medium:'보통',low:'낮음',confirmApplyScanTitle:'인식된 값을 적용할까요?',confirmApplyScanMessage:'체크한 줄이 선택한 요일의 보유량을 변경합니다. 이후에도 수정할 수 있습니다.',scanApplied:'값이 계산기에 추가되었습니다',scanCleared:'스크린샷을 지웠습니다',applyNothing:'유효한 줄이 선택되지 않았습니다.',screenshot:'스크린샷'},
+hr:{scanner:'Snimke',scannerEyebrow:'AUTOMATSKO ČITANJE',scannerTitle:'Uvezi snimke igrača',scannerIntro:'Odaberi jednu ili više Last War snimki. Stranica čita brojeve, predlaže odgovarajuće resurse i dopušta provjeru prije popunjavanja kalkulatora.',scanDay:'Analizirani dan',importScreenshots:'Odaberi snimke',takePhoto:'Snimi fotografiju',startReading:'Ponovi čitanje',clearScreenshots:'Obriši snimke',firstScanNote:'Prvo čitanje treba Internet za učitavanje otvorenog OCR sustava. Sljedeća čitanja preglednik sprema u predmemoriju.',privacyTitle:'PRIVATNOST',privacyText:'Slike se analiziraju u pregledniku. Stranica ih ne šalje u bazu podataka i ne čuva ih nakon zatvaranja ili osvježavanja stranice.',reviewEyebrow:'PROVJERA',reviewTitle:'Prepoznate vrijednosti',reviewIntro:'Provjeri svaki redak. Ispravi vrijednost ili odaberi pravi resurs kada prepoznavanje nije sigurno.',replaceValues:'Zamijeni trenutačne zalihe',addValues:'Dodaj trenutačnim zalihama',applyValues:'Potvrdi i popuni kalkulator',rawText:'Prikaži prepoznati sirovi tekst',currentScore:'Danas već osvojeni bodovi',ignore:'Ne koristi',targetField:'Resurs',detectedValue:'Vrijednost',source:'Snimka i prepoznati tekst',confidence:'Pouzdanost',reading:'Čitanje u tijeku',preparing:'Priprema slika',loadingEngine:'Učitavanje OCR sustava',readingImage:'Čitanje snimke {current}/{total}',done:'Čitanje završeno',filesSelected:'Spremno snimki: {count}',noScreenshot:'Odaberi najmanje jednu snimku.',ocrUnavailable:'OCR sustav nije učitan. Provjeri Internet i pokušaj ponovno.',ocrFailed:'Ovu snimku nije bilo moguće pročitati.',noDetectedValue:'Nije prepoznata upotrebljiva vrijednost. Pokušaj s jasnijom ili izrezanom snimkom.',detectedCount:'Predloženo vrijednosti: {count}',high:'Visoka',medium:'Srednja',low:'Niska',confirmApplyScanTitle:'Primijeniti prepoznate vrijednosti?',confirmApplyScanMessage:'Označeni redci promijenit će zalihe odabranog dana. Poslije ih možeš dodatno ispraviti.',scanApplied:'Vrijednosti su dodane u kalkulator',scanCleared:'Snimke su obrisane',applyNothing:'Nije označen nijedan valjan redak.',screenshot:'Snimka'}
+};
+
+
+const TEXT = {
+fr:{
+heroCopy:'Calcule quoi utiliser pour atteindre au minimum 7,2 M avec une marge, sans gaspiller tes ressources.',language:'Langue',autoSave:'Sauvegarde automatique active',saved:'Enregistré',calculator:'Calculateur',weekGuide:'Guide semaine',settings:'Réglages',player:'Joueur',playerPlaceholder:'Nom du joueur',minimumTarget:'Objectif minimum',safetyMargin:'Marge de sécurité',vsBonus:'Bonus recherche VS',automaticDay:'Choisir automatiquement le jour VS',nextDay:'Jour suivant',recommendedTarget:'Objectif conseillé',alreadyEarned:'Déjà obtenu',stillNeeded:'Encore nécessaire',availablePotential:'Potentiel disponible',useToday:'À utiliser',saveForLater:'À garder',pointsToday:'Points déjà gagnés aujourd’hui',strategy:'Stratégie',speedLimit:'Limite d’accélérateurs par calcul',daysUnit:'jours',playerStock:'STOCK DU JOUEUR',availableResources:'Ressources disponibles',clearDay:'Effacer les quantités du jour',editablePointsWarning:'Les valeurs de points sont modifiables. Vérifie-les avec ton écran du jeu si les règles ou bonus ont changé.',calculatePlan:'Calculer mon plan',automaticExample:'Exemple automatique',automaticDebrief:'DÉBRIEF AUTOMATIQUE',markUsed:'Marquer ce plan comme utilisé',copyDebrief:'Copier le débrief',mainRule:'RÈGLE PRINCIPALE',rightResourceRightDay:'Utiliser chaque ressource le bon jour',guideIntro:'Le site vise l’objectif choisi, ajoute la marge de sécurité et protège les réserves. Une fois la cible atteinte, il conseille de garder le reste.',backup:'SAUVEGARDE',savedOnDevice:'Données conservées sur cet appareil',storageInfo:'Les stocks, réserves, valeurs de points et réglages restent dans le navigateur. Aucun compte, crédit ou base de données distante n’est nécessaire.',exportBackup:'Exporter une sauvegarde',importBackup:'Importer une sauvegarde',pointValues:'VALEURS DE POINTS',editableValues:'Valeurs modifiables',pointInfo:'Le bonus VS est appliqué automatiquement. Modifie une valeur dans une fiche si le jeu affiche un autre nombre.',restoreBaseValues:'Restaurer les valeurs de base',addHomeScreen:'Ajouter le site à l’écran d’accueil',iphoneInfo:'Dans Safari : Partager, puis « Sur l’écran d’accueil ». Le site s’ouvrira ensuite comme une application et pourra fonctionner hors ligne.',reset:'RÉINITIALISATION',eraseAllData:'Effacer toutes les données',resetInfo:'Cette action supprime les stocks, réserves, résultats et réglages enregistrés sur cet appareil.',fullReset:'Réinitialiser complètement',cancel:'Annuler',confirm:'Confirmer',day:'JOUR',stock:'Stock',reserve:'Réserve',pointsPerUnit:'Points par unité',unit:'Unité',usable:'Utilisable',potential:'Potentiel',strategyEconomy:'Économie maximale',strategyPrudent:'Mode prudent',strategyProgress:'Progression maximale',strategyScore:'Gros score VS',helpEconomy:'Protège les ressources rares et utilise d’abord les ressources rentables et faciles à remplacer.',helpPrudent:'Renforce la protection des stocks et évite de descendre trop près des réserves.',helpProgress:'Privilégie les actions qui améliorent réellement le compte.',helpScore:'Privilégie les actions qui rapportent le plus de points rapidement.',goalReached:'Objectif atteint',stockInsufficient:'Stock insuffisant',pointsAdded:'Points ajoutés',estimatedTotal:'Total estimé',realMargin:'Marge réelle',missingPoints:'Points manquants',use:'Utiliser',about:'environ',points:'points',remainingStock:'Stock restant',noResourceNeeded:'Aucune ressource supplémentaire n’est nécessaire. L’objectif est déjà atteint.',reachedNote:'Objectif atteint. Arrête de dépenser et garde le reste pour la prochaine semaine, sauf consigne contraire de l’alliance.',missingNote:'Avec le stock saisi et les réserves protégées, il manque encore {points} points.',planCalculated:'Plan calculé',demoAdded:'Exemple ajouté. Tu peux lancer le calcul.',confirmApplyTitle:'Marquer ce plan comme utilisé ?',confirmApplyMessage:'Les quantités seront retirées du stock et les points estimés seront ajoutés au total du jour.',planApplied:'Stock et points mis à jour.',confirmClearTitle:'Effacer les quantités du jour ?',confirmClearMessage:'Les réserves et les valeurs de points seront conservées.',cleared:'Quantités effacées.',confirmRestoreTitle:'Restaurer les valeurs de base ?',confirmRestoreMessage:'Toutes les modifications manuelles des points seront supprimées.',restored:'Valeurs restaurées.',confirmResetTitle:'Réinitialiser complètement ?',confirmResetMessage:'Toutes les données enregistrées seront supprimées. Cette action est irréversible sans sauvegarde exportée.',resetDone:'Toutes les données ont été effacées.',backupExported:'Sauvegarde exportée.',confirmImportTitle:'Importer cette sauvegarde ?',confirmImportMessage:'Les données actuelles seront remplacées par celles du fichier choisi.',backupImported:'Sauvegarde importée.',invalidBackup:'Le fichier choisi n’est pas une sauvegarde valide.',debriefCopied:'Débrief copié.',copyFailed:'Copie impossible sur ce navigateur.',plan:'Plan conseillé',advice:'Conseil',currentPointsLabel:'Points déjà obtenus',objectiveLabel:'Objectif',estimatedTotalLabel:'Total estimé',keepAdvice:'Garde le reste du stock et les réserves pour la prochaine semaine.',hours:'h',minutes:'min',noAction:'Aucune action supplémentaire nécessaire.'
+},
+en:{
+heroCopy:'Calculate what to use to reach at least 7.2M with a safety margin, without wasting resources.',language:'Language',autoSave:'Automatic saving active',saved:'Saved',calculator:'Calculator',weekGuide:'Week guide',settings:'Settings',player:'Player',playerPlaceholder:'Player name',minimumTarget:'Minimum target',safetyMargin:'Safety margin',vsBonus:'VS research bonus',automaticDay:'Choose the VS day automatically',nextDay:'Next day',recommendedTarget:'Recommended target',alreadyEarned:'Already earned',stillNeeded:'Still needed',availablePotential:'Available potential',useToday:'Use today',saveForLater:'Save for later',pointsToday:'Points already earned today',strategy:'Strategy',speedLimit:'Speed-up limit per calculation',daysUnit:'days',playerStock:'PLAYER STOCK',availableResources:'Available resources',clearDay:'Clear today’s quantities',editablePointsWarning:'Point values are editable. Check them against the game if rules or bonuses have changed.',calculatePlan:'Calculate my plan',automaticExample:'Automatic example',automaticDebrief:'AUTOMATIC BRIEF',markUsed:'Mark this plan as used',copyDebrief:'Copy brief',mainRule:'MAIN RULE',rightResourceRightDay:'Use each resource on the right day',guideIntro:'The site aims for your target, adds the safety margin and protects reserves. Once the target is reached, it recommends saving the rest.',backup:'BACKUP',savedOnDevice:'Data saved on this device',storageInfo:'Stocks, reserves, point values and settings stay in the browser. No account, credits or remote database are required.',exportBackup:'Export backup',importBackup:'Import backup',pointValues:'POINT VALUES',editableValues:'Editable values',pointInfo:'The VS bonus is applied automatically. Edit a value on a resource card if the game shows another number.',restoreBaseValues:'Restore base values',addHomeScreen:'Add the site to the Home Screen',iphoneInfo:'In Safari: Share, then “Add to Home Screen”. The site will open like an app and can work offline.',reset:'RESET',eraseAllData:'Erase all data',resetInfo:'This deletes stocks, reserves, results and settings saved on this device.',fullReset:'Full reset',cancel:'Cancel',confirm:'Confirm',day:'DAY',stock:'Stock',reserve:'Reserve',pointsPerUnit:'Points per unit',unit:'Unit',usable:'Usable',potential:'Potential',strategyEconomy:'Maximum saving',strategyPrudent:'Cautious mode',strategyProgress:'Maximum progress',strategyScore:'High VS score',helpEconomy:'Protects rare resources and uses efficient, easy-to-replace resources first.',helpPrudent:'Strengthens stock protection and avoids getting too close to reserves.',helpProgress:'Prioritises actions that genuinely improve the account.',helpScore:'Prioritises actions that generate the most points quickly.',goalReached:'Target reached',stockInsufficient:'Insufficient stock',pointsAdded:'Points added',estimatedTotal:'Estimated total',realMargin:'Actual margin',missingPoints:'Missing points',use:'Use',about:'about',points:'points',remainingStock:'Remaining stock',noResourceNeeded:'No additional resource is needed. The target is already reached.',reachedNote:'Target reached. Stop spending and save the rest for next week, unless the alliance says otherwise.',missingNote:'With the entered stock and protected reserves, {points} points are still missing.',planCalculated:'Plan calculated',demoAdded:'Example added. You can run the calculation.',confirmApplyTitle:'Mark this plan as used?',confirmApplyMessage:'The quantities will be removed from stock and estimated points added to today’s total.',planApplied:'Stock and points updated.',confirmClearTitle:'Clear today’s quantities?',confirmClearMessage:'Reserves and point values will be kept.',cleared:'Quantities cleared.',confirmRestoreTitle:'Restore base values?',confirmRestoreMessage:'All manual point changes will be removed.',restored:'Values restored.',confirmResetTitle:'Reset everything?',confirmResetMessage:'All saved data will be deleted. This cannot be undone without an exported backup.',resetDone:'All data has been erased.',backupExported:'Backup exported.',confirmImportTitle:'Import this backup?',confirmImportMessage:'Current data will be replaced by the selected file.',backupImported:'Backup imported.',invalidBackup:'The selected file is not a valid backup.',debriefCopied:'Brief copied.',copyFailed:'Copying is not available in this browser.',plan:'Recommended plan',advice:'Advice',currentPointsLabel:'Points already earned',objectiveLabel:'Target',estimatedTotalLabel:'Estimated total',keepAdvice:'Keep the remaining stock and reserves for next week.',hours:'h',minutes:'min',noAction:'No additional action needed.'
+},
+de:{
+heroCopy:'Berechne, was du einsetzen musst, um mindestens 7,2 Mio. mit Sicherheitsmarge zu erreichen, ohne Ressourcen zu verschwenden.',language:'Sprache',autoSave:'Automatisches Speichern aktiv',saved:'Gespeichert',calculator:'Rechner',weekGuide:'Wochenplan',settings:'Einstellungen',player:'Spieler',playerPlaceholder:'Spielername',minimumTarget:'Mindestziel',safetyMargin:'Sicherheitsmarge',vsBonus:'VS-Forschungsbonus',automaticDay:'VS-Tag automatisch wählen',nextDay:'Nächster Tag',recommendedTarget:'Empfohlenes Ziel',alreadyEarned:'Bereits erreicht',stillNeeded:'Noch benötigt',availablePotential:'Verfügbares Potenzial',useToday:'Heute verwenden',saveForLater:'Für später aufheben',pointsToday:'Heute bereits erzielte Punkte',strategy:'Strategie',speedLimit:'Beschleunigerlimit pro Berechnung',daysUnit:'Tage',playerStock:'SPIELERBESTAND',availableResources:'Verfügbare Ressourcen',clearDay:'Mengen des Tages löschen',editablePointsWarning:'Punktwerte sind änderbar. Prüfe sie im Spiel, wenn Regeln oder Boni geändert wurden.',calculatePlan:'Meinen Plan berechnen',automaticExample:'Automatisches Beispiel',automaticDebrief:'AUTOMATISCHE AUSWERTUNG',markUsed:'Plan als verwendet markieren',copyDebrief:'Auswertung kopieren',mainRule:'HAUPTREGEL',rightResourceRightDay:'Jede Ressource am richtigen Tag verwenden',guideIntro:'Die Seite zielt auf dein Ziel, addiert die Sicherheitsmarge und schützt Reserven. Nach Erreichen des Ziels soll der Rest gespart werden.',backup:'SICHERUNG',savedOnDevice:'Daten auf diesem Gerät gespeichert',storageInfo:'Bestände, Reserven, Punktwerte und Einstellungen bleiben im Browser. Kein Konto, keine Credits und keine externe Datenbank nötig.',exportBackup:'Sicherung exportieren',importBackup:'Sicherung importieren',pointValues:'PUNKTWERTE',editableValues:'Änderbare Werte',pointInfo:'Der VS-Bonus wird automatisch angewendet. Ändere einen Wert, wenn das Spiel eine andere Zahl zeigt.',restoreBaseValues:'Basiswerte wiederherstellen',addHomeScreen:'Zum Home-Bildschirm hinzufügen',iphoneInfo:'In Safari: Teilen und dann „Zum Home-Bildschirm“. Die Seite öffnet sich wie eine App und funktioniert offline.',reset:'ZURÜCKSETZEN',eraseAllData:'Alle Daten löschen',resetInfo:'Löscht Bestände, Reserven, Ergebnisse und Einstellungen auf diesem Gerät.',fullReset:'Vollständig zurücksetzen',cancel:'Abbrechen',confirm:'Bestätigen',day:'TAG',stock:'Bestand',reserve:'Reserve',pointsPerUnit:'Punkte pro Einheit',unit:'Einheit',usable:'Verwendbar',potential:'Potenzial',strategyEconomy:'Maximal sparen',strategyPrudent:'Vorsichtiger Modus',strategyProgress:'Maximaler Fortschritt',strategyScore:'Hohe VS-Punktzahl',helpEconomy:'Schützt seltene Ressourcen und nutzt zuerst effiziente, leicht ersetzbare Ressourcen.',helpPrudent:'Schützt Bestände stärker und hält mehr Abstand zu den Reserven.',helpProgress:'Bevorzugt Aktionen, die das Konto wirklich verbessern.',helpScore:'Bevorzugt Aktionen, die schnell die meisten Punkte liefern.',goalReached:'Ziel erreicht',stockInsufficient:'Bestand reicht nicht',pointsAdded:'Punkte hinzugefügt',estimatedTotal:'Geschätzte Summe',realMargin:'Tatsächliche Marge',missingPoints:'Fehlende Punkte',use:'Verwende',about:'etwa',points:'Punkte',remainingStock:'Restbestand',noResourceNeeded:'Keine weitere Ressource nötig. Das Ziel ist bereits erreicht.',reachedNote:'Ziel erreicht. Höre auf auszugeben und spare den Rest für nächste Woche, außer die Allianz entscheidet anders.',missingNote:'Mit dem eingegebenen Bestand und den geschützten Reserven fehlen noch {points} Punkte.',planCalculated:'Plan berechnet',demoAdded:'Beispiel hinzugefügt. Du kannst die Berechnung starten.',confirmApplyTitle:'Diesen Plan als verwendet markieren?',confirmApplyMessage:'Die Mengen werden vom Bestand abgezogen und die geschätzten Punkte zum Tagesscore addiert.',planApplied:'Bestand und Punkte aktualisiert.',confirmClearTitle:'Mengen des Tages löschen?',confirmClearMessage:'Reserven und Punktwerte bleiben erhalten.',cleared:'Mengen gelöscht.',confirmRestoreTitle:'Basiswerte wiederherstellen?',confirmRestoreMessage:'Alle manuellen Punktänderungen werden gelöscht.',restored:'Werte wiederhergestellt.',confirmResetTitle:'Alles zurücksetzen?',confirmResetMessage:'Alle gespeicherten Daten werden gelöscht. Ohne exportierte Sicherung ist dies nicht rückgängig zu machen.',resetDone:'Alle Daten wurden gelöscht.',backupExported:'Sicherung exportiert.',confirmImportTitle:'Diese Sicherung importieren?',confirmImportMessage:'Die aktuellen Daten werden durch die ausgewählte Datei ersetzt.',backupImported:'Sicherung importiert.',invalidBackup:'Die ausgewählte Datei ist keine gültige Sicherung.',debriefCopied:'Auswertung kopiert.',copyFailed:'Kopieren ist in diesem Browser nicht möglich.',plan:'Empfohlener Plan',advice:'Hinweis',currentPointsLabel:'Bereits erzielte Punkte',objectiveLabel:'Ziel',estimatedTotalLabel:'Geschätzte Summe',keepAdvice:'Restbestand und Reserven für nächste Woche aufheben.',hours:'Std.',minutes:'Min.',noAction:'Keine weitere Aktion nötig.'
+},
+ro:{
+heroCopy:'Calculează ce să folosești pentru a ajunge la minimum 7,2 M cu o marjă de siguranță, fără risipă.',language:'Limbă',autoSave:'Salvare automată activă',saved:'Salvat',calculator:'Calculator',weekGuide:'Ghid săptămânal',settings:'Setări',player:'Jucător',playerPlaceholder:'Numele jucătorului',minimumTarget:'Obiectiv minim',safetyMargin:'Marjă de siguranță',vsBonus:'Bonus cercetare VS',automaticDay:'Alege automat ziua VS',nextDay:'Ziua următoare',recommendedTarget:'Obiectiv recomandat',alreadyEarned:'Deja obținut',stillNeeded:'Mai este necesar',availablePotential:'Potențial disponibil',useToday:'Folosește azi',saveForLater:'Păstrează pentru mai târziu',pointsToday:'Puncte obținute deja azi',strategy:'Strategie',speedLimit:'Limită acceleratoare pe calcul',daysUnit:'zile',playerStock:'STOCUL JUCĂTORULUI',availableResources:'Resurse disponibile',clearDay:'Șterge cantitățile zilei',editablePointsWarning:'Valorile punctelor pot fi modificate. Verifică-le în joc dacă regulile sau bonusurile s-au schimbat.',calculatePlan:'Calculează planul',automaticExample:'Exemplu automat',automaticDebrief:'RAPORT AUTOMAT',markUsed:'Marchează planul ca folosit',copyDebrief:'Copiază raportul',mainRule:'REGULA PRINCIPALĂ',rightResourceRightDay:'Folosește fiecare resursă în ziua potrivită',guideIntro:'Site-ul urmărește obiectivul ales, adaugă marja și protejează rezervele. După atingerea țintei, recomandă păstrarea restului.',backup:'COPIE DE SIGURANȚĂ',savedOnDevice:'Date salvate pe acest dispozitiv',storageInfo:'Stocurile, rezervele, valorile și setările rămân în browser. Nu este necesar cont, credite sau bază de date externă.',exportBackup:'Exportă copia',importBackup:'Importă copia',pointValues:'VALORI PUNCTE',editableValues:'Valori modificabile',pointInfo:'Bonusul VS este aplicat automat. Modifică valoarea dacă jocul afișează alt număr.',restoreBaseValues:'Restaurează valorile de bază',addHomeScreen:'Adaugă pe ecranul principal',iphoneInfo:'În Safari: Partajare, apoi „Adaugă pe ecranul principal”. Site-ul se va deschide ca o aplicație și poate funcționa offline.',reset:'RESETARE',eraseAllData:'Șterge toate datele',resetInfo:'Șterge stocurile, rezervele, rezultatele și setările salvate pe acest dispozitiv.',fullReset:'Resetare completă',cancel:'Anulează',confirm:'Confirmă',day:'ZIUA',stock:'Stoc',reserve:'Rezervă',pointsPerUnit:'Puncte pe unitate',unit:'Unitate',usable:'Utilizabil',potential:'Potențial',strategyEconomy:'Economie maximă',strategyPrudent:'Mod prudent',strategyProgress:'Progres maxim',strategyScore:'Scor VS mare',helpEconomy:'Protejează resursele rare și folosește întâi resurse eficiente și ușor de înlocuit.',helpPrudent:'Protejează mai mult stocul și evită apropierea prea mare de rezerve.',helpProgress:'Prioritizează acțiunile care îmbunătățesc cu adevărat contul.',helpScore:'Prioritizează acțiunile care oferă rapid cele mai multe puncte.',goalReached:'Obiectiv atins',stockInsufficient:'Stoc insuficient',pointsAdded:'Puncte adăugate',estimatedTotal:'Total estimat',realMargin:'Marjă reală',missingPoints:'Puncte lipsă',use:'Folosește',about:'aproximativ',points:'puncte',remainingStock:'Stoc rămas',noResourceNeeded:'Nu este necesară nicio resursă suplimentară. Obiectivul este deja atins.',reachedNote:'Obiectiv atins. Oprește cheltuirea și păstrează restul pentru săptămâna viitoare, dacă alianța nu cere altceva.',missingNote:'Cu stocul introdus și rezervele protejate, mai lipsesc {points} puncte.',planCalculated:'Plan calculat',demoAdded:'Exemplu adăugat. Poți porni calculul.',confirmApplyTitle:'Marchezi planul ca folosit?',confirmApplyMessage:'Cantitățile vor fi scăzute din stoc, iar punctele estimate vor fi adăugate la totalul zilei.',planApplied:'Stoc și puncte actualizate.',confirmClearTitle:'Ștergi cantitățile zilei?',confirmClearMessage:'Rezervele și valorile punctelor vor fi păstrate.',cleared:'Cantități șterse.',confirmRestoreTitle:'Restaurezi valorile de bază?',confirmRestoreMessage:'Toate modificările manuale ale punctelor vor fi șterse.',restored:'Valori restaurate.',confirmResetTitle:'Resetezi totul?',confirmResetMessage:'Toate datele salvate vor fi șterse. Fără o copie exportată, acțiunea este ireversibilă.',resetDone:'Toate datele au fost șterse.',backupExported:'Copie exportată.',confirmImportTitle:'Importezi această copie?',confirmImportMessage:'Datele actuale vor fi înlocuite cu cele din fișierul ales.',backupImported:'Copie importată.',invalidBackup:'Fișierul ales nu este o copie validă.',debriefCopied:'Raport copiat.',copyFailed:'Copierea nu este disponibilă în acest browser.',plan:'Plan recomandat',advice:'Sfat',currentPointsLabel:'Puncte deja obținute',objectiveLabel:'Obiectiv',estimatedTotalLabel:'Total estimat',keepAdvice:'Păstrează stocul rămas și rezervele pentru săptămâna viitoare.',hours:'h',minutes:'min',noAction:'Nu este necesară nicio acțiune suplimentară.'
+},
+uk:{
+heroCopy:'Розраховує, що використати, щоб набрати щонайменше 7,2 млн із запасом без марнування ресурсів.',language:'Мова',autoSave:'Автозбереження активне',saved:'Збережено',calculator:'Калькулятор',weekGuide:'Гід на тиждень',settings:'Налаштування',player:'Гравець',playerPlaceholder:'Ім’я гравця',minimumTarget:'Мінімальна ціль',safetyMargin:'Запас безпеки',vsBonus:'Бонус дослідження VS',automaticDay:'Автоматично вибирати день VS',nextDay:'Наступний день',recommendedTarget:'Рекомендована ціль',alreadyEarned:'Уже набрано',stillNeeded:'Ще потрібно',availablePotential:'Доступний потенціал',useToday:'Використати сьогодні',saveForLater:'Зберегти на потім',pointsToday:'Очки, уже набрані сьогодні',strategy:'Стратегія',speedLimit:'Ліміт прискорень на розрахунок',daysUnit:'днів',playerStock:'ЗАПАСИ ГРАВЦЯ',availableResources:'Доступні ресурси',clearDay:'Очистити кількості за день',editablePointsWarning:'Значення очок можна змінювати. Перевіряй їх у грі, якщо правила або бонуси змінилися.',calculatePlan:'Розрахувати план',automaticExample:'Автоматичний приклад',automaticDebrief:'АВТОМАТИЧНИЙ ЗВІТ',markUsed:'Позначити план як використаний',copyDebrief:'Копіювати звіт',mainRule:'ГОЛОВНЕ ПРАВИЛО',rightResourceRightDay:'Використовуй кожен ресурс у правильний день',guideIntro:'Сайт орієнтується на вибрану ціль, додає запас і захищає резерви. Після досягнення цілі радить зберегти решту.',backup:'РЕЗЕРВНА КОПІЯ',savedOnDevice:'Дані зберігаються на цьому пристрої',storageInfo:'Запаси, резерви, значення очок і налаштування залишаються в браузері. Обліковий запис, кредити чи зовнішня база не потрібні.',exportBackup:'Експортувати копію',importBackup:'Імпортувати копію',pointValues:'ЗНАЧЕННЯ ОЧОК',editableValues:'Змінювані значення',pointInfo:'Бонус VS застосовується автоматично. Зміни значення, якщо гра показує інше число.',restoreBaseValues:'Відновити базові значення',addHomeScreen:'Додати на головний екран',iphoneInfo:'У Safari: «Поділитися», потім «На початковий екран». Сайт відкриватиметься як застосунок і працюватиме офлайн.',reset:'СКИДАННЯ',eraseAllData:'Видалити всі дані',resetInfo:'Видаляє запаси, резерви, результати й налаштування з цього пристрою.',fullReset:'Повне скидання',cancel:'Скасувати',confirm:'Підтвердити',day:'ДЕНЬ',stock:'Запас',reserve:'Резерв',pointsPerUnit:'Очок за одиницю',unit:'Одиниця',usable:'Доступно',potential:'Потенціал',strategyEconomy:'Максимальна економія',strategyPrudent:'Обережний режим',strategyProgress:'Максимальний прогрес',strategyScore:'Високий рахунок VS',helpEconomy:'Захищає рідкісні ресурси й спочатку використовує ефективні та легкозамінні.',helpPrudent:'Сильніше захищає запаси й не дозволяє надто наближатися до резервів.',helpProgress:'Надає перевагу діям, що реально покращують акаунт.',helpScore:'Надає перевагу діям, що швидко дають найбільше очок.',goalReached:'Ціль досягнута',stockInsufficient:'Недостатньо запасів',pointsAdded:'Додано очок',estimatedTotal:'Орієнтовний підсумок',realMargin:'Фактичний запас',missingPoints:'Не вистачає очок',use:'Використати',about:'приблизно',points:'очок',remainingStock:'Залишок',noResourceNeeded:'Додаткові ресурси не потрібні. Ціль уже досягнута.',reachedNote:'Ціль досягнута. Припини витрачати й збережи решту на наступний тиждень, якщо альянс не вирішив інакше.',missingNote:'Із введеними запасами та захищеними резервами ще бракує {points} очок.',planCalculated:'План розраховано',demoAdded:'Приклад додано. Можна запускати розрахунок.',confirmApplyTitle:'Позначити цей план як використаний?',confirmApplyMessage:'Кількості буде віднято із запасів, а орієнтовні очки додано до підсумку дня.',planApplied:'Запаси й очки оновлено.',confirmClearTitle:'Очистити кількості за день?',confirmClearMessage:'Резерви та значення очок буде збережено.',cleared:'Кількості очищено.',confirmRestoreTitle:'Відновити базові значення?',confirmRestoreMessage:'Усі ручні зміни очок буде видалено.',restored:'Значення відновлено.',confirmResetTitle:'Скинути все?',confirmResetMessage:'Усі збережені дані буде видалено. Без експортованої копії це незворотно.',resetDone:'Усі дані видалено.',backupExported:'Копію експортовано.',confirmImportTitle:'Імпортувати цю копію?',confirmImportMessage:'Поточні дані буде замінено даними з вибраного файла.',backupImported:'Копію імпортовано.',invalidBackup:'Вибраний файл не є дійсною резервною копією.',debriefCopied:'Звіт скопійовано.',copyFailed:'Копіювання недоступне в цьому браузері.',plan:'Рекомендований план',advice:'Порада',currentPointsLabel:'Уже набрані очки',objectiveLabel:'Ціль',estimatedTotalLabel:'Орієнтовний підсумок',keepAdvice:'Збережи решту запасів і резерви на наступний тиждень.',hours:'год',minutes:'хв',noAction:'Додаткові дії не потрібні.'
+},
+ko:{
+heroCopy:'자원을 낭비하지 않고 안전 여유를 포함해 최소 720만 점에 도달하도록 사용할 자원을 계산합니다.',language:'언어',autoSave:'자동 저장 활성화',saved:'저장됨',calculator:'계산기',weekGuide:'주간 가이드',settings:'설정',player:'플레이어',playerPlaceholder:'플레이어 이름',minimumTarget:'최소 목표',safetyMargin:'안전 여유',vsBonus:'VS 연구 보너스',automaticDay:'VS 요일 자동 선택',nextDay:'다음 날',recommendedTarget:'권장 목표',alreadyEarned:'이미 획득',stillNeeded:'추가 필요',availablePotential:'사용 가능 잠재 점수',useToday:'오늘 사용',saveForLater:'나중을 위해 보관',pointsToday:'오늘 이미 획득한 점수',strategy:'전략',speedLimit:'계산당 가속 제한',daysUnit:'일',playerStock:'플레이어 보유량',availableResources:'사용 가능한 자원',clearDay:'오늘 수량 지우기',editablePointsWarning:'점수 값은 수정할 수 있습니다. 규칙이나 보너스가 바뀌면 게임 화면과 비교하세요.',calculatePlan:'내 계획 계산',automaticExample:'자동 예시',automaticDebrief:'자동 분석',markUsed:'이 계획을 사용 완료로 표시',copyDebrief:'분석 복사',mainRule:'핵심 규칙',rightResourceRightDay:'각 자원을 올바른 날에 사용',guideIntro:'선택한 목표에 안전 여유를 더하고 예비 자원을 보호합니다. 목표에 도달하면 나머지는 보관하도록 안내합니다.',backup:'백업',savedOnDevice:'이 기기에 저장된 데이터',storageInfo:'보유량, 예비량, 점수 값과 설정은 브라우저에 저장됩니다. 계정, 크레딧, 외부 데이터베이스가 필요 없습니다.',exportBackup:'백업 내보내기',importBackup:'백업 가져오기',pointValues:'점수 값',editableValues:'수정 가능한 값',pointInfo:'VS 보너스는 자동 적용됩니다. 게임에 다른 값이 표시되면 자원 카드에서 수정하세요.',restoreBaseValues:'기본값 복원',addHomeScreen:'홈 화면에 추가',iphoneInfo:'Safari에서 공유 후 “홈 화면에 추가”를 선택하세요. 앱처럼 열리고 오프라인에서도 사용할 수 있습니다.',reset:'초기화',eraseAllData:'모든 데이터 삭제',resetInfo:'이 기기에 저장된 보유량, 예비량, 결과와 설정을 삭제합니다.',fullReset:'전체 초기화',cancel:'취소',confirm:'확인',day:'일차',stock:'보유량',reserve:'예비량',pointsPerUnit:'단위당 점수',unit:'단위',usable:'사용 가능',potential:'잠재 점수',strategyEconomy:'최대 절약',strategyPrudent:'신중 모드',strategyProgress:'최대 성장',strategyScore:'높은 VS 점수',helpEconomy:'희귀 자원을 보호하고 효율적이며 쉽게 보충할 수 있는 자원부터 사용합니다.',helpPrudent:'보유량 보호를 강화하고 예비량에 너무 가까워지지 않게 합니다.',helpProgress:'계정을 실제로 성장시키는 행동을 우선합니다.',helpScore:'빠르게 가장 많은 점수를 주는 행동을 우선합니다.',goalReached:'목표 달성',stockInsufficient:'자원 부족',pointsAdded:'추가 점수',estimatedTotal:'예상 합계',realMargin:'실제 여유',missingPoints:'부족 점수',use:'사용',about:'약',points:'점',remainingStock:'남은 보유량',noResourceNeeded:'추가 자원이 필요하지 않습니다. 이미 목표를 달성했습니다.',reachedNote:'목표 달성. 동맹 지시가 없다면 지출을 멈추고 나머지는 다음 주를 위해 보관하세요.',missingNote:'입력한 보유량과 보호된 예비량으로는 {points}점이 더 필요합니다.',planCalculated:'계획 계산 완료',demoAdded:'예시가 추가되었습니다. 계산을 실행할 수 있습니다.',confirmApplyTitle:'이 계획을 사용 완료로 표시할까요?',confirmApplyMessage:'수량이 보유량에서 차감되고 예상 점수가 오늘 합계에 추가됩니다.',planApplied:'보유량과 점수가 업데이트되었습니다.',confirmClearTitle:'오늘 수량을 지울까요?',confirmClearMessage:'예비량과 점수 값은 유지됩니다.',cleared:'수량이 지워졌습니다.',confirmRestoreTitle:'기본값을 복원할까요?',confirmRestoreMessage:'수동으로 변경한 모든 점수 값이 삭제됩니다.',restored:'값이 복원되었습니다.',confirmResetTitle:'모두 초기화할까요?',confirmResetMessage:'저장된 모든 데이터가 삭제됩니다. 내보낸 백업이 없으면 되돌릴 수 없습니다.',resetDone:'모든 데이터가 삭제되었습니다.',backupExported:'백업을 내보냈습니다.',confirmImportTitle:'이 백업을 가져올까요?',confirmImportMessage:'현재 데이터가 선택한 파일의 데이터로 대체됩니다.',backupImported:'백업을 가져왔습니다.',invalidBackup:'선택한 파일은 유효한 백업이 아닙니다.',debriefCopied:'분석을 복사했습니다.',copyFailed:'이 브라우저에서는 복사할 수 없습니다.',plan:'권장 계획',advice:'조언',currentPointsLabel:'이미 획득한 점수',objectiveLabel:'목표',estimatedTotalLabel:'예상 합계',keepAdvice:'남은 보유량과 예비량을 다음 주를 위해 보관하세요.',hours:'시간',minutes:'분',noAction:'추가 행동이 필요하지 않습니다.'
+},
+hr:{
+heroCopy:'Izračunava što upotrijebiti za najmanje 7,2 M bodova uz sigurnosnu marginu, bez rasipanja resursa.',language:'Jezik',autoSave:'Automatsko spremanje aktivno',saved:'Spremljeno',calculator:'Kalkulator',weekGuide:'Tjedni vodič',settings:'Postavke',player:'Igrač',playerPlaceholder:'Ime igrača',minimumTarget:'Minimalni cilj',safetyMargin:'Sigurnosna margina',vsBonus:'VS bonus istraživanja',automaticDay:'Automatski odaberi VS dan',nextDay:'Sljedeći dan',recommendedTarget:'Preporučeni cilj',alreadyEarned:'Već osvojeno',stillNeeded:'Još potrebno',availablePotential:'Dostupan potencijal',useToday:'Upotrijebi danas',saveForLater:'Sačuvaj za kasnije',pointsToday:'Bodovi već osvojeni danas',strategy:'Strategija',speedLimit:'Ograničenje ubrzanja po izračunu',daysUnit:'dana',playerStock:'ZALIHE IGRAČA',availableResources:'Dostupni resursi',clearDay:'Obriši današnje količine',editablePointsWarning:'Vrijednosti bodova mogu se mijenjati. Provjeri ih u igri ako su se pravila ili bonusi promijenili.',calculatePlan:'Izračunaj moj plan',automaticExample:'Automatski primjer',automaticDebrief:'AUTOMATSKI PREGLED',markUsed:'Označi plan kao iskorišten',copyDebrief:'Kopiraj pregled',mainRule:'GLAVNO PRAVILO',rightResourceRightDay:'Koristi svaki resurs pravog dana',guideIntro:'Stranica cilja odabrani rezultat, dodaje sigurnosnu marginu i štiti rezerve. Nakon cilja savjetuje čuvanje ostatka.',backup:'SIGURNOSNA KOPIJA',savedOnDevice:'Podaci spremljeni na ovom uređaju',storageInfo:'Zalihe, rezerve, vrijednosti bodova i postavke ostaju u pregledniku. Nisu potrebni račun, krediti ni udaljena baza.',exportBackup:'Izvezi kopiju',importBackup:'Uvezi kopiju',pointValues:'VRIJEDNOSTI BODOVA',editableValues:'Promjenjive vrijednosti',pointInfo:'VS bonus primjenjuje se automatski. Promijeni vrijednost ako igra prikazuje drugi broj.',restoreBaseValues:'Vrati osnovne vrijednosti',addHomeScreen:'Dodaj na početni zaslon',iphoneInfo:'U Safariju: Dijeli, zatim „Dodaj na početni zaslon”. Stranica će se otvarati kao aplikacija i raditi izvan mreže.',reset:'PONIŠTAVANJE',eraseAllData:'Obriši sve podatke',resetInfo:'Briše zalihe, rezerve, rezultate i postavke spremljene na ovom uređaju.',fullReset:'Potpuno poništi',cancel:'Odustani',confirm:'Potvrdi',day:'DAN',stock:'Zaliha',reserve:'Rezerva',pointsPerUnit:'Bodovi po jedinici',unit:'Jedinica',usable:'Dostupno',potential:'Potencijal',strategyEconomy:'Maksimalna štednja',strategyPrudent:'Oprezni način',strategyProgress:'Maksimalni napredak',strategyScore:'Visok VS rezultat',helpEconomy:'Štiti rijetke resurse i prvo koristi učinkovite resurse koje je lako nadoknaditi.',helpPrudent:'Jače štiti zalihe i izbjegava približavanje rezervama.',helpProgress:'Daje prednost radnjama koje stvarno poboljšavaju račun.',helpScore:'Daje prednost radnjama koje brzo donose najviše bodova.',goalReached:'Cilj ostvaren',stockInsufficient:'Nedovoljno zaliha',pointsAdded:'Dodani bodovi',estimatedTotal:'Procijenjeni zbroj',realMargin:'Stvarna margina',missingPoints:'Nedostajući bodovi',use:'Upotrijebi',about:'oko',points:'bodova',remainingStock:'Preostala zaliha',noResourceNeeded:'Nije potreban dodatni resurs. Cilj je već ostvaren.',reachedNote:'Cilj ostvaren. Prestani trošiti i sačuvaj ostatak za sljedeći tjedan, osim ako savez ne odluči drukčije.',missingNote:'S unesenim zalihama i zaštićenim rezervama nedostaje još {points} bodova.',planCalculated:'Plan izračunat',demoAdded:'Primjer dodan. Možeš pokrenuti izračun.',confirmApplyTitle:'Označiti ovaj plan kao iskorišten?',confirmApplyMessage:'Količine će se oduzeti od zaliha, a procijenjeni bodovi dodati današnjem rezultatu.',planApplied:'Zalihe i bodovi ažurirani.',confirmClearTitle:'Obrisati današnje količine?',confirmClearMessage:'Rezerve i vrijednosti bodova bit će sačuvane.',cleared:'Količine obrisane.',confirmRestoreTitle:'Vratiti osnovne vrijednosti?',confirmRestoreMessage:'Sve ručne promjene bodova bit će uklonjene.',restored:'Vrijednosti vraćene.',confirmResetTitle:'Poništiti sve?',confirmResetMessage:'Svi spremljeni podaci bit će obrisani. Bez izvezene kopije ovo se ne može vratiti.',resetDone:'Svi podaci su obrisani.',backupExported:'Kopija izvezena.',confirmImportTitle:'Uvesti ovu kopiju?',confirmImportMessage:'Trenutačni podaci bit će zamijenjeni podacima iz odabrane datoteke.',backupImported:'Kopija uvezena.',invalidBackup:'Odabrana datoteka nije valjana sigurnosna kopija.',debriefCopied:'Pregled kopiran.',copyFailed:'Kopiranje nije dostupno u ovom pregledniku.',plan:'Preporučeni plan',advice:'Savjet',currentPointsLabel:'Već osvojeni bodovi',objectiveLabel:'Cilj',estimatedTotalLabel:'Procijenjeni zbroj',keepAdvice:'Sačuvaj preostale zalihe i rezerve za sljedeći tjedan.',hours:'h',minutes:'min',noAction:'Nije potrebna dodatna radnja.'
+}
+};
+
+const DAY_TEXT = {
+fr:[
+{short:'Lun.',label:'Radar',title:'Lundi · Entraînement radar',description:'Jour idéal pour les radars, l’endurance, les ressources récoltées et les améliorations du drone.',use:'Radars préparés dimanche, endurance, données et pièces de drone, coffres de puces et récoltes.',save:'Accélérateurs de construction, recherche et entraînement, badges, fragments et tickets héros.'},
+{short:'Mar.',label:'Base',title:'Mardi · Expansion de la base',description:'Jour de la construction, des bâtiments terminés, des camions UR, missions secrètes et survivants.',use:'Grosses constructions, accélérateurs construction, puissance bâtiment, camions UR et missions légendaires.',save:'Recherche pour mercredi, ressources héros pour jeudi, entraînement et universels pour vendredi.'},
+{short:'Mer.',label:'Science',title:'Mercredi · Âge de la science',description:'Jour de la recherche, des badges de bravoure et des composants de drone.',use:'Recherche longue, accélérateurs recherche, puissance technologie, badges et composants drone.',save:'Fragments, EXP, médailles et tickets héros pour jeudi; entraînement et universels pour vendredi.'},
+{short:'Jeu.',label:'Héros',title:'Jeudi · Entraîner les héros',description:'Jour des recrutements, EXP, fragments, médailles de compétence et armes exclusives.',use:'Tickets héros, EXP, fragments UR/SSR/R, médailles et fragments d’arme exclusive.',save:'Accélérateurs d’entraînement, construction, recherche et universels pour vendredi.'},
+{short:'Ven.',label:'Mobilisation',title:'Vendredi · Mobilisation totale',description:'Grand jour des accélérateurs et de l’entraînement. Garde les universels pour compléter précisément.',use:'Accélérateurs utiles, puissance bâtiment/technologie, entraînement des troupes et radars restants.',save:'Garde les réserves imposées. Prépare boucliers et soins pour samedi.'},
+{short:'Sam.',label:'Combat',title:'Samedi · Destruction ennemie',description:'Jour de combat. Les cibles de l’alliance adverse rapportent davantage. Le calcul reste une estimation.',use:'Camions UR, missions légendaires, soins, accélérateurs restants et combats coordonnés.',save:'Uniquement les réserves personnelles que tu as fixées.'}
+],
+en:[
+{short:'Mon',label:'Radar',title:'Monday · Radar Training',description:'Best day for radar tasks, stamina, gathered resources and drone upgrades.',use:'Sunday-prepared radars, stamina, drone data and parts, chip chests and gathering.',save:'Construction, research and training speed-ups, valor badges, shards and hero tickets.'},
+{short:'Tue',label:'Base',title:'Tuesday · Base Expansion',description:'Day for construction, completed buildings, UR trucks, secret tasks and survivors.',use:'Major construction, construction speed-ups, building power, UR trucks and legendary tasks.',save:'Research for Wednesday, hero resources for Thursday, training and universals for Friday.'},
+{short:'Wed',label:'Science',title:'Wednesday · Age of Science',description:'Day for research, valor badges and drone components.',use:'Long research, research speed-ups, technology power, badges and drone components.',save:'Shards, EXP, medals and hero tickets for Thursday; training and universals for Friday.'},
+{short:'Thu',label:'Heroes',title:'Thursday · Train Heroes',description:'Day for recruitment, EXP, shards, skill medals and exclusive weapons.',use:'Hero tickets, EXP, UR/SSR/R shards, skill medals and exclusive weapon shards.',save:'Training, construction, research and universal speed-ups for Friday.'},
+{short:'Fri',label:'Mobilisation',title:'Friday · Total Mobilisation',description:'The main day for speed-ups and training. Keep universals for precise completion.',use:'Useful speed-ups, building/technology power, troop training and remaining radars.',save:'Keep your protected reserves. Prepare shields and healing for Saturday.'},
+{short:'Sat',label:'Combat',title:'Saturday · Enemy Destruction',description:'Combat day. Rival-alliance targets are worth more. The calculation remains an estimate.',use:'UR trucks, legendary tasks, healing, remaining speed-ups and coordinated combat.',save:'Only the personal reserves you have set.'}
+],
+de:[
+{short:'Mo.',label:'Radar',title:'Montag · Radartraining',description:'Bester Tag für Radaraufgaben, Ausdauer, gesammelte Ressourcen und Drohnenverbesserungen.',use:'Am Sonntag vorbereitete Radare, Ausdauer, Drohnendaten und -teile, Chipkisten und Sammeln.',save:'Bau-, Forschungs- und Trainingsbeschleuniger, Tapferkeitsabzeichen, Fragmente und Heldentickets.'},
+{short:'Di.',label:'Basis',title:'Dienstag · Basiserweiterung',description:'Tag für Bau, fertige Gebäude, UR-Laster, geheime Aufgaben und Überlebende.',use:'Große Bauten, Baubeschleuniger, Gebäudestärke, UR-Laster und legendäre Aufgaben.',save:'Forschung für Mittwoch, Heldenressourcen für Donnerstag, Training und Universalbeschleuniger für Freitag.'},
+{short:'Mi.',label:'Wissenschaft',title:'Mittwoch · Zeitalter der Wissenschaft',description:'Tag für Forschung, Tapferkeitsabzeichen und Drohnenkomponenten.',use:'Lange Forschung, Forschungsbeschleuniger, Technologiestärke, Abzeichen und Drohnenkomponenten.',save:'Fragmente, EXP, Medaillen und Tickets für Donnerstag; Training und Universalbeschleuniger für Freitag.'},
+{short:'Do.',label:'Helden',title:'Donnerstag · Helden trainieren',description:'Tag für Rekrutierung, EXP, Fragmente, Fähigkeitsmedaillen und exklusive Waffen.',use:'Heldentickets, EXP, UR/SSR/R-Fragmente, Medaillen und exklusive Waffenfragmente.',save:'Trainings-, Bau-, Forschungs- und Universalbeschleuniger für Freitag.'},
+{short:'Fr.',label:'Mobilisierung',title:'Freitag · Totale Mobilisierung',description:'Haupttag für Beschleuniger und Training. Universalbeschleuniger zum genauen Auffüllen aufheben.',use:'Nützliche Beschleuniger, Gebäude-/Technologiestärke, Truppentraining und restliche Radare.',save:'Geschützte Reserven behalten. Schilde und Heilung für Samstag vorbereiten.'},
+{short:'Sa.',label:'Kampf',title:'Samstag · Feindvernichtung',description:'Kampftag. Ziele der gegnerischen Allianz bringen mehr Punkte. Die Berechnung bleibt eine Schätzung.',use:'UR-Laster, legendäre Aufgaben, Heilung, restliche Beschleuniger und koordinierte Kämpfe.',save:'Nur die persönlich festgelegten Reserven.'}
+],
+ro:[
+{short:'Lun',label:'Radar',title:'Luni · Antrenament radar',description:'Zi ideală pentru radar, energie, resurse colectate și îmbunătățiri ale dronei.',use:'Radare pregătite duminică, energie, date și piese de dronă, cufere de cipuri și colectare.',save:'Acceleratoare de construcție, cercetare și antrenament, insigne, fragmente și tichete de eroi.'},
+{short:'Mar',label:'Bază',title:'Marți · Extinderea bazei',description:'Zi pentru construcții, clădiri finalizate, camioane UR, misiuni secrete și supraviețuitori.',use:'Construcții mari, acceleratoare de construcție, putere clădiri, camioane UR și misiuni legendare.',save:'Cercetare pentru miercuri, resurse eroi pentru joi, antrenament și universale pentru vineri.'},
+{short:'Mie',label:'Știință',title:'Miercuri · Era științei',description:'Zi pentru cercetare, insigne de vitejie și componente de dronă.',use:'Cercetări lungi, acceleratoare, putere tehnologică, insigne și componente de dronă.',save:'Fragmente, EXP, medalii și tichete pentru joi; antrenament și universale pentru vineri.'},
+{short:'Joi',label:'Eroi',title:'Joi · Antrenează eroii',description:'Zi pentru recrutare, EXP, fragmente, medalii de abilitate și arme exclusive.',use:'Tichete eroi, EXP, fragmente UR/SSR/R, medalii și fragmente de armă exclusivă.',save:'Acceleratoare de antrenament, construcție, cercetare și universale pentru vineri.'},
+{short:'Vin',label:'Mobilizare',title:'Vineri · Mobilizare totală',description:'Ziua principală pentru acceleratoare și antrenament. Păstrează universalele pentru completare precisă.',use:'Acceleratoare utile, putere clădiri/tehnologie, antrenarea trupelor și radarele rămase.',save:'Păstrează rezervele protejate. Pregătește scuturi și vindecare pentru sâmbătă.'},
+{short:'Sâm',label:'Luptă',title:'Sâmbătă · Distrugerea inamicului',description:'Zi de luptă. Țintele alianței rivale valorează mai mult. Calculul rămâne o estimare.',use:'Camioane UR, misiuni legendare, vindecare, acceleratoare rămase și lupte coordonate.',save:'Doar rezervele personale stabilite.'}
+],
+uk:[
+{short:'Пн',label:'Радар',title:'Понеділок · Радарне тренування',description:'Найкращий день для радарів, витривалості, зібраних ресурсів і покращень дрона.',use:'Радари, підготовлені в неділю, витривалість, дані й деталі дрона, скрині чипів і збір.',save:'Прискорення будівництва, дослідження й тренування, значки, фрагменти та квитки героїв.'},
+{short:'Вт',label:'База',title:'Вівторок · Розширення бази',description:'День будівництва, завершених споруд, вантажівок UR, секретних завдань і вцілілих.',use:'Великі будівництва, прискорення, сила споруд, вантажівки UR і легендарні завдання.',save:'Дослідження на середу, ресурси героїв на четвер, тренування й універсальні прискорення на п’ятницю.'},
+{short:'Ср',label:'Наука',title:'Середа · Епоха науки',description:'День досліджень, значків доблесті й компонентів дрона.',use:'Довгі дослідження, прискорення, сила технологій, значки й компоненти дрона.',save:'Фрагменти, EXP, медалі й квитки на четвер; тренування й універсальні прискорення на п’ятницю.'},
+{short:'Чт',label:'Герої',title:'Четвер · Тренування героїв',description:'День набору, EXP, фрагментів, медалей навичок і ексклюзивної зброї.',use:'Квитки героїв, EXP, фрагменти UR/SSR/R, медалі й фрагменти ексклюзивної зброї.',save:'Прискорення тренування, будівництва, дослідження й універсальні на п’ятницю.'},
+{short:'Пт',label:'Мобілізація',title:'П’ятниця · Повна мобілізація',description:'Головний день прискорень і тренування. Універсальні прискорення залиш для точного завершення.',use:'Корисні прискорення, сила споруд/технологій, тренування військ і залишені радари.',save:'Збережи захищені резерви. Підготуй щити й лікування на суботу.'},
+{short:'Сб',label:'Бій',title:'Субота · Знищення ворога',description:'День бою. Цілі ворожого альянсу дають більше очок. Розрахунок залишається приблизним.',use:'Вантажівки UR, легендарні завдання, лікування, залишені прискорення й узгоджені бої.',save:'Лише встановлені особисті резерви.'}
+],
+ko:[
+{short:'월',label:'레이더',title:'월요일 · 레이더 훈련',description:'레이더 임무, 스태미나, 채집 자원과 드론 강화에 가장 좋은 날입니다.',use:'일요일에 준비한 레이더, 스태미나, 드론 데이터와 부품, 칩 상자와 채집.',save:'건설·연구·훈련 가속, 용맹 배지, 조각과 영웅 모집권.'},
+{short:'화',label:'기지',title:'화요일 · 기지 확장',description:'건설, 완료된 건물, UR 트럭, 비밀 임무와 생존자에 집중하는 날입니다.',use:'대형 건설, 건설 가속, 건물 전투력, UR 트럭과 전설 임무.',save:'수요일 연구, 목요일 영웅 자원, 금요일 훈련·범용 가속.'},
+{short:'수',label:'과학',title:'수요일 · 과학의 시대',description:'연구, 용맹 배지와 드론 부품을 사용하는 날입니다.',use:'장기 연구, 연구 가속, 기술 전투력, 배지와 드론 부품.',save:'목요일 조각·EXP·메달·모집권, 금요일 훈련·범용 가속.'},
+{short:'목',label:'영웅',title:'목요일 · 영웅 훈련',description:'모집, EXP, 조각, 스킬 메달과 전용 무기의 날입니다.',use:'영웅 모집권, EXP, UR/SSR/R 조각, 스킬 메달과 전용 무기 조각.',save:'금요일을 위한 훈련·건설·연구·범용 가속.'},
+{short:'금',label:'총동원',title:'금요일 · 총동원',description:'가속과 훈련의 핵심 날입니다. 정확한 마무리를 위해 범용 가속을 남겨두세요.',use:'필요한 가속, 건물/기술 전투력, 병력 훈련과 남은 레이더.',save:'보호 예비량을 남기고 토요일 방어막과 치료를 준비하세요.'},
+{short:'토',label:'전투',title:'토요일 · 적 파괴',description:'전투의 날입니다. 상대 동맹 목표가 더 많은 점수를 줍니다. 계산은 예상치입니다.',use:'UR 트럭, 전설 임무, 치료, 남은 가속과 협동 전투.',save:'직접 설정한 개인 예비량만 보관.'}
+],
+hr:[
+{short:'Pon',label:'Radar',title:'Ponedjeljak · Radarska obuka',description:'Najbolji dan za radare, izdržljivost, prikupljene resurse i nadogradnje drona.',use:'Radari pripremljeni u nedjelju, izdržljivost, podaci i dijelovi drona, škrinje čipova i prikupljanje.',save:'Ubrzanja gradnje, istraživanja i obuke, značke, fragmenti i ulaznice heroja.'},
+{short:'Uto',label:'Baza',title:'Utorak · Proširenje baze',description:'Dan za gradnju, završene zgrade, UR kamione, tajne zadatke i preživjele.',use:'Velike gradnje, ubrzanja gradnje, snaga zgrada, UR kamioni i legendarni zadaci.',save:'Istraživanje za srijedu, resurse heroja za četvrtak, obuku i univerzalna ubrzanja za petak.'},
+{short:'Sri',label:'Znanost',title:'Srijeda · Doba znanosti',description:'Dan za istraživanje, značke hrabrosti i komponente drona.',use:'Duga istraživanja, ubrzanja, tehnološka snaga, značke i komponente drona.',save:'Fragmente, EXP, medalje i ulaznice za četvrtak; obuku i univerzalna ubrzanja za petak.'},
+{short:'Čet',label:'Heroji',title:'Četvrtak · Treniranje heroja',description:'Dan za novačenje, EXP, fragmente, medalje vještina i ekskluzivna oružja.',use:'Ulaznice heroja, EXP, UR/SSR/R fragmenti, medalje i fragmenti ekskluzivnog oružja.',save:'Ubrzanja obuke, gradnje, istraživanja i univerzalna za petak.'},
+{short:'Pet',label:'Mobilizacija',title:'Petak · Potpuna mobilizacija',description:'Glavni dan za ubrzanja i obuku. Čuvaj univerzalna ubrzanja za precizan završetak.',use:'Korisna ubrzanja, snaga zgrada/tehnologije, obuka trupa i preostali radari.',save:'Sačuvaj zaštićene rezerve. Pripremi štitove i liječenje za subotu.'},
+{short:'Sub',label:'Borba',title:'Subota · Uništenje neprijatelja',description:'Dan borbe. Ciljevi protivničkog saveza vrijede više. Izračun ostaje procjena.',use:'UR kamioni, legendarni zadaci, liječenje, preostala ubrzanja i koordinirane borbe.',save:'Samo osobne rezerve koje si postavio.'}
+]
+};
+
+const LABELS = {
+fr:{staminaUsed:'Endurance utilisée',radarTasks:'Missions radar terminées',heroExp:'EXP de héros utilisée',droneData:'Données de combat drone',droneParts:'Pièces de drone',foodHarvest:'Nourriture récoltée',ironHarvest:'Fer récolté',coinHarvest:'Pièces récoltées',skillChipPoints:'Points de puce drone gagnés',constructionSpeed:'Accélérateurs de construction',universalSpeed:'Accélérateurs universels',buildingPower:'Puissance bâtiment prévue',urTrucks:'Camions commerciaux UR',legendTasks:'Missions secrètes légendaires',survivorRecruit:'Recrutements de survivants',researchSpeed:'Accélérateurs de recherche',techPower:'Puissance technologie prévue',valorBadges:'Badges de bravoure',droneChest:'Coffres composant drone niveau {n}',eliteTickets:'Tickets de recrutement héros',urShards:'Fragments de héros UR',ssrShards:'Fragments de héros SSR',rareShards:'Fragments de héros R',skillMedals:'Médailles de compétence',weaponShards:'Fragments d’arme exclusive',trainingSpeed:'Accélérateurs d’entraînement',healingSpeed:'Accélérateurs de soins',trainedTroops:'Troupes niveau {n} entraînées',rivalKilled:'Troupes adversaires VS niveau {n} éliminées',otherKilled:'Autres troupes niveau {n} éliminées',lostTroops:'Tes troupes niveau {n} perdues'},
+en:{staminaUsed:'Stamina used',radarTasks:'Radar tasks completed',heroExp:'Hero EXP used',droneData:'Drone combat data',droneParts:'Drone parts',foodHarvest:'Food gathered',ironHarvest:'Iron gathered',coinHarvest:'Coins gathered',skillChipPoints:'Drone skill-chip points earned',constructionSpeed:'Construction speed-ups',universalSpeed:'Universal speed-ups',buildingPower:'Planned building power',urTrucks:'UR trade trucks',legendTasks:'Legendary secret tasks',survivorRecruit:'Survivor recruitment',researchSpeed:'Research speed-ups',techPower:'Planned technology power',valorBadges:'Valor badges',droneChest:'Level {n} drone component chests',eliteTickets:'Hero recruitment tickets',urShards:'UR hero shards',ssrShards:'SSR hero shards',rareShards:'R hero shards',skillMedals:'Skill medals',weaponShards:'Exclusive weapon shards',trainingSpeed:'Training speed-ups',healingSpeed:'Healing speed-ups',trainedTroops:'Level {n} troops trained',rivalKilled:'Level {n} rival VS troops eliminated',otherKilled:'Other level {n} troops eliminated',lostTroops:'Your level {n} troops lost'},
+de:{staminaUsed:'Verbrauchte Ausdauer',radarTasks:'Abgeschlossene Radaraufgaben',heroExp:'Verwendete Helden-EXP',droneData:'Drohnen-Kampfdaten',droneParts:'Drohnenteile',foodHarvest:'Gesammelte Nahrung',ironHarvest:'Gesammeltes Eisen',coinHarvest:'Gesammelte Münzen',skillChipPoints:'Erhaltene Drohnen-Chippunkte',constructionSpeed:'Baubeschleuniger',universalSpeed:'Universalbeschleuniger',buildingPower:'Geplante Gebäudestärke',urTrucks:'UR-Handelslaster',legendTasks:'Legendäre Geheimaufgaben',survivorRecruit:'Rekrutierung von Überlebenden',researchSpeed:'Forschungsbeschleuniger',techPower:'Geplante Technologiestärke',valorBadges:'Tapferkeitsabzeichen',droneChest:'Drohnenkomponenten-Kisten Stufe {n}',eliteTickets:'Helden-Rekrutierungstickets',urShards:'UR-Heldenfragmente',ssrShards:'SSR-Heldenfragmente',rareShards:'R-Heldenfragmente',skillMedals:'Fähigkeitsmedaillen',weaponShards:'Exklusive Waffenfragmente',trainingSpeed:'Trainingsbeschleuniger',healingSpeed:'Heilungsbeschleuniger',trainedTroops:'Truppen Stufe {n} trainiert',rivalKilled:'Gegnerische VS-Truppen Stufe {n} besiegt',otherKilled:'Andere Truppen Stufe {n} besiegt',lostTroops:'Eigene Truppen Stufe {n} verloren'},
+ro:{staminaUsed:'Energie folosită',radarTasks:'Misiuni radar finalizate',heroExp:'EXP erou folosit',droneData:'Date de luptă dronă',droneParts:'Piese de dronă',foodHarvest:'Hrană colectată',ironHarvest:'Fier colectat',coinHarvest:'Monede colectate',skillChipPoints:'Puncte cip dronă obținute',constructionSpeed:'Acceleratoare de construcție',universalSpeed:'Acceleratoare universale',buildingPower:'Putere clădiri planificată',urTrucks:'Camioane comerciale UR',legendTasks:'Misiuni secrete legendare',survivorRecruit:'Recrutări de supraviețuitori',researchSpeed:'Acceleratoare de cercetare',techPower:'Putere tehnologică planificată',valorBadges:'Insigne de vitejie',droneChest:'Cufere componente dronă nivel {n}',eliteTickets:'Tichete recrutare eroi',urShards:'Fragmente erou UR',ssrShards:'Fragmente erou SSR',rareShards:'Fragmente erou R',skillMedals:'Medalii de abilitate',weaponShards:'Fragmente armă exclusivă',trainingSpeed:'Acceleratoare de antrenament',healingSpeed:'Acceleratoare de vindecare',trainedTroops:'Trupe nivel {n} antrenate',rivalKilled:'Trupe rivale VS nivel {n} eliminate',otherKilled:'Alte trupe nivel {n} eliminate',lostTroops:'Trupele tale nivel {n} pierdute'},
+uk:{staminaUsed:'Використана витривалість',radarTasks:'Завершені радарні завдання',heroExp:'Використаний EXP героїв',droneData:'Бойові дані дрона',droneParts:'Деталі дрона',foodHarvest:'Зібрана їжа',ironHarvest:'Зібране залізо',coinHarvest:'Зібрані монети',skillChipPoints:'Отримані очки чипів дрона',constructionSpeed:'Прискорення будівництва',universalSpeed:'Універсальні прискорення',buildingPower:'Запланована сила споруд',urTrucks:'Торгові вантажівки UR',legendTasks:'Легендарні секретні завдання',survivorRecruit:'Набір уцілілих',researchSpeed:'Прискорення дослідження',techPower:'Запланована сила технологій',valorBadges:'Значки доблесті',droneChest:'Скрині компонентів дрона рівня {n}',eliteTickets:'Квитки набору героїв',urShards:'Фрагменти героїв UR',ssrShards:'Фрагменти героїв SSR',rareShards:'Фрагменти героїв R',skillMedals:'Медалі навичок',weaponShards:'Фрагменти ексклюзивної зброї',trainingSpeed:'Прискорення тренування',healingSpeed:'Прискорення лікування',trainedTroops:'Натреновані війська рівня {n}',rivalKilled:'Знищені війська суперника VS рівня {n}',otherKilled:'Знищені інші війська рівня {n}',lostTroops:'Втрачено власні війська рівня {n}'},
+ko:{staminaUsed:'사용한 스태미나',radarTasks:'완료한 레이더 임무',heroExp:'사용한 영웅 EXP',droneData:'드론 전투 데이터',droneParts:'드론 부품',foodHarvest:'채집한 식량',ironHarvest:'채집한 철',coinHarvest:'채집한 코인',skillChipPoints:'획득한 드론 스킬 칩 점수',constructionSpeed:'건설 가속',universalSpeed:'범용 가속',buildingPower:'예정 건물 전투력',urTrucks:'UR 교역 트럭',legendTasks:'전설 비밀 임무',survivorRecruit:'생존자 모집',researchSpeed:'연구 가속',techPower:'예정 기술 전투력',valorBadges:'용맹 배지',droneChest:'레벨 {n} 드론 부품 상자',eliteTickets:'영웅 모집권',urShards:'UR 영웅 조각',ssrShards:'SSR 영웅 조각',rareShards:'R 영웅 조각',skillMedals:'스킬 메달',weaponShards:'전용 무기 조각',trainingSpeed:'훈련 가속',healingSpeed:'치료 가속',trainedTroops:'레벨 {n} 병력 훈련',rivalKilled:'상대 VS 레벨 {n} 병력 처치',otherKilled:'기타 레벨 {n} 병력 처치',lostTroops:'내 레벨 {n} 병력 손실'},
+hr:{staminaUsed:'Potrošena izdržljivost',radarTasks:'Završeni radarski zadaci',heroExp:'Potrošeni EXP heroja',droneData:'Borbeni podaci drona',droneParts:'Dijelovi drona',foodHarvest:'Prikupljena hrana',ironHarvest:'Prikupljeno željezo',coinHarvest:'Prikupljeni novčići',skillChipPoints:'Osvojeni bodovi čipa drona',constructionSpeed:'Ubrzanja gradnje',universalSpeed:'Univerzalna ubrzanja',buildingPower:'Planirana snaga zgrada',urTrucks:'UR trgovački kamioni',legendTasks:'Legendarni tajni zadaci',survivorRecruit:'Novačenje preživjelih',researchSpeed:'Ubrzanja istraživanja',techPower:'Planirana tehnološka snaga',valorBadges:'Značke hrabrosti',droneChest:'Škrinje komponenti drona razine {n}',eliteTickets:'Ulaznice za novačenje heroja',urShards:'UR fragmenti heroja',ssrShards:'SSR fragmenti heroja',rareShards:'R fragmenti heroja',skillMedals:'Medalje vještina',weaponShards:'Fragmenti ekskluzivnog oružja',trainingSpeed:'Ubrzanja obuke',healingSpeed:'Ubrzanja liječenja',trainedTroops:'Obučene trupe razine {n}',rivalKilled:'Eliminirane suparničke VS trupe razine {n}',otherKilled:'Eliminirane druge trupe razine {n}',lostTroops:'Izgubljene vlastite trupe razine {n}'}
+};
+
+const UNITS = {
+fr:{stamina:'point(s) d’endurance',mission:'mission(s)',exp:'EXP',data:'donnée(s)',part:'pièce(s)',lot100:'lot(s) de 100',lot60:'lot(s) de 60',chip:'point(s) de puce',minute:'minute(s)',power:'point(s) de puissance',truck:'camion(s)',recruit:'recrutement(s)',badge:'badge(s)',chest:'coffre(s)',ticket:'ticket(s)',shard:'fragment(s)',medal:'médaille(s)',troop:'troupe(s)'},
+en:{stamina:'stamina point(s)',mission:'mission(s)',exp:'EXP',data:'data',part:'part(s)',lot100:'lot(s) of 100',lot60:'lot(s) of 60',chip:'chip point(s)',minute:'minute(s)',power:'power point(s)',truck:'truck(s)',recruit:'recruitment(s)',badge:'badge(s)',chest:'chest(s)',ticket:'ticket(s)',shard:'shard(s)',medal:'medal(s)',troop:'troop(s)'},
+de:{stamina:'Ausdauerpunkt(e)',mission:'Aufgabe(n)',exp:'EXP',data:'Daten',part:'Teil(e)',lot100:'100er-Einheit(en)',lot60:'60er-Einheit(en)',chip:'Chippunkt(e)',minute:'Minute(n)',power:'Stärkepunkt(e)',truck:'Laster',recruit:'Rekrutierung(en)',badge:'Abzeichen',chest:'Kiste(n)',ticket:'Ticket(s)',shard:'Fragment(e)',medal:'Medaille(n)',troop:'Truppe(n)'},
+ro:{stamina:'punct(e) energie',mission:'misiune(i)',exp:'EXP',data:'date',part:'piesă(e)',lot100:'lot(uri) de 100',lot60:'lot(uri) de 60',chip:'punct(e) cip',minute:'minut(e)',power:'punct(e) putere',truck:'camion(oane)',recruit:'recrutare(i)',badge:'insignă(e)',chest:'cufăr(e)',ticket:'tichet(e)',shard:'fragment(e)',medal:'medalie(i)',troop:'trupă(e)'},
+uk:{stamina:'очок витривалості',mission:'завдань',exp:'EXP',data:'даних',part:'деталей',lot100:'партій по 100',lot60:'партій по 60',chip:'очок чипа',minute:'хвилин',power:'очок сили',truck:'вантажівок',recruit:'наборів',badge:'значків',chest:'скринь',ticket:'квитків',shard:'фрагментів',medal:'медалей',troop:'військ'},
+ko:{stamina:'스태미나',mission:'임무',exp:'EXP',data:'데이터',part:'부품',lot100:'100 단위',lot60:'60 단위',chip:'칩 점수',minute:'분',power:'전투력',truck:'트럭',recruit:'모집',badge:'배지',chest:'상자',ticket:'모집권',shard:'조각',medal:'메달',troop:'병력'},
+hr:{stamina:'bod(ova) izdržljivosti',mission:'zadatak(a)',exp:'EXP',data:'podataka',part:'dio/dijelova',lot100:'paket(a) od 100',lot60:'paket(a) od 60',chip:'bod(ova) čipa',minute:'minuta',power:'bod(ova) snage',truck:'kamion(a)',recruit:'novačenje(a)',badge:'značka(e)',chest:'škrinja(e)',ticket:'ulaznica(e)',shard:'fragment(a)',medal:'medalja',troop:'trupa'}
+};
+
+function item(stockKey,labelKey,unitKey,points,options={}){return{id:options.id||stockKey,stockKey,labelKey,unitKey,points,scarcity:options.scarcity??2,progression:options.progression??2,eco:options.eco??2,quick:options.quick||[1,10,100],defaultReserve:options.defaultReserve??0,speedup:options.speedup??false,n:options.n??null};}
+function speedItem(stockKey,labelKey,points,options={}){return item(stockKey,labelKey,'minute',points,{...options,speedup:true,quick:[60,480,1440]});}
+
+const DAYS = [
+{id:1,items:[item('stamina','staminaUsed','stamina',150,{scarcity:1,progression:1,eco:1}),item('radarTasks','radarTasks','mission',10000,{scarcity:1,progression:1,eco:1}),item('heroExp','heroExp','exp',1/660,{scarcity:3,progression:5,eco:4,quick:[660000,6600000,66000000]}),item('droneData','droneData','data',3,{scarcity:2,progression:5,eco:2,quick:[1000,10000,100000]}),item('droneParts','droneParts','part',2500,{scarcity:4,progression:5,eco:4}),item('foodLots','foodHarvest','lot100',20,{scarcity:1,progression:1,eco:1,quick:[100,1000,10000]}),item('ironLots','ironHarvest','lot100',20,{scarcity:1,progression:1,eco:1,quick:[100,1000,10000]}),item('coinLots','coinHarvest','lot60',20,{scarcity:1,progression:1,eco:1,quick:[100,1000,10000]}),item('skillChipPoints','skillChipPoints','chip',1000,{scarcity:3,progression:5,eco:3})]},
+{id:2,items:[speedItem('constructionSpeed','constructionSpeed',50,{scarcity:2,progression:4,eco:2}),speedItem('universalSpeed','universalSpeed',50,{scarcity:4,progression:4,eco:5}),item('buildingPower','buildingPower','power',10,{scarcity:1,progression:5,eco:1,quick:[1000,10000,100000]}),item('urTrucks','urTrucks','truck',100000,{scarcity:2,progression:1,eco:1}),item('legendTasks','legendTasks','mission',75000,{scarcity:2,progression:1,eco:1}),item('survivorRecruit','survivorRecruit','recruit',1500,{scarcity:3,progression:2,eco:3,defaultReserve:50})]},
+{id:3,items:[speedItem('researchSpeed','researchSpeed',50,{scarcity:2,progression:5,eco:2}),speedItem('universalSpeed','universalSpeed',50,{scarcity:4,progression:5,eco:5}),item('techPower','techPower','power',10,{scarcity:1,progression:5,eco:1,quick:[1000,10000,100000]}),item('valorBadges','valorBadges','badge',300,{scarcity:3,progression:5,eco:3,quick:[100,1000,10000]}),item('radarTasks','radarTasks','mission',10000,{scarcity:1,progression:1,eco:1}),...Array.from({length:7},(_,i)=>item(`droneChest${i+1}`,'droneChest','chest',[1100,3300,10000,30000,90000,270000,810000][i],{scarcity:Math.min(5,2+Math.floor(i/2)),progression:4+(i>3?1:0),eco:Math.min(5,2+Math.floor(i/2)),n:i+1}))]},
+{id:4,items:[item('eliteTickets','eliteTickets','ticket',1500,{scarcity:3,progression:4,eco:3,defaultReserve:500}),item('heroExp','heroExp','exp',1/660,{scarcity:2,progression:5,eco:2,quick:[660000,6600000,66000000]}),item('urShards','urShards','shard',10000,{scarcity:5,progression:5,eco:5,defaultReserve:200}),item('ssrShards','ssrShards','shard',3500,{scarcity:3,progression:4,eco:3}),item('rareShards','rareShards','shard',1000,{scarcity:1,progression:2,eco:1}),item('skillMedals','skillMedals','medal',10,{scarcity:3,progression:5,eco:3,quick:[1000,10000,100000]}),item('weaponShards','weaponShards','shard',10000,{scarcity:5,progression:5,eco:5})]},
+{id:5,items:[item('radarTasks','radarTasks','mission',10000,{scarcity:1,progression:1,eco:1}),speedItem('constructionSpeed','constructionSpeed',50,{scarcity:2,progression:4,eco:2}),speedItem('researchSpeed','researchSpeed',50,{scarcity:2,progression:5,eco:2}),speedItem('trainingSpeed','trainingSpeed',50,{scarcity:2,progression:5,eco:1}),speedItem('universalSpeed','universalSpeed',50,{scarcity:4,progression:5,eco:5}),item('buildingPower','buildingPower','power',10,{scarcity:1,progression:5,eco:1,quick:[1000,10000,100000]}),item('techPower','techPower','power',10,{scarcity:1,progression:5,eco:1,quick:[1000,10000,100000]}),...Array.from({length:10},(_,i)=>item(`trainT${i+1}`,'trainedTroops','troop',20+i*10,{scarcity:1,progression:4,eco:2,quick:[100,1000,10000],n:i+1}))]},
+{id:6,items:[item('urTrucks','urTrucks','truck',100000,{scarcity:2,progression:1,eco:1}),item('legendTasks','legendTasks','mission',75000,{scarcity:2,progression:1,eco:1}),speedItem('constructionSpeed','constructionSpeed',50,{scarcity:2,progression:4,eco:2}),speedItem('researchSpeed','researchSpeed',50,{scarcity:2,progression:5,eco:2}),speedItem('trainingSpeed','trainingSpeed',50,{scarcity:2,progression:5,eco:2}),speedItem('healingSpeed','healingSpeed',50,{scarcity:2,progression:3,eco:1}),speedItem('universalSpeed','universalSpeed',50,{scarcity:4,progression:4,eco:5}),...Array.from({length:10},(_,i)=>item(`rivalKillT${i+1}`,'rivalKilled','troop',10+i*5,{scarcity:1,progression:1,eco:1,quick:[100,1000,10000],n:i+1})),...Array.from({length:10},(_,i)=>item(`otherKillT${i+1}`,'otherKilled','troop',2+i,{scarcity:2,progression:1,eco:3,quick:[100,1000,10000],n:i+1})),...Array.from({length:10},(_,i)=>item(`lostT${i+1}`,'lostTroops','troop',2+i,{scarcity:5,progression:0,eco:5,quick:[100,1000,10000],n:i+1}))]}
 ];
 
-function item(stockKey, label, unit, points, options = {}) {
-  return {
-    id: `${stockKey}-${label.toLowerCase().replace(/[^a-z0-9]+/g, '-').slice(0, 20)}`,
-    stockKey, label, unit, points,
-    scarcity: options.scarcity ?? 2,
-    progression: options.progression ?? 2,
-    eco: options.eco ?? 2,
-    quick: options.quick ?? [1, 10, 100],
-    defaultReserve: options.defaultReserve ?? 0,
-    speedup: false,
-    advanced: options.advanced ?? false
-  };
+function detectLanguage(){const code=(navigator.language||'fr').toLowerCase().split('-')[0];return LANGS[code]?code:'fr';}
+function automaticDay(){const d=new Date().getDay();return d===0?1:Math.min(6,d);}
+function todayKey(){return new Date().toISOString().slice(0,10);}
+function defaultState(){return{version:VERSION,language:detectLanguage(),view:'planner',selectedDay:automaticDay(),autoDay:true,lastOpenDate:todayKey(),profile:{playerName:'',target:7200000,margin:300000,bonusPct:0,strategy:'economy',speedupLimitDays:10},currentPoints:{},inventory:{},reserves:{},pointOverrides:{},lastPlan:null};}
+function deepMerge(base,extra){if(!extra||typeof extra!=='object')return base;for(const[k,v]of Object.entries(extra)){if(v&&typeof v==='object'&&!Array.isArray(v)&&base[k]&&typeof base[k]==='object')base[k]=deepMerge(base[k],v);else base[k]=v;}return base;}
+function loadState(){try{return deepMerge(defaultState(),JSON.parse(localStorage.getItem(STORAGE_KEY)||'null')||{});}catch{return defaultState();}}
+let state=loadState();if(state.autoDay){state.selectedDay=automaticDay();state.lastOpenDate=todayKey();}
+let pendingConfirm=null,toastTimer=null;
+let ocrFiles=[],ocrRows=[],ocrRaw=[],ocrWorker=null,ocrBusy=false,ocrObjectUrls=[],ocrDayId=null;
+const el=id=>document.getElementById(id);
+const t=(key,vars={})=>{let value=(TEXT[state.language]||TEXT.fr)[key]??TEXT.en[key]??TEXT.fr[key]??key;for(const[k,v]of Object.entries(vars))value=String(value).replaceAll(`{${k}}`,v);return value;};
+const fmt=n=>new Intl.NumberFormat(LOCALES[state.language]||'fr-FR',{maximumFractionDigits:0}).format(Number(n)||0);
+const day=()=>DAYS.find(d=>d.id===Number(state.selectedDay))||DAYS[0];
+const dayText=(id=state.selectedDay)=>(DAY_TEXT[state.language]||DAY_TEXT.fr)[Number(id)-1];
+const pointKey=(dayId,itemId)=>`${dayId}:${itemId}`;
+const getStock=i=>Math.max(0,Number(state.inventory[i.stockKey]||0));
+const getReserve=i=>state.reserves[i.stockKey]===undefined?Number(i.defaultReserve||0):Math.max(0,Number(state.reserves[i.stockKey]||0));
+const getPoints=(dayId,i)=>state.pointOverrides[pointKey(dayId,i.id)]===undefined?Number(i.points):Math.max(0,Number(state.pointOverrides[pointKey(dayId,i.id)]||0));
+const multiplier=()=>1+Math.max(0,Number(state.profile.bonusPct||0))/100;
+const effectivePoints=(dayId,i)=>getPoints(dayId,i)*multiplier();
+const usable=i=>Math.max(0,getStock(i)-getReserve(i));
+const target=()=>Math.max(0,Number(state.profile.target||0))+Math.max(0,Number(state.profile.margin||0));
+const itemLabel=i=>((LABELS[state.language]||LABELS.fr)[i.labelKey]||(LABELS.en[i.labelKey])||i.labelKey).replaceAll('{n}',i.n??'');
+const itemUnit=i=>(UNITS[state.language]||UNITS.fr)[i.unitKey]||UNITS.en[i.unitKey]||i.unitKey;
+const escapeHtml=s=>String(s).replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
+
+function saveState(message=t('saved')){state.version=VERSION;localStorage.setItem(STORAGE_KEY,JSON.stringify(state));el('saveState').textContent=message;clearTimeout(saveState.timer);saveState.timer=setTimeout(()=>el('saveState').textContent=t('autoSave'),1200);}
+function invalidatePlan(){state.lastPlan=null;el('resultPanel')?.classList.add('hidden');}
+function applyTranslations(){document.documentElement.lang=state.language;document.title='GoMo VS Planner';document.querySelectorAll('[data-i18n]').forEach(node=>node.textContent=t(node.dataset.i18n));document.querySelectorAll('[data-i18n-placeholder]').forEach(node=>node.placeholder=t(node.dataset.i18nPlaceholder));el('languageSelect').innerHTML=Object.entries(LANGS).map(([k,v])=>`<option value="${k}">${v}</option>`).join('');el('languageSelect').value=state.language;el('strategy').innerHTML=[['economy','strategyEconomy'],['prudent','strategyPrudent'],['progress','strategyProgress'],['score','strategyScore']].map(([v,k])=>`<option value="${v}">${t(k)}</option>`).join('');el('strategy').value=state.profile.strategy;renderOcrTranslations();}
+function renderAll(){applyTranslations();renderView();renderProfile();renderDays();renderDayInfo();renderResources();renderSummary();renderGuide();renderStrategyHelp();renderScanner();renderLastPlan();}
+function renderView(){document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));document.querySelectorAll('.nav-btn').forEach(b=>b.classList.toggle('active',b.dataset.view===state.view));el(`${state.view}View`).classList.add('active');}
+function renderProfile(){el('playerName').value=state.profile.playerName||'';el('targetPoints').value=Number(state.profile.target||0);el('marginPoints').value=Number(state.profile.margin||0);el('bonusPct').value=Number(state.profile.bonusPct||0);el('strategy').value=state.profile.strategy||'economy';el('speedupLimitDays').value=Number(state.profile.speedupLimitDays??10);el('currentPoints').value=Number(state.currentPoints[state.selectedDay]||0);el('autoDay').checked=Boolean(state.autoDay);}
+function renderDays(){el('dayStrip').innerHTML=DAYS.map(d=>{const tx=dayText(d.id);return`<button class="day-btn ${d.id===state.selectedDay?'active':''}" data-day="${d.id}">${escapeHtml(tx.short)}<small>${escapeHtml(tx.label)}</small></button>`;}).join('');}
+function renderDayInfo(){const tx=dayText();el('dayEyebrow').textContent=`${t('day')} ${state.selectedDay}`;el('dayTitle').textContent=tx.title;el('dayDescription').textContent=tx.description;el('useToday').textContent=tx.use;el('saveForLater').textContent=tx.save;}
+function quickLabel(amount,i){if(i.speedup){if(amount===1440)return`+1 ${t('daysUnit')}`;if(amount>=60&&amount%60===0)return`+${amount/60}${t('hours')}`;}if(amount>=1000000)return`+${(amount/1000000).toLocaleString(LOCALES[state.language],{maximumFractionDigits:1})}M`;if(amount>=1000)return`+${(amount/1000).toLocaleString(LOCALES[state.language],{maximumFractionDigits:1})}K`;return`+${amount}`;}
+function renderResources(){const d=day();el('resourceList').innerHTML=d.items.map(i=>{const p=effectivePoints(d.id,i),potential=usable(i)*p;return`<article class="resource-card" data-item="${escapeHtml(i.id)}"><div class="resource-head"><div><h3>${escapeHtml(itemLabel(i))}</h3><p class="resource-meta">${t('unit')}: ${escapeHtml(itemUnit(i))}</p></div><div class="resource-potential">${fmt(Math.floor(potential))} pts</div></div><div class="resource-fields"><label class="resource-field"><span>${t('stock')}</span><input class="inventory-input" data-stock="${escapeHtml(i.stockKey)}" type="number" inputmode="decimal" min="0" value="${getStock(i)}"></label><label class="resource-field"><span>${t('reserve')}</span><input class="reserve-input" data-stock="${escapeHtml(i.stockKey)}" type="number" inputmode="decimal" min="0" value="${getReserve(i)}"></label><label class="resource-field points-field"><span>${t('pointsPerUnit')}</span><input class="points-input" data-point-key="${pointKey(d.id,i.id)}" type="number" inputmode="decimal" min="0" step="any" value="${getPoints(d.id,i)}"></label></div><div class="quick-row">${i.quick.map(a=>`<button class="quick-btn" data-add="${a}" data-stock="${escapeHtml(i.stockKey)}">${quickLabel(a,i)}</button>`).join('')}<button class="quick-btn" data-clear-stock="${escapeHtml(i.stockKey)}">0</button></div><div class="resource-foot"><span>${t('usable')}: <strong>${fmt(Math.floor(usable(i)))}</strong></span><span>${t('potential')}: <strong>${fmt(Math.floor(potential))} pts</strong></span></div></article>`;}).join('');}
+function renderSummary(){const d=day(),current=Number(state.currentPoints[d.id]||0),goal=target(),missing=Math.max(0,goal-current),potential=d.items.reduce((s,i)=>s+usable(i)*effectivePoints(d.id,i),0);el('recommendedTarget').textContent=fmt(goal);el('currentPointsSummary').textContent=fmt(current);el('missingPointsSummary').textContent=fmt(missing);el('potentialPointsSummary').textContent=fmt(Math.floor(potential));}
+function renderGuide(){el('weeklyGuide').innerHTML=DAYS.map(d=>{const tx=dayText(d.id);return`<article class="guide-card"><p class="eyebrow">${t('day')} ${d.id}</p><h3>${escapeHtml(tx.title)}</h3><p><strong>${t('useToday')}:</strong> ${escapeHtml(tx.use)}</p><p><strong>${t('saveForLater')}:</strong> ${escapeHtml(tx.save)}</p></article>`;}).join('');}
+function renderStrategyHelp(){el('strategyHelp').textContent=t({economy:'helpEconomy',prudent:'helpPrudent',progress:'helpProgress',score:'helpScore'}[state.profile.strategy]||'helpEconomy');}
+
+function strategyComparator(strategy){return(a,b)=>{if(strategy==='score')return(b.ppu-a.ppu)||(a.item.scarcity-b.item.scarcity);if(strategy==='progress')return(b.item.progression-a.item.progression)||(a.item.scarcity-b.item.scarcity)||(b.ppu-a.ppu);if(strategy==='prudent')return(a.item.scarcity-b.item.scarcity)||(a.item.eco-b.item.eco)||(b.ppu-a.ppu);return(a.item.eco-b.item.eco)||(a.item.scarcity-b.item.scarcity)||(b.ppu-a.ppu);};}
+function strategyCost(c,strategy,qty){const scarcity=c.item.scarcity*5000,action=Math.min(qty,100000)*.01;if(strategy==='score')return c.item.scarcity*100;if(strategy==='progress')return(6-c.item.progression)*4000+c.item.scarcity*1000;if(strategy==='prudent')return scarcity*2+c.item.eco*2500+action;return scarcity+c.item.eco*1500+action;}
+function calculatePlan(){const d=day(),current=Number(state.currentPoints[d.id]||0),goal=target(),needed=Math.max(0,goal-current),speedLimit=Math.max(0,Number(state.profile.speedupLimitDays||0)*1440);let speedUsed=0;if(needed<=0)return{dayId:d.id,goal,current,totalPoints:0,finalPoints:current,steps:[],reached:true,overshoot:current-goal,missing:0,strategy:state.profile.strategy};const candidates=d.items.map(i=>({item:i,available:Math.floor(usable(i)),ppu:effectivePoints(d.id,i)})).filter(c=>c.available>0&&c.ppu>0).sort(strategyComparator(state.profile.strategy));const usage=new Map();let remaining=needed;for(const c of candidates){let max=c.available;if(c.item.speedup)max=Math.min(max,Math.max(0,Math.floor(speedLimit-speedUsed)));if(max<=0)continue;const qty=Math.min(max,Math.floor(remaining/c.ppu));if(qty>0){usage.set(c.item.id,qty);remaining-=qty*c.ppu;if(c.item.speedup)speedUsed+=qty;}if(remaining<=.0001)break;}if(remaining>.0001){let best=null;for(const c of candidates){const used=usage.get(c.item.id)||0;let left=c.available-used;if(c.item.speedup)left=Math.min(left,Math.max(0,Math.floor(speedLimit-speedUsed)));if(left<=0)continue;const qty=Math.min(left,Math.ceil(remaining/c.ppu));if(qty<=0)continue;const gained=qty*c.ppu,rank=Math.max(0,gained-remaining)+strategyCost(c,state.profile.strategy,qty);if(!best||rank<best.rank)best={c,qty,gained,rank};}if(best){usage.set(best.c.item.id,(usage.get(best.c.item.id)||0)+best.qty);remaining-=best.gained;if(best.c.item.speedup)speedUsed+=best.qty;}}if(remaining>.0001){for(const c of candidates){const used=usage.get(c.item.id)||0;let left=c.available-used;if(c.item.speedup)left=Math.min(left,Math.max(0,Math.floor(speedLimit-speedUsed)));if(left<=0)continue;usage.set(c.item.id,used+left);remaining-=left*c.ppu;if(c.item.speedup)speedUsed+=left;if(remaining<=.0001)break;}}const steps=candidates.map(c=>{const qty=usage.get(c.item.id)||0;if(!qty)return null;return{itemId:c.item.id,stockKey:c.item.stockKey,qty,points:qty*c.ppu,remainingStock:Math.max(0,getStock(c.item)-qty),speedup:c.item.speedup};}).filter(Boolean);const totalPoints=steps.reduce((s,x)=>s+x.points,0),finalPoints=current+totalPoints;return{dayId:d.id,goal,current,totalPoints,finalPoints,steps,reached:finalPoints>=goal,overshoot:Math.max(0,finalPoints-goal),missing:Math.max(0,goal-finalPoints),strategy:state.profile.strategy,speedUsed};}
+function findItem(id,dayId=state.selectedDay){return(DAYS.find(d=>d.id===Number(dayId))||day()).items.find(i=>i.id===id);}
+function formatQty(qty,i){if(i.speedup){const days=Math.floor(qty/1440),hours=Math.floor((qty%1440)/60),minutes=Math.floor(qty%60),parts=[];if(days)parts.push(`${days} ${t('daysUnit')}`);if(hours)parts.push(`${hours}${t('hours')}`);if(minutes)parts.push(`${minutes} ${t('minutes')}`);return parts.join(' ')||`0 ${t('minutes')}`;}if(i.unitKey==='exp')return`${fmt(qty)} EXP`;return`${fmt(qty)} ${itemUnit(i)}`;}
+function renderPlan(plan,save=true){state.lastPlan=plan;if(save)saveState(t('planCalculated'));el('resultPanel').classList.remove('hidden');const strategyName=t({economy:'strategyEconomy',prudent:'strategyPrudent',progress:'strategyProgress',score:'strategyScore'}[plan.strategy]||'plan');el('resultTitle').textContent=`${dayText(plan.dayId).title} · ${strategyName}`;el('resultBadge').textContent=plan.reached?t('goalReached'):t('stockInsufficient');el('resultBadge').classList.toggle('warning',!plan.reached);el('resultMetrics').innerHTML=`<div class="metric"><span>${t('pointsAdded')}</span><strong>${fmt(Math.floor(plan.totalPoints))}</strong></div><div class="metric"><span>${t('estimatedTotal')}</span><strong>${fmt(Math.floor(plan.finalPoints))}</strong></div><div class="metric"><span>${plan.reached?t('realMargin'):t('missingPoints')}</span><strong>${fmt(Math.floor(plan.reached?plan.overshoot:plan.missing))}</strong></div>`;el('planSteps').innerHTML=plan.steps.length?plan.steps.map(s=>{const i=findItem(s.itemId,plan.dayId);return`<li>${t('use')} <strong>${escapeHtml(formatQty(s.qty,i))}</strong> · ${escapeHtml(itemLabel(i))} → ${t('about')} <strong>${fmt(Math.floor(s.points))} ${t('points')}</strong>. ${t('remainingStock')}: ${fmt(Math.floor(s.remainingStock))}.</li>`;}).join(''):`<li>${t('noResourceNeeded')}</li>`;el('resultNote').textContent=plan.reached?t('reachedNote'):t('missingNote',{points:fmt(Math.ceil(plan.missing))});el('applyPlanBtn').disabled=plan.steps.length===0;if(save)setTimeout(()=>el('resultPanel').scrollIntoView({behavior:'smooth',block:'start'}),30);}
+function renderLastPlan(){if(!state.lastPlan||state.lastPlan.dayId!==state.selectedDay){el('resultPanel').classList.add('hidden');return;}renderPlan(state.lastPlan,false);}
+function buildDebrief(plan){const lines=plan.steps.map((s,n)=>{const i=findItem(s.itemId,plan.dayId);return`${n+1}. ${t('use')} ${formatQty(s.qty,i)} · ${itemLabel(i)}: ${t('about')} ${fmt(Math.floor(s.points))} ${t('points')}.`;});return`${state.profile.playerName?`${t('player')}: ${state.profile.playerName}\n`:''}${dayText(plan.dayId).title}\n${t('objectiveLabel')}: ${fmt(plan.goal)} ${t('points')}\n${t('currentPointsLabel')}: ${fmt(plan.current)}\n\n${lines.length?lines.join('\n'):t('noAction')}\n\n${t('estimatedTotalLabel')}: ${fmt(Math.floor(plan.finalPoints))} ${t('points')}\n${plan.reached?t('reachedNote'):t('missingNote',{points:fmt(Math.ceil(plan.missing))})}\n\n${t('advice')}: ${t('keepAdvice')}`;}
+
+function fillDemo(){const demo={1:{radarTasks:35,stamina:5000,droneData:700000,droneParts:1720},2:{constructionSpeed:50000,buildingPower:700000,urTrucks:4,legendTasks:5,survivorRecruit:120},3:{researchSpeed:30000,techPower:430000,valorBadges:5000,radarTasks:13,droneChest3:40,droneChest4:15},4:{eliteTickets:720,heroExp:900000000,urShards:326,ssrShards:500,rareShards:700,skillMedals:180000,weaponShards:30},5:{trainingSpeed:80000,constructionSpeed:10000,researchSpeed:10000,universalSpeed:10000,trainT10:70000},6:{urTrucks:5,legendTasks:5,healingSpeed:6000,rivalKillT10:115000}}[state.selectedDay];Object.assign(state.inventory,demo);invalidatePlan();saveState();renderResources();renderSummary();showToast(t('demoAdded'));}
+function confirmAction(title,message,callback){pendingConfirm=callback;el('confirmTitle').textContent=title;el('confirmMessage').textContent=message;el('confirmModal').classList.remove('hidden');}
+function closeConfirm(){pendingConfirm=null;el('confirmModal').classList.add('hidden');}
+function applyPlan(){const plan=state.lastPlan;if(!plan||!plan.steps.length)return;confirmAction(t('confirmApplyTitle'),t('confirmApplyMessage'),()=>{for(const s of plan.steps)state.inventory[s.stockKey]=Math.max(0,Number(state.inventory[s.stockKey]||0)-s.qty);state.currentPoints[plan.dayId]=Math.floor(plan.finalPoints);invalidatePlan();saveState();renderAll();showToast(t('planApplied'));});}
+function clearDay(){confirmAction(t('confirmClearTitle'),t('confirmClearMessage'),()=>{[...new Set(day().items.map(i=>i.stockKey))].forEach(k=>state.inventory[k]=0);invalidatePlan();saveState();renderAll();showToast(t('cleared'));});}
+function restorePoints(){confirmAction(t('confirmRestoreTitle'),t('confirmRestoreMessage'),()=>{state.pointOverrides={};invalidatePlan();saveState();renderAll();showToast(t('restored'));});}
+function resetAll(){confirmAction(t('confirmResetTitle'),t('confirmResetMessage'),()=>{const lang=state.language;state=defaultState();state.language=lang;saveState();renderAll();showToast(t('resetDone'));});}
+function exportBackup(){const blob=new Blob([JSON.stringify({...state,exportedAt:new Date().toISOString()},null,2)],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a'),name=(state.profile.playerName||'player').replace(/[^a-z0-9_-]+/gi,'-');a.href=url;a.download=`VS-Planner-${name}.json`;document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url);showToast(t('backupExported'));}
+async function importBackup(file){if(!file)return;try{const parsed=JSON.parse(await file.text());confirmAction(t('confirmImportTitle'),t('confirmImportMessage'),()=>{state=deepMerge(defaultState(),parsed);invalidatePlan();saveState();renderAll();showToast(t('backupImported'));});}catch{showToast(t('invalidBackup'));}finally{el('importInput').value='';}}
+function showToast(message){clearTimeout(toastTimer);el('toast').textContent=message;el('toast').classList.remove('hidden');toastTimer=setTimeout(()=>el('toast').classList.add('hidden'),2400);}
+function updateResourceCard(input){const card=input.closest('.resource-card');if(!card)return;const i=day().items.find(x=>x.id===card.dataset.item);if(!i)return;const p=usable(i)*effectivePoints(day().id,i),strongs=card.querySelectorAll('.resource-foot strong');if(strongs[0])strongs[0].textContent=fmt(Math.floor(usable(i)));if(strongs[1])strongs[1].textContent=`${fmt(Math.floor(p))} pts`;const badge=card.querySelector('.resource-potential');if(badge)badge.textContent=`${fmt(Math.floor(p))} pts`;}
+
+
+function ot(key,vars={}){let value=(OCR_TEXT[state.language]||OCR_TEXT.fr)[key]??OCR_TEXT.en[key]??OCR_TEXT.fr[key]??key;for(const[k,v]of Object.entries(vars))value=String(value).replaceAll(`{${k}}`,v);return value;}
+function renderOcrTranslations(){document.querySelectorAll('[data-ocr-i18n]').forEach(node=>node.textContent=ot(node.dataset.ocrI18n));}
+function renderScanner(){
+  const dayLabel=el('scannerDayLabel');if(!dayLabel)return;
+  dayLabel.textContent=dayText(ocrDayId||state.selectedDay).title;
+  el('ocrStartBtn').disabled=ocrBusy||ocrFiles.length===0;
+  el('ocrClearBtn').disabled=ocrBusy||ocrFiles.length===0;
+  el('ocrInput').disabled=ocrBusy;el('ocrCameraInput').disabled=ocrBusy;
+  renderOcrPreviews();renderOcrRows();
 }
-
-function speedItem(stockKey, label, points, options = {}) {
-  return { ...item(stockKey, label, 'minute(s)', points, { ...options, quick: [60, 480, 1440] }), speedup: true };
+function renderOcrPreviews(){const box=el('ocrPreviewList');if(!box)return;if(!ocrFiles.length){box.innerHTML='';return;}box.innerHTML=ocrFiles.map((f,i)=>`<article class="ocr-preview-card"><img src="${ocrObjectUrls[i]}" alt="${escapeHtml(ot('screenshot'))} ${i+1}"><div><strong>${escapeHtml(f.name||`${ot('screenshot')} ${i+1}`)}</strong><span>${fmt(Math.round(f.size/1024))} Ko</span></div></article>`).join('');}
+function ocrDay(){return DAYS.find(d=>d.id===Number(ocrDayId||state.selectedDay))||day();}
+function scannerTargetOptions(selected=''){const unique=new Map();for(const i of ocrDay().items)if(!unique.has(i.stockKey))unique.set(i.stockKey,i);const options=[`<option value="">${escapeHtml(ot('ignore'))}</option>`,`<option value="__currentPoints" ${selected==='__currentPoints'?'selected':''}>${escapeHtml(ot('currentScore'))}</option>`];for(const[k,i]of unique)options.push(`<option value="${escapeHtml(k)}" ${selected===k?'selected':''}>${escapeHtml(itemLabel(i))}</option>`);return options.join('');}
+function confidenceInfo(value){if(value>=75)return{key:'high',cls:'high'};if(value>=50)return{key:'medium',cls:'medium'};return{key:'low',cls:'low'};}
+function renderOcrRows(){const panel=el('ocrReviewPanel');if(!panel)return;if(!ocrRows.length){panel.classList.add('hidden');return;}panel.classList.remove('hidden');el('ocrResultBadge').textContent=ot('detectedCount',{count:ocrRows.length});el('ocrReviewList').innerHTML=ocrRows.map((row,index)=>{const ci=confidenceInfo(row.confidence);return`<article class="ocr-review-row" data-ocr-row="${index}"><label class="ocr-use-check"><input class="ocr-row-enabled" type="checkbox" ${row.enabled?'checked':''}><span>${escapeHtml(ot('targetField'))}</span></label><select class="ocr-row-target">${scannerTargetOptions(row.target)}</select><label class="ocr-value-field"><span>${escapeHtml(ot('detectedValue'))}</span><input class="ocr-row-value" type="number" inputmode="decimal" min="0" value="${Math.max(0,Number(row.value)||0)}"></label><div class="ocr-row-context"><span>${escapeHtml(row.source)}</span><p>${escapeHtml(row.context)}</p></div><span class="ocr-confidence ${ci.cls}">${escapeHtml(ot(ci.key))} · ${row.confidence}%</span></article>`;}).join('');el('ocrRawText').textContent=ocrRaw.join('\n\n──────────\n\n');}
+function setOcrProgress(show,label='',value=0){const box=el('ocrProgressBox');if(!box)return;box.classList.toggle('hidden',!show);el('ocrProgressLabel').textContent=label;const pct=Math.max(0,Math.min(100,Math.round(value)));el('ocrProgress').value=pct;el('ocrProgressPct').textContent=`${pct}%`;}
+function releaseOcrUrls(){for(const url of ocrObjectUrls)URL.revokeObjectURL(url);ocrObjectUrls=[];}
+function setOcrFiles(files){releaseOcrUrls();ocrFiles=[...files].filter(f=>f&&String(f.type||'').startsWith('image/')).slice(0,12);ocrObjectUrls=ocrFiles.map(f=>URL.createObjectURL(f));ocrRows=[];ocrRaw=[];ocrDayId=state.selectedDay;el('ocrReviewPanel').classList.add('hidden');setOcrProgress(false);renderScanner();if(ocrFiles.length)showToast(ot('filesSelected',{count:ocrFiles.length}));}
+function clearOcr(){releaseOcrUrls();ocrFiles=[];ocrRows=[];ocrRaw=[];ocrDayId=null;el('ocrInput').value='';el('ocrCameraInput').value='';setOcrProgress(false);renderScanner();showToast(ot('scanCleared'));}
+function loadImageElement(file){return new Promise((resolve,reject)=>{const img=new Image(),url=URL.createObjectURL(file);img.onload=()=>{URL.revokeObjectURL(url);resolve(img);};img.onerror=()=>{URL.revokeObjectURL(url);reject(new Error('image'));};img.src=url;});}
+async function preprocessOcrImage(file){let source,width,height;if('createImageBitmap'in window){try{source=await createImageBitmap(file);width=source.width;height=source.height;}catch{source=null;}}if(!source){source=await loadImageElement(file);width=source.naturalWidth;height=source.naturalHeight;}const maxSide=2400,minSide=1400;let scale=Math.min(2.2,maxSide/Math.max(width,height));if(Math.max(width,height)<minSide)scale=Math.min(2.2,minSide/Math.max(width,height));scale=Math.max(.55,scale);const canvas=document.createElement('canvas');canvas.width=Math.max(1,Math.round(width*scale));canvas.height=Math.max(1,Math.round(height*scale));const ctx=canvas.getContext('2d',{willReadFrequently:true});ctx.imageSmoothingEnabled=true;ctx.imageSmoothingQuality='high';ctx.drawImage(source,0,0,canvas.width,canvas.height);if(source.close)source.close();const data=ctx.getImageData(0,0,canvas.width,canvas.height),p=data.data;for(let i=0;i<p.length;i+=4){const gray=.299*p[i]+.587*p[i+1]+.114*p[i+2];const contrast=Math.max(0,Math.min(255,(gray-128)*1.45+128));p[i]=p[i+1]=p[i+2]=contrast;}ctx.putImageData(data,0,0);return canvas;}
+function normalizeOcrText(value){return String(value||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9가-힣а-яіїє]+/gi,' ').replace(/\s+/g,' ').trim();}
+function parseGameNumber(token){let s=String(token||'').trim().toUpperCase().replace(/[’']/g,'').replace(/\s+/g,'');const suffix=(s.match(/[KMB]$/)||[''])[0];if(suffix)s=s.slice(0,-1);if(!s)return 0;if(suffix){s=s.replace(/,/g,'.');const pieces=s.split('.');if(pieces.length>2)s=pieces.slice(0,-1).join('')+'.'+pieces.at(-1);const n=Number(s.replace(/[^0-9.]/g,''));return Number.isFinite(n)?Math.round(n*({K:1e3,M:1e6,B:1e9}[suffix]||1)):0;}const digits=s.replace(/[^0-9]/g,'');return digits?Number(digits):0;}
+function numericTokens(line){const matches=String(line||'').match(/\d{1,3}(?:[ \u00A0]\d{3})+(?:\s*[KMB])?|\d+(?:[.,]\d+)*(?:\s*[KMB])?/gi)||[];return matches.map(raw=>({raw,value:parseGameNumber(raw)})).filter(x=>Number.isFinite(x.value)&&x.value>0);}
+function itemAliases(i){const aliases=new Set([i.stockKey.replace(/([a-z])([A-Z])/g,'$1 $2'),i.labelKey]);for(const lang of Object.keys(LABELS)){const raw=(LABELS[lang]||{})[i.labelKey];if(raw)aliases.add(String(raw).replaceAll('{n}',i.n??''));}return[...aliases].map(normalizeOcrText).filter(x=>x.length>=3);}
+function tokenOverlap(a,b){const aa=new Set(a.split(' ').filter(x=>x.length>1)),bb=new Set(b.split(' ').filter(x=>x.length>1));if(!aa.size||!bb.size)return 0;let hit=0;for(const x of aa)if(bb.has(x)||[...bb].some(y=>x.length>3&&y.length>3&&(x.includes(y)||y.includes(x))))hit++;return hit/Math.max(aa.size,bb.size);}
+function findOcrTarget(line){const norm=normalizeOcrText(line),scoreAliases=['vs points','points vs','vs score','score vs','duel points','alliance duel','duel d alliance','duell punkte','vs punkte','puncte vs','очки vs','vs 점수','vs bodovi','score'].map(normalizeOcrText).filter(Boolean);if(scoreAliases.some(a=>norm===a||norm.startsWith(`${a} `)||norm.endsWith(` ${a}`)||norm.includes(` ${a} `)))return{target:'__currentPoints',score:.78};const tierMatch=norm.match(/(?:^| )(?:t|lv|level|niveau|stufe|nivel|razine) ?(10|[1-9])(?: |$)/),tier=tierMatch?Number(tierMatch[1]):null;let best={target:'',score:0};const unique=new Map();for(const i of ocrDay().items)if(!unique.has(i.stockKey))unique.set(i.stockKey,i);for(const[k,i]of unique){for(const alias of itemAliases(i)){let score=0;if((` ${norm} `).includes(` ${alias} `))score=.96;else{const overlap=tokenOverlap(norm,alias);score=overlap*.82;}if(i.n&&tier!==null)score=Number(i.n)===tier?score+.48:score*.2;else if(i.n&&new RegExp(`(?:^| )${i.n}(?: |$)`).test(norm))score+=.12;if(score>best.score)best={target:k,score:Math.min(1,score)};}}return best;}
+function shouldIgnoreOcrLine(line){const n=normalizeOcrText(line);return !n||/^\d{1,2} \d{2}$/.test(n)||/\b(server|serveur|level|niveau|lvl|qg|hq)\b/.test(n)&&numericTokens(line).length===1;}
+function parseOcrText(text,source){const rows=[],seen=new Set(),lines=String(text||'').split(/\r?\n/).map(x=>x.trim()).filter(Boolean);for(const line of lines){if(shouldIgnoreOcrLine(line))continue;const nums=numericTokens(line);if(!nums.length)continue;const match=findOcrTarget(line),chosen=nums.at(-1);if(chosen.value>999999999999)continue;const key=`${match.target}|${chosen.value}|${normalizeOcrText(line)}`;if(seen.has(key))continue;seen.add(key);const confidence=Math.max(22,Math.min(98,Math.round(30+match.score*68+(nums.length===1?4:0))));rows.push({enabled:Boolean(match.target&&confidence>=48),target:match.target,value:chosen.value,confidence,source,context:line});}
+  if(rows.filter(r=>r.target).length===0){for(const line of lines){for(const num of numericTokens(line)){if(num.value<10||num.value>999999999999)continue;const key=`unassigned|${num.value}|${normalizeOcrText(line)}`;if(seen.has(key))continue;seen.add(key);rows.push({enabled:false,target:'',value:num.value,confidence:24,source,context:line});if(rows.length>=35)break;}if(rows.length>=35)break;}}
+  return rows.slice(0,45);
 }
+async function loadOcrLibrary(){if(window.Tesseract)return window.Tesseract;const urls=['https://cdnjs.cloudflare.com/ajax/libs/tesseract.js/6.0.1/tesseract.min.js','https://cdn.jsdelivr.net/npm/tesseract.js@6.0.1/dist/tesseract.min.js'];for(const url of urls){try{await new Promise((resolve,reject)=>{const old=document.querySelector('script[data-ocr-library]');if(old)old.remove();const script=document.createElement('script'),timer=setTimeout(()=>{script.remove();reject(new Error('timeout'));},18000);script.dataset.ocrLibrary='1';script.src=url;script.async=true;script.onload=()=>{clearTimeout(timer);resolve();};script.onerror=()=>{clearTimeout(timer);script.remove();reject(new Error('load'));};document.head.appendChild(script);});if(window.Tesseract)return window.Tesseract;}catch(err){console.warn('OCR library source unavailable',url,err);}}throw new Error(ot('ocrUnavailable'));}
+async function ensureOcrWorker(){if(ocrWorker)return ocrWorker;await loadOcrLibrary();setOcrProgress(true,ot('loadingEngine'),3);ocrWorker=await Tesseract.createWorker('eng',1,{logger:m=>{if(!ocrBusy)return;const p=Number(m.progress||0);if(m.status&&p>=0)setOcrProgress(true,ot('loadingEngine'),Math.max(3,Math.min(18,3+p*15)));},errorHandler:err=>console.error('OCR worker',err)});await ocrWorker.setParameters({preserve_interword_spaces:'1'});return ocrWorker;}
+async function startOcrScan(){if(ocrBusy)return;if(!ocrFiles.length){showToast(ot('noScreenshot'));return;}ocrDayId=ocrDayId||state.selectedDay;ocrBusy=true;ocrRows=[];ocrRaw=[];renderScanner();setOcrProgress(true,ot('preparing'),1);try{const worker=await ensureOcrWorker();for(let index=0;index<ocrFiles.length;index++){const file=ocrFiles[index],canvas=await preprocessOcrImage(file),base=18+(index/ocrFiles.length)*78,span=78/ocrFiles.length;setOcrProgress(true,ot('readingImage',{current:index+1,total:ocrFiles.length}),base);const result=await worker.recognize(canvas,{rotateAuto:true});const text=String(result?.data?.text||'').trim();ocrRaw.push(`${file.name||`${ot('screenshot')} ${index+1}`}\n${text||ot('ocrFailed')}`);ocrRows.push(...parseOcrText(text,file.name||`${ot('screenshot')} ${index+1}`));setOcrProgress(true,ot('readingImage',{current:index+1,total:ocrFiles.length}),base+span);await new Promise(r=>setTimeout(r,0));}
+    const byKey=new Map();for(const row of ocrRows){const key=row.target?`${row.target}|${row.value}`:`${row.source}|${row.value}|${row.context}`;const old=byKey.get(key);if(!old||row.confidence>old.confidence)byKey.set(key,row);}ocrRows=[...byKey.values()].sort((a,b)=>(Boolean(b.target)-Boolean(a.target))||(b.confidence-a.confidence)).slice(0,80);setOcrProgress(true,ot('done'),100);renderScanner();if(!ocrRows.length)showToast(ot('noDetectedValue'));}
+  catch(err){console.error(err);showToast(err?.message===ot('ocrUnavailable')?ot('ocrUnavailable'):ot('ocrFailed'));setOcrProgress(false);}finally{ocrBusy=false;renderScanner();}}
+function applyOcrRows(){const valid=ocrRows.filter(r=>r.enabled&&r.target&&Number(r.value)>0);if(!valid.length){showToast(ot('applyNothing'));return;}const mode=document.querySelector('input[name="ocrApplyMode"]:checked')?.value||'replace';confirmAction(ot('confirmApplyScanTitle'),ot('confirmApplyScanMessage'),()=>{const grouped=new Map();for(const row of valid){const value=Math.max(0,Number(row.value)||0);if(mode==='add')grouped.set(row.target,(grouped.get(row.target)||0)+value);else grouped.set(row.target,Math.max(grouped.get(row.target)||0,value));}const scanDay=Number(ocrDayId||state.selectedDay);for(const[targetKey,value]of grouped){if(targetKey==='__currentPoints'){state.currentPoints[scanDay]=mode==='add'?Number(state.currentPoints[scanDay]||0)+value:value;}else state.inventory[targetKey]=mode==='add'?Number(state.inventory[targetKey]||0)+value:value;}state.selectedDay=scanDay;state.autoDay=false;invalidatePlan();state.view='planner';saveState();renderAll();showToast(ot('scanApplied'));});}
+function bindOcrEvents(){el('ocrInput').addEventListener('change',e=>{setOcrFiles(e.target.files||[]);if(ocrFiles.length)void startOcrScan();});el('ocrCameraInput').addEventListener('change',e=>{setOcrFiles(e.target.files||[]);if(ocrFiles.length)void startOcrScan();});el('ocrStartBtn').addEventListener('click',()=>void startOcrScan());el('ocrClearBtn').addEventListener('click',clearOcr);el('ocrApplyBtn').addEventListener('click',applyOcrRows);el('ocrReviewList').addEventListener('input',e=>{const card=e.target.closest('[data-ocr-row]');if(!card)return;const row=ocrRows[Number(card.dataset.ocrRow)];if(!row)return;if(e.target.classList.contains('ocr-row-enabled'))row.enabled=e.target.checked;if(e.target.classList.contains('ocr-row-target')){row.target=e.target.value;row.enabled=Boolean(row.target);const check=card.querySelector('.ocr-row-enabled');if(check)check.checked=row.enabled;}if(e.target.classList.contains('ocr-row-value'))row.value=Math.max(0,Number(e.target.value||0));});window.addEventListener('beforeunload',()=>{releaseOcrUrls();if(ocrWorker)ocrWorker.terminate().catch(()=>{});});}
 
-const defaultState = () => ({
-  version: VERSION,
-  selectedDay: 1,
-  view: 'planner',
-  profile: {
-    playerName: '',
-    target: 7200000,
-    margin: 150000,
-    bonusPct: 0,
-    strategy: 'economy',
-    speedupLimitDays: 10
-  },
-  currentPoints: {},
-  inventory: {},
-  reserves: {},
-  pointOverrides: {},
-  lastPlan: null
-});
+function bindEvents(){document.addEventListener('click',e=>{const nav=e.target.closest('.nav-btn');if(nav){state.view=nav.dataset.view;saveState();renderView();return;}const db=e.target.closest('.day-btn');if(db){state.selectedDay=Number(db.dataset.day);state.autoDay=false;invalidatePlan();saveState();renderAll();return;}const add=e.target.closest('[data-add]');if(add){const k=add.dataset.stock;state.inventory[k]=Number(state.inventory[k]||0)+Number(add.dataset.add||0);invalidatePlan();saveState();renderResources();renderSummary();return;}const clear=e.target.closest('[data-clear-stock]');if(clear){state.inventory[clear.dataset.clearStock]=0;invalidatePlan();saveState();renderResources();renderSummary();}});document.addEventListener('input',e=>{const x=e.target;if(x.matches('.inventory-input')){state.inventory[x.dataset.stock]=Math.max(0,Number(x.value||0));invalidatePlan();saveState();renderSummary();updateResourceCard(x);}if(x.matches('.reserve-input')){state.reserves[x.dataset.stock]=Math.max(0,Number(x.value||0));invalidatePlan();saveState();renderSummary();updateResourceCard(x);}if(x.matches('.points-input')){state.pointOverrides[x.dataset.pointKey]=Math.max(0,Number(x.value||0));invalidatePlan();saveState();renderSummary();updateResourceCard(x);}});el('languageSelect').addEventListener('change',e=>{state.language=e.target.value;saveState();renderAll();});el('playerName').addEventListener('input',e=>{state.profile.playerName=e.target.value;saveState();});el('targetPoints').addEventListener('input',e=>{state.profile.target=Math.max(0,Number(e.target.value||0));invalidatePlan();saveState();renderSummary();});el('marginPoints').addEventListener('input',e=>{state.profile.margin=Math.max(0,Number(e.target.value||0));invalidatePlan();saveState();renderSummary();});el('bonusPct').addEventListener('input',e=>{state.profile.bonusPct=Math.max(0,Number(e.target.value||0));invalidatePlan();saveState();renderResources();renderSummary();});el('currentPoints').addEventListener('input',e=>{state.currentPoints[state.selectedDay]=Math.max(0,Number(e.target.value||0));invalidatePlan();saveState();renderSummary();});el('strategy').addEventListener('change',e=>{state.profile.strategy=e.target.value;invalidatePlan();saveState();renderStrategyHelp();renderLastPlan();});el('speedupLimitDays').addEventListener('input',e=>{state.profile.speedupLimitDays=Math.max(0,Number(e.target.value||0));invalidatePlan();saveState();});el('autoDay').addEventListener('change',e=>{state.autoDay=e.target.checked;if(state.autoDay)state.selectedDay=automaticDay();invalidatePlan();saveState();renderAll();});el('nextDayBtn').addEventListener('click',()=>{state.autoDay=false;state.selectedDay=state.selectedDay>=6?1:state.selectedDay+1;invalidatePlan();saveState();renderAll();});el('analyzeBtn').addEventListener('click',()=>renderPlan(calculatePlan()));el('demoBtn').addEventListener('click',fillDemo);el('applyPlanBtn').addEventListener('click',applyPlan);el('copyDebriefBtn').addEventListener('click',async()=>{if(!state.lastPlan)return;try{await navigator.clipboard.writeText(buildDebrief(state.lastPlan));showToast(t('debriefCopied'));}catch{showToast(t('copyFailed'));}});el('clearDayBtn').addEventListener('click',clearDay);el('restorePointsBtn').addEventListener('click',restorePoints);el('resetAllBtn').addEventListener('click',resetAll);el('exportBtn').addEventListener('click',exportBackup);el('importInput').addEventListener('change',e=>importBackup(e.target.files?.[0]));el('confirmCancel').addEventListener('click',closeConfirm);el('confirmOk').addEventListener('click',()=>{const cb=pendingConfirm;closeConfirm();if(cb)cb();});el('confirmModal').addEventListener('click',e=>{if(e.target===el('confirmModal'))closeConfirm();});}
 
-let state = loadState();
-let pendingConfirm = null;
-let toastTimer = null;
+bindEvents();bindOcrEvents();renderAll();saveState(t('autoSave'));
+if('serviceWorker'in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('service-worker.js').catch(()=>{}));
+window.VSPlannerTest={calculatePlan,DAYS,getState:()=>state,setState:s=>{state=s;}};
 
-const el = id => document.getElementById(id);
-const dayById = id => days.find(day => day.id === Number(id)) || days[0];
-const activeDay = () => dayById(state.selectedDay);
-const pointKey = (dayId, itemId) => `${dayId}:${itemId}`;
-
-function loadState() {
-  try {
-    const parsed = JSON.parse(localStorage.getItem(STORAGE_KEY));
-    return deepMerge(defaultState(), parsed || {});
-  } catch {
-    return defaultState();
-  }
-}
-
-function deepMerge(base, extra) {
-  if (!extra || typeof extra !== 'object') return base;
-  for (const [key, value] of Object.entries(extra)) {
-    if (value && typeof value === 'object' && !Array.isArray(value) && base[key] && typeof base[key] === 'object') {
-      base[key] = deepMerge(base[key], value);
-    } else {
-      base[key] = value;
-    }
-  }
-  return base;
-}
-
-function saveState(message = 'Enregistré') {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-  el('saveState').textContent = message;
-  window.clearTimeout(saveState.timer);
-  saveState.timer = window.setTimeout(() => { el('saveState').textContent = 'Sauvegarde automatique active'; }, 1200);
-}
-
-function getInventory(itemDef) { return Number(state.inventory[itemDef.stockKey] || 0); }
-function getReserve(itemDef) {
-  const stored = state.reserves[itemDef.stockKey];
-  return stored === undefined ? Number(itemDef.defaultReserve || 0) : Number(stored || 0);
-}
-function getBasePoints(dayId, itemDef) {
-  const override = state.pointOverrides[pointKey(dayId, itemDef.id)];
-  return override === undefined ? itemDef.points : Number(override || 0);
-}
-function multiplier() { return 1 + Math.max(0, Number(state.profile.bonusPct || 0)) / 100; }
-function effectivePoints(dayId, itemDef) { return getBasePoints(dayId, itemDef) * multiplier(); }
-function recommendedTarget() { return Math.max(0, Number(state.profile.target || 0)) + Math.max(0, Number(state.profile.margin || 0)); }
-function usableQuantity(itemDef) { return Math.max(0, getInventory(itemDef) - getReserve(itemDef)); }
-
-function invalidatePlan() {
-  state.lastPlan = null;
-  el('resultPanel')?.classList.add('hidden');
-}
-
-function renderAll() {
-  renderView();
-  renderProfile();
-  renderDayStrip();
-  renderDayInfo();
-  renderResources();
-  renderSummary();
-  renderWeeklyGuide();
-  renderStrategyHelp();
-  renderLastPlan();
-}
-
-function renderView() {
-  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-  document.querySelectorAll('.nav-btn').forEach(b => b.classList.toggle('active', b.dataset.view === state.view));
-  el(`${state.view}View`).classList.add('active');
-}
-
-function renderProfile() {
-  el('playerName').value = state.profile.playerName || '';
-  el('targetPoints').value = Number(state.profile.target || 0);
-  el('marginPoints').value = Number(state.profile.margin || 0);
-  el('bonusPct').value = Number(state.profile.bonusPct || 0);
-  el('strategy').value = state.profile.strategy || 'economy';
-  el('speedupLimitDays').value = Number(state.profile.speedupLimitDays ?? 10);
-  el('currentPoints').value = Number(state.currentPoints[state.selectedDay] || 0);
-}
-
-function renderDayStrip() {
-  el('dayStrip').innerHTML = days.map(day => `
-    <button class="day-btn ${day.id === state.selectedDay ? 'active' : ''}" data-day="${day.id}">
-      ${day.short}<small>${day.label}</small>
-    </button>`).join('');
-}
-
-function renderDayInfo() {
-  const day = activeDay();
-  el('dayEyebrow').textContent = `JOUR ${day.id}`;
-  el('dayTitle').textContent = day.title;
-  el('dayDescription').textContent = day.description;
-  el('useToday').textContent = day.use;
-  el('saveForLater').textContent = day.save;
-}
-
-function renderResources() {
-  const day = activeDay();
-  const renderCard = itemDef => {
-    const inv = getInventory(itemDef);
-    const reserve = getReserve(itemDef);
-    const basePts = getBasePoints(day.id, itemDef);
-    const potential = usableQuantity(itemDef) * effectivePoints(day.id, itemDef);
-    const quickButtons = itemDef.quick.map(amount => `<button class="quick-btn" data-add="${amount}" data-stock="${escapeAttr(itemDef.stockKey)}">+${formatQuick(amount, itemDef)}</button>`).join('');
-    return `
-      <article class="resource-card" data-item-id="${escapeAttr(itemDef.id)}">
-        <div class="resource-head">
-          <div>
-            <h3>${escapeHtml(itemDef.label)}</h3>
-            <p class="resource-meta">Unité : ${escapeHtml(itemDef.unit)}${itemDef.speedup ? ' · saisie en minutes' : ''}</p>
-          </div>
-          <span class="point-pill">${formatPointsPerUnit(basePts, itemDef)} pts base</span>
-        </div>
-        <div class="resource-fields">
-          <label>Disponible<input class="inventory-input" type="number" inputmode="decimal" min="0" step="1" data-stock="${escapeAttr(itemDef.stockKey)}" value="${safeNumber(inv)}"></label>
-          <label>Réserve à garder<input class="reserve-input" type="number" inputmode="decimal" min="0" step="1" data-stock="${escapeAttr(itemDef.stockKey)}" value="${safeNumber(reserve)}"></label>
-          <label>Points par unité<input class="points-input" type="number" inputmode="decimal" min="0" step="0.0001" data-point-key="${escapeAttr(pointKey(day.id, itemDef.id))}" value="${safeNumber(basePts)}"></label>
-        </div>
-        <div class="quick-buttons">${quickButtons}<button class="quick-btn" data-clear-stock="${escapeAttr(itemDef.stockKey)}">Effacer</button></div>
-        <div class="resource-foot">
-          <span>Utilisable : <strong>${fmt.format(usableQuantity(itemDef))}</strong></span>
-          <span>Potentiel avec bonus : <strong>${fmt.format(Math.floor(potential))} pts</strong></span>
-        </div>
-      </article>`;
-  };
-
-  const basic = day.items.filter(itemDef => !itemDef.advanced).map(renderCard).join('');
-  const advancedItems = day.items.filter(itemDef => itemDef.advanced);
-  const advanced = advancedItems.length ? `
-    <details class="advanced-block">
-      <summary>Afficher les niveaux et actions avancés (${advancedItems.length})</summary>
-      <div class="advanced-list">${advancedItems.map(renderCard).join('')}</div>
-    </details>` : '';
-  el('resourceList').innerHTML = basic + advanced;
-}
-
-function formatQuick(amount, itemDef) {
-  if (itemDef.speedup) {
-    if (amount === 60) return '1 h';
-    if (amount === 480) return '8 h';
-    if (amount === 1440) return '1 j';
-  }
-  if (amount >= 1000000) return `${amount / 1000000} M`;
-  if (amount >= 1000) return `${amount / 1000} k`;
-  return fmt.format(amount);
-}
-
-function formatPointsPerUnit(points, itemDef) {
-  if (itemDef.stockKey === 'heroExp') return '1 / 660 EXP';
-  if (points < 1) return points.toFixed(4).replace('.', ',');
-  return fmt.format(points);
-}
-
-function renderSummary() {
-  const day = activeDay();
-  const target = recommendedTarget();
-  const current = Number(state.currentPoints[day.id] || 0);
-  const speedLimitMinutes = Math.max(0, Number(state.profile.speedupLimitDays || 0) * 1440);
-  let speedMinutesLeft = speedLimitMinutes;
-  let potential = day.items.filter(itemDef => !itemDef.speedup)
-    .reduce((sum, itemDef) => sum + usableQuantity(itemDef) * effectivePoints(day.id, itemDef), 0);
-  const speedItems = day.items.filter(itemDef => itemDef.speedup)
-    .sort((a, b) => effectivePoints(day.id, b) - effectivePoints(day.id, a));
-  for (const itemDef of speedItems) {
-    const used = Math.min(usableQuantity(itemDef), speedMinutesLeft);
-    potential += used * effectivePoints(day.id, itemDef);
-    speedMinutesLeft -= used;
-    if (speedMinutesLeft <= 0) break;
-  }
-  el('recommendedTarget').textContent = fmt.format(target);
-  el('currentPointsSummary').textContent = fmt.format(current);
-  el('missingPointsSummary').textContent = fmt.format(Math.max(0, target - current));
-  el('potentialPointsSummary').textContent = fmt.format(Math.floor(potential));
-}
-
-function renderWeeklyGuide() {
-  el('weeklyGuide').innerHTML = days.map(day => `
-    <article class="guide-card">
-      <span class="day-number">JOUR ${day.id}</span>
-      <h3>${escapeHtml(day.title)}</h3>
-      <p>${escapeHtml(day.description)}</p>
-      <ul><li><strong>Utiliser :</strong> ${escapeHtml(day.use)}</li><li><strong>Garder :</strong> ${escapeHtml(day.save)}</li></ul>
-    </article>`).join('');
-}
-
-const strategyTexts = {
-  economy: 'Priorise les actions courantes et les ressources les moins rares, puis ajuste pour dépasser l’objectif le moins possible.',
-  progress: 'Priorise les dépenses qui améliorent directement la puissance du compte, tout en respectant les réserves.',
-  score: 'Priorise les plus gros gains de points par action. Le calcul s’arrête quand l’objectif avec marge est atteint.',
-  prudent: 'Protège au maximum les ressources rares, respecte les réserves et applique strictement la limite d’accélérateurs.'
-};
-function renderStrategyHelp() { el('strategyHelp').textContent = strategyTexts[state.profile.strategy] || strategyTexts.economy; }
-
-function calculatePlan() {
-  const day = activeDay();
-  const current = Number(state.currentPoints[day.id] || 0);
-  const goal = recommendedTarget();
-  const needed = Math.max(0, goal - current);
-  const speedLimitMinutes = Math.max(0, Number(state.profile.speedupLimitDays || 0) * 1440);
-  let speedUsed = 0;
-
-  if (needed <= 0) {
-    return { dayId: day.id, goal, current, needed: 0, totalPoints: 0, finalPoints: current, steps: [], reached: true, overshoot: current - goal, missing: 0, strategy: state.profile.strategy };
-  }
-
-  const candidates = day.items.map(itemDef => ({
-    item: itemDef,
-    available: Math.floor(usableQuantity(itemDef)),
-    ppu: effectivePoints(day.id, itemDef),
-    basePpu: getBasePoints(day.id, itemDef)
-  })).filter(c => c.available > 0 && c.ppu > 0);
-
-  candidates.sort(strategyComparator(state.profile.strategy));
-  const usage = new Map();
-  let remaining = needed;
-
-  for (const c of candidates) {
-    let maxQty = c.available;
-    if (c.item.speedup) maxQty = Math.min(maxQty, Math.max(0, Math.floor(speedLimitMinutes - speedUsed)));
-    if (maxQty <= 0) continue;
-    const qty = Math.min(maxQty, Math.floor(remaining / c.ppu));
-    if (qty > 0) {
-      usage.set(c.item.id, qty);
-      remaining -= qty * c.ppu;
-      if (c.item.speedup) speedUsed += qty;
-    }
-    if (remaining <= 0.0001) break;
-  }
-
-  if (remaining > 0.0001) {
-    let best = null;
-    for (const c of candidates) {
-      const already = usage.get(c.item.id) || 0;
-      let left = c.available - already;
-      if (c.item.speedup) left = Math.min(left, Math.max(0, Math.floor(speedLimitMinutes - speedUsed)));
-      if (left <= 0) continue;
-      const requiredQty = Math.min(left, Math.ceil(remaining / c.ppu));
-      if (requiredQty <= 0) continue;
-      const gained = requiredQty * c.ppu;
-      const overshoot = Math.max(0, gained - remaining);
-      const cost = strategyCost(c, state.profile.strategy, requiredQty);
-      const rank = overshoot + cost;
-      if (!best || rank < best.rank) best = { c, requiredQty, gained, rank };
-    }
-    if (best) {
-      usage.set(best.c.item.id, (usage.get(best.c.item.id) || 0) + best.requiredQty);
-      remaining -= best.gained;
-      if (best.c.item.speedup) speedUsed += best.requiredQty;
-    }
-  }
-
-  if (remaining > 0.0001) {
-    for (const c of candidates) {
-      const already = usage.get(c.item.id) || 0;
-      let left = c.available - already;
-      if (c.item.speedup) left = Math.min(left, Math.max(0, Math.floor(speedLimitMinutes - speedUsed)));
-      if (left <= 0) continue;
-      usage.set(c.item.id, already + left);
-      remaining -= left * c.ppu;
-      if (c.item.speedup) speedUsed += left;
-      if (remaining <= 0.0001) break;
-    }
-  }
-
-  const steps = candidates.map(c => {
-    const qty = usage.get(c.item.id) || 0;
-    if (!qty) return null;
-    const points = qty * c.ppu;
-    return {
-      itemId: c.item.id,
-      stockKey: c.item.stockKey,
-      label: c.item.label,
-      unit: c.item.unit,
-      qty,
-      points,
-      remainingStock: Math.max(0, getInventory(c.item) - qty),
-      reserve: getReserve(c.item),
-      speedup: c.item.speedup
-    };
-  }).filter(Boolean);
-
-  const totalPoints = steps.reduce((sum, step) => sum + step.points, 0);
-  const finalPoints = current + totalPoints;
-  return {
-    dayId: day.id,
-    goal, current, needed,
-    totalPoints,
-    finalPoints,
-    steps,
-    reached: finalPoints >= goal,
-    overshoot: Math.max(0, finalPoints - goal),
-    missing: Math.max(0, goal - finalPoints),
-    strategy: state.profile.strategy,
-    speedUsed
-  };
-}
-
-function strategyComparator(strategy) {
-  return (a, b) => {
-    if (strategy === 'score') return (b.ppu - a.ppu) || (a.item.scarcity - b.item.scarcity);
-    if (strategy === 'progress') return (b.item.progression - a.item.progression) || (a.item.scarcity - b.item.scarcity) || (b.ppu - a.ppu);
-    if (strategy === 'prudent') return (a.item.scarcity - b.item.scarcity) || (a.item.eco - b.item.eco) || (a.ppu - b.ppu);
-    return (a.item.eco - b.item.eco) || (a.item.scarcity - b.item.scarcity) || (a.ppu - b.ppu);
-  };
-}
-
-function strategyCost(candidate, strategy, qty) {
-  const scarcity = candidate.item.scarcity * 5000;
-  const actionCost = Math.min(qty, 100000) * 0.01;
-  if (strategy === 'score') return candidate.item.scarcity * 100;
-  if (strategy === 'progress') return (6 - candidate.item.progression) * 4000 + candidate.item.scarcity * 1000;
-  if (strategy === 'prudent') return scarcity * 2 + candidate.item.eco * 2500 + actionCost;
-  return scarcity + candidate.item.eco * 1500 + actionCost;
-}
-
-function renderPlan(plan) {
-  state.lastPlan = plan;
-  saveState('Plan calculé');
-  el('resultPanel').classList.remove('hidden');
-  const strategyName = el('strategy').selectedOptions[0]?.textContent || 'Plan';
-  el('resultTitle').textContent = `${activeDay().title} · ${strategyName}`;
-  el('resultBadge').textContent = plan.reached ? 'Objectif atteint' : 'Stock insuffisant';
-  el('resultBadge').classList.toggle('warning', !plan.reached);
-  el('resultMetrics').innerHTML = `
-    <div class="metric"><span>Points ajoutés</span><strong>${fmt.format(Math.floor(plan.totalPoints))}</strong></div>
-    <div class="metric"><span>Total estimé</span><strong>${fmt.format(Math.floor(plan.finalPoints))}</strong></div>
-    <div class="metric"><span>${plan.reached ? 'Marge réelle' : 'Points manquants'}</span><strong>${fmt.format(Math.floor(plan.reached ? plan.overshoot : plan.missing))}</strong></div>`;
-
-  el('planSteps').innerHTML = plan.steps.length
-    ? plan.steps.map(step => `<li>Utiliser <strong>${formatQty(step.qty, step)}</strong> de ${escapeHtml(step.label)} → environ <strong>${fmt.format(Math.floor(step.points))} points</strong>. Stock restant : ${fmt.format(Math.floor(step.remainingStock))}.</li>`).join('')
-    : '<li>Aucune ressource supplémentaire n’est nécessaire. L’objectif est déjà atteint.</li>';
-
-  el('resultNote').textContent = plan.reached
-    ? `Le calcul s’arrête à ${fmt.format(Math.floor(plan.finalPoints))} points. Garde le reste du stock et les réserves pour la prochaine semaine, sauf ordre contraire de l’alliance.`
-    : `Avec les quantités saisies et les réserves protégées, il manque encore environ ${fmt.format(Math.ceil(plan.missing))} points. Ajoute du stock, baisse une réserve ou complète avec une autre action du jour.`;
-  el('applyPlanBtn').disabled = plan.steps.length === 0;
-  setTimeout(() => el('resultPanel').scrollIntoView({ behavior: 'smooth', block: 'start' }), 30);
-}
-
-function renderLastPlan() {
-  const plan = state.lastPlan;
-  if (!plan || plan.dayId !== state.selectedDay) {
-    el('resultPanel').classList.add('hidden');
-    return;
-  }
-  renderPlanWithoutSave(plan);
-}
-function renderPlanWithoutSave(plan) {
-  el('resultPanel').classList.remove('hidden');
-  const names = { economy: 'Économie maximale', progress: 'Progression maximale', score: 'Gros score VS', prudent: 'Mode prudent' };
-  el('resultTitle').textContent = `${activeDay().title} · ${names[plan.strategy] || 'Plan conseillé'}`;
-  el('resultBadge').textContent = plan.reached ? 'Objectif atteint' : 'Stock insuffisant';
-  el('resultBadge').classList.toggle('warning', !plan.reached);
-  el('resultMetrics').innerHTML = `
-    <div class="metric"><span>Points ajoutés</span><strong>${fmt.format(Math.floor(plan.totalPoints))}</strong></div>
-    <div class="metric"><span>Total estimé</span><strong>${fmt.format(Math.floor(plan.finalPoints))}</strong></div>
-    <div class="metric"><span>${plan.reached ? 'Marge réelle' : 'Points manquants'}</span><strong>${fmt.format(Math.floor(plan.reached ? plan.overshoot : plan.missing))}</strong></div>`;
-  el('planSteps').innerHTML = plan.steps.length
-    ? plan.steps.map(step => `<li>Utiliser <strong>${formatQty(step.qty, step)}</strong> de ${escapeHtml(step.label)} → environ <strong>${fmt.format(Math.floor(step.points))} points</strong>. Stock restant : ${fmt.format(Math.floor(step.remainingStock))}.</li>`).join('')
-    : '<li>Aucune ressource supplémentaire n’est nécessaire. L’objectif est déjà atteint.</li>';
-  el('resultNote').textContent = plan.reached
-    ? `Le calcul s’arrête à ${fmt.format(Math.floor(plan.finalPoints))} points. Garde le reste du stock et les réserves pour la prochaine semaine, sauf ordre contraire de l’alliance.`
-    : `Il manque encore environ ${fmt.format(Math.ceil(plan.missing))} points avec les données actuelles.`;
-  el('applyPlanBtn').disabled = plan.steps.length === 0;
-}
-
-function formatQty(qty, step) {
-  if (step.speedup) {
-    const days = Math.floor(qty / 1440);
-    const hours = Math.floor((qty % 1440) / 60);
-    const mins = Math.floor(qty % 60);
-    const parts = [];
-    if (days) parts.push(`${days} j`);
-    if (hours) parts.push(`${hours} h`);
-    if (mins) parts.push(`${mins} min`);
-    return `${parts.join(' ') || '0 min'} (${fmt.format(qty)} min)`;
-  }
-  if (step.stockKey === 'heroExp') return `${fmt.format(qty)} EXP`;
-  return `${fmt.format(qty)} ${step.unit}`;
-}
-
-function buildDebrief(plan) {
-  const player = state.profile.playerName ? `Joueur : ${state.profile.playerName}\n` : '';
-  const lines = plan.steps.map((step, index) => `${index + 1}. Utiliser ${formatQty(step.qty, step)} de ${step.label} : environ ${fmt.format(Math.floor(step.points))} points.`);
-  return `${player}${activeDay().title}\nObjectif : ${fmt.format(plan.goal)} points\nPoints déjà obtenus : ${fmt.format(plan.current)}\n\n${lines.length ? lines.join('\n') : 'Aucune ressource supplémentaire nécessaire.'}\n\nTotal estimé : ${fmt.format(Math.floor(plan.finalPoints))} points\n${plan.reached ? `Marge : ${fmt.format(Math.floor(plan.overshoot))} points.` : `Il manque encore : ${fmt.format(Math.ceil(plan.missing))} points.`}\n\nConseil : garder le reste du stock et les réserves pour la prochaine semaine, sauf consigne contraire de l’alliance.`;
-}
-
-function fillDemo() {
-  const day = activeDay();
-  const demo = {
-    1: { radarTasks: 35, stamina: 5000, droneData: 700000, droneParts: 1700 },
-    2: { constructionSpeed: 50000, buildingPower: 700000, urTrucks: 4, legendTasks: 5, survivorRecruit: 120 },
-    3: { researchSpeed: 30000, techPower: 430000, valorBadges: 5000, droneChest3: 40, droneChest4: 15 },
-    4: { eliteTickets: 720, heroExp: 900000000, urShards: 320, ssrShards: 500, rareShards: 700, skillMedals: 180000, weaponShards: 30 },
-    5: { trainingSpeed: 80000, constructionSpeed: 10000, researchSpeed: 10000, universalSpeed: 10000, trainT10: 70000 },
-    6: { urTrucks: 4, legendTasks: 5, healingSpeed: 6000, rivalKillT10: 115000 }
-  }[day.id];
-  Object.assign(state.inventory, demo);
-  invalidatePlan();
-  saveState('Exemple ajouté');
-  renderResources();
-  renderSummary();
-  showToast('Exemple ajouté. Tu peux lancer le calcul.');
-}
-
-function applyPlan() {
-  const plan = state.lastPlan;
-  if (!plan || !plan.steps.length) return;
-  confirmAction(
-    'Marquer ce plan comme utilisé ?',
-    'Les quantités seront retirées du stock et les points estimés seront ajoutés au total du jour.',
-    () => {
-      for (const step of plan.steps) state.inventory[step.stockKey] = Math.max(0, Number(state.inventory[step.stockKey] || 0) - step.qty);
-      state.currentPoints[plan.dayId] = Math.floor(plan.finalPoints);
-      invalidatePlan();
-      saveState('Plan appliqué');
-      renderAll();
-      showToast('Stock et points mis à jour.');
-    }
-  );
-}
-
-function clearDayQuantities() {
-  const uniqueKeys = [...new Set(activeDay().items.map(i => i.stockKey))];
-  confirmAction('Effacer les quantités du jour ?', 'Les réserves et valeurs de points seront conservées.', () => {
-    uniqueKeys.forEach(key => { state.inventory[key] = 0; });
-    invalidatePlan();
-    saveState('Quantités effacées');
-    renderResources(); renderSummary(); renderLastPlan();
-  });
-}
-
-function restoreBasePoints() {
-  confirmAction('Restaurer les valeurs de base ?', 'Toutes les modifications manuelles des points par unité seront supprimées.', () => {
-    state.pointOverrides = {};
-    invalidatePlan();
-    saveState('Valeurs restaurées');
-    renderResources(); renderSummary(); renderLastPlan();
-  });
-}
-
-function resetAll() {
-  confirmAction('Réinitialiser complètement ?', 'Toutes les données enregistrées dans ce calculateur seront supprimées. Cette action est irréversible sans sauvegarde exportée.', () => {
-    state = defaultState();
-    saveState('Réinitialisation terminée');
-    renderAll();
-    showToast('Toutes les données ont été effacées.');
-  });
-}
-
-function exportBackup() {
-  const blob = new Blob([JSON.stringify({ ...state, exportedAt: new Date().toISOString() }, null, 2)], { type: 'application/json' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  const safeName = (state.profile.playerName || 'joueur').replace(/[^a-z0-9_-]+/gi, '-');
-  a.href = url;
-  a.download = `VS-Planner-${safeName}.json`;
-  document.body.appendChild(a);
-  a.click();
-  a.remove();
-  URL.revokeObjectURL(url);
-  showToast('Sauvegarde exportée.');
-}
-
-async function importBackup(file) {
-  if (!file) return;
-  try {
-    const parsed = JSON.parse(await file.text());
-    confirmAction('Importer cette sauvegarde ?', 'Les données actuelles seront remplacées par celles du fichier choisi.', () => {
-      state = deepMerge(defaultState(), parsed);
-      invalidatePlan();
-      saveState('Sauvegarde importée');
-      renderAll();
-      showToast('Sauvegarde importée.');
-    });
-  } catch {
-    showToast('Le fichier choisi n’est pas une sauvegarde valide.');
-  } finally {
-    el('importInput').value = '';
-  }
-}
-
-function confirmAction(title, message, callback) {
-  pendingConfirm = callback;
-  el('confirmTitle').textContent = title;
-  el('confirmMessage').textContent = message;
-  el('confirmModal').classList.remove('hidden');
-}
-function closeConfirm() { pendingConfirm = null; el('confirmModal').classList.add('hidden'); }
-function showToast(message) {
-  window.clearTimeout(toastTimer);
-  el('toast').textContent = message;
-  el('toast').classList.remove('hidden');
-  toastTimer = window.setTimeout(() => el('toast').classList.add('hidden'), 2300);
-}
-
-function escapeHtml(value) { return String(value).replace(/[&<>'"]/g, ch => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', "'":'&#39;', '"':'&quot;' }[ch])); }
-function escapeAttr(value) { return escapeHtml(value); }
-function safeNumber(value) { return Number.isFinite(Number(value)) ? Number(value) : 0; }
-
-function bindEvents() {
-  document.addEventListener('click', event => {
-    const nav = event.target.closest('.nav-btn');
-    if (nav) { state.view = nav.dataset.view; saveState(); renderView(); return; }
-    const dayBtn = event.target.closest('.day-btn');
-    if (dayBtn) { state.selectedDay = Number(dayBtn.dataset.day); invalidatePlan(); saveState(); renderAll(); return; }
-    const addBtn = event.target.closest('[data-add]');
-    if (addBtn) {
-      const key = addBtn.dataset.stock;
-      state.inventory[key] = Number(state.inventory[key] || 0) + Number(addBtn.dataset.add || 0);
-      invalidatePlan(); saveState(); renderResources(); renderSummary(); return;
-    }
-    const clearBtn = event.target.closest('[data-clear-stock]');
-    if (clearBtn) {
-      state.inventory[clearBtn.dataset.clearStock] = 0;
-      invalidatePlan(); saveState(); renderResources(); renderSummary(); return;
-    }
-  });
-
-  document.addEventListener('input', event => {
-    const t = event.target;
-    if (t.matches('.inventory-input')) { state.inventory[t.dataset.stock] = Math.max(0, Number(t.value || 0)); invalidatePlan(); saveState(); renderSummary(); updateResourceFoot(t); }
-    if (t.matches('.reserve-input')) { state.reserves[t.dataset.stock] = Math.max(0, Number(t.value || 0)); invalidatePlan(); saveState(); renderSummary(); updateResourceFoot(t); }
-    if (t.matches('.points-input')) { state.pointOverrides[t.dataset.pointKey] = Math.max(0, Number(t.value || 0)); invalidatePlan(); saveState(); renderSummary(); updateResourceFoot(t); }
-  });
-
-  el('playerName').addEventListener('input', e => { state.profile.playerName = e.target.value; saveState(); });
-  el('targetPoints').addEventListener('input', e => { state.profile.target = Math.max(0, Number(e.target.value || 0)); invalidatePlan(); saveState(); renderSummary(); });
-  el('marginPoints').addEventListener('input', e => { state.profile.margin = Math.max(0, Number(e.target.value || 0)); invalidatePlan(); saveState(); renderSummary(); });
-  el('bonusPct').addEventListener('input', e => { state.profile.bonusPct = Math.max(0, Number(e.target.value || 0)); invalidatePlan(); saveState(); renderResources(); renderSummary(); });
-  el('currentPoints').addEventListener('input', e => { state.currentPoints[state.selectedDay] = Math.max(0, Number(e.target.value || 0)); invalidatePlan(); saveState(); renderSummary(); });
-  el('strategy').addEventListener('change', e => { state.profile.strategy = e.target.value; invalidatePlan(); saveState(); renderStrategyHelp(); renderLastPlan(); });
-  el('speedupLimitDays').addEventListener('input', e => { state.profile.speedupLimitDays = Math.max(0, Number(e.target.value || 0)); invalidatePlan(); saveState(); });
-
-  el('analyzeBtn').addEventListener('click', () => renderPlan(calculatePlan()));
-  el('demoBtn').addEventListener('click', fillDemo);
-  el('applyPlanBtn').addEventListener('click', applyPlan);
-  el('clearDayBtn').addEventListener('click', clearDayQuantities);
-  el('restorePointsBtn').addEventListener('click', restoreBasePoints);
-  el('resetAllBtn').addEventListener('click', resetAll);
-  el('exportBtn').addEventListener('click', exportBackup);
-  el('importInput').addEventListener('change', e => importBackup(e.target.files?.[0]));
-  el('copyDebriefBtn').addEventListener('click', async () => {
-    if (!state.lastPlan) return;
-    try { await navigator.clipboard.writeText(buildDebrief(state.lastPlan)); showToast('Débrief copié.'); }
-    catch { showToast('Copie impossible sur ce navigateur.'); }
-  });
-  el('confirmCancel').addEventListener('click', closeConfirm);
-  el('confirmOk').addEventListener('click', () => { const cb = pendingConfirm; closeConfirm(); if (cb) cb(); });
-  el('confirmModal').addEventListener('click', e => { if (e.target === el('confirmModal')) closeConfirm(); });
-}
-
-function updateResourceFoot(input) {
-  const card = input.closest('.resource-card');
-  if (!card) return;
-  const itemDef = activeDay().items.find(i => i.id === card.dataset.itemId);
-  if (!itemDef) return;
-  const spans = card.querySelectorAll('.resource-foot strong');
-  if (spans[0]) spans[0].textContent = fmt.format(usableQuantity(itemDef));
-  if (spans[1]) spans[1].textContent = `${fmt.format(Math.floor(usableQuantity(itemDef) * effectivePoints(activeDay().id, itemDef)))} pts`;
-}
-
-bindEvents();
-renderAll();
-
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => navigator.serviceWorker.register('service-worker.js').catch(() => {}));
-}
