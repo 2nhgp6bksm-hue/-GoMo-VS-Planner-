@@ -1,305 +1,288 @@
-<!doctype html>
+<!DOCTYPE html>
+
 <html lang="fr">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="theme-color" content="#071522">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="VS Planner">
-  <title>GoMo VS Planner</title>
-  <link rel="manifest" href="manifest.webmanifest">
-  <link rel="apple-touch-icon" href="icon-192.png">
-  <link rel="stylesheet" href="styles.css">
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1, viewport-fit=cover" name="viewport"/>
+<meta content="#071522" name="theme-color"/>
+<meta content="yes" name="apple-mobile-web-app-capable"/>
+<meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"/>
+<meta content="VS Planner" name="apple-mobile-web-app-title"/>
+<title>GoMo VS Planner</title>
+<link href="manifest.webmanifest" rel="manifest"/>
+<link href="icon-192.png" rel="apple-touch-icon"/>
+<link href="styles.css" rel="stylesheet"/>
 </head>
 <body>
-  <div class="app-shell">
-    <header class="hero">
-      <div class="hero-main">
-        <p class="eyebrow">GoMo Forever · LAST WAR</p>
-        <h1>GoMo VS Planner</h1><div class="gomo-hero-tags"><span>7,2 M</span><span>Inventaire</span><span>Calcul automatique</span></div>
-        <p class="hero-copy" data-i18n="heroCopy"></p>
-      </div>
-      <div class="hero-tools">
-        <label class="language-label">
-          <span data-i18n="language"></span>
-          <select id="languageSelect" aria-label="Language"></select>
-        </label>
-        <div class="save-state" id="saveState" data-i18n="autoSave"></div>
-      </div>
-    </header>
+<div class="app-shell">
+<header class="hero">
+<div class="hero-main">
+<p class="eyebrow">GoMo Forever · LAST WAR</p>
+<h1>GoMo VS Planner</h1><div class="gomo-hero-tags"><span>7,2 M</span><span>Inventaire</span><span>Calcul automatique</span></div>
+<p class="hero-copy" data-i18n="heroCopy"></p>
+</div>
+<div class="hero-tools">
+<label class="language-label">
+<span data-i18n="language"></span>
+<select aria-label="Language" id="languageSelect"></select>
+</label>
+<div class="save-state" data-i18n="autoSave" id="saveState"></div>
+</div>
+</header>
+<nav aria-label="Navigation" class="main-nav">
+<button class="nav-btn active" data-simple-i18n="assistantNav" data-view="scanner"></button>
+<button class="nav-btn" data-i18n="calculator" data-view="planner"></button>
+<button class="nav-btn" data-i18n="weekGuide" data-view="guide"></button>
+<button class="nav-btn" data-i18n="settings" data-view="settings"></button>
+</nav>
+<main>
+<section class="view active" id="scannerView">
+<section aria-label="Étapes" class="assistant-steps">
+<article><span>1</span><div><strong data-simple-i18n="step1"></strong><p data-simple-i18n="step1Text"></p></div></article>
+<article><span>2</span><div><strong data-simple-i18n="step2"></strong><p data-simple-i18n="step2Text"></p></div></article>
+<article><span>3</span><div><strong data-simple-i18n="step3"></strong><p data-simple-i18n="step3Text"></p></div></article>
+</section>
+<section class="panel assistant-day-panel">
+<div class="assistant-day-heading">
+<div>
+<p class="eyebrow" data-simple-i18n="chooseDay"></p>
+<h2 id="assistantDayTitle"></h2>
+</div>
+<label class="toggle-line compact-toggle"><input id="quickAutoDay" type="checkbox"/><span data-i18n="automaticDay"></span></label>
+</div>
+<section aria-label="VS day" class="day-strip" id="assistantDayStrip"></section>
+<button class="secondary-btn full-mobile" data-i18n="nextDay" id="quickNextDayBtn"></button>
+</section>
+<section class="panel scanner-intro">
+<div>
+<p class="eyebrow" data-simple-i18n="simpleMode"></p>
+<h2 data-simple-i18n="assistantTitle"></h2>
+<p data-simple-i18n="assistantIntro"></p>
+</div>
+<div class="scanner-day-chip"><span data-ocr-i18n="scanDay"></span><strong id="scannerDayLabel"></strong></div>
+</section>
+<section class="panel quick-score-panel">
+<label>
+<span data-i18n="pointsToday"></span>
+<input id="quickCurrentPoints" inputmode="numeric" min="0" step="10000" type="number" value="0"/>
+</label>
+<div class="quick-target-card">
+<span data-simple-i18n="targetWithMargin"></span>
+<strong id="quickRecommendedTarget">7 500 000</strong>
+</div>
+<label class="point-profile-card">
+<span id="pointProfileLabel"></span>
+<select id="pointProfileSelect"></select>
+<small id="pointProfileHelp"></small>
+</label>
+</section>
 
-    <nav class="main-nav" aria-label="Navigation">
-      <button class="nav-btn active" data-view="scanner" data-simple-i18n="assistantNav"></button>
-      <button class="nav-btn" data-view="planner" data-i18n="calculator"></button>
-      <button class="nav-btn" data-view="guide" data-i18n="weekGuide"></button>
-      <button class="nav-btn" data-view="settings" data-i18n="settings"></button>
-    </nav>
-
-    <main>
-      <section id="scannerView" class="view active">
-        <section class="assistant-steps" aria-label="Étapes">
-          <article><span>1</span><div><strong data-simple-i18n="step1"></strong><p data-simple-i18n="step1Text"></p></div></article>
-          <article><span>2</span><div><strong data-simple-i18n="step2"></strong><p data-simple-i18n="step2Text"></p></div></article>
-          <article><span>3</span><div><strong data-simple-i18n="step3"></strong><p data-simple-i18n="step3Text"></p></div></article>
-        </section>
-
-        <section class="panel assistant-day-panel">
-          <div class="assistant-day-heading">
-            <div>
-              <p class="eyebrow" data-simple-i18n="chooseDay"></p>
-              <h2 id="assistantDayTitle"></h2>
-            </div>
-            <label class="toggle-line compact-toggle"><input id="quickAutoDay" type="checkbox"><span data-i18n="automaticDay"></span></label>
-          </div>
-          <section class="day-strip" id="assistantDayStrip" aria-label="VS day"></section>
-          <button class="secondary-btn full-mobile" id="quickNextDayBtn" data-i18n="nextDay"></button>
-        </section>
-
-        <section class="panel scanner-intro">
-          <div>
-            <p class="eyebrow" data-simple-i18n="simpleMode"></p>
-            <h2 data-simple-i18n="assistantTitle"></h2>
-            <p data-simple-i18n="assistantIntro"></p>
-          </div>
-          <div class="scanner-day-chip"><span data-ocr-i18n="scanDay"></span><strong id="scannerDayLabel"></strong></div>
-        </section>
-
-        <section class="panel quick-score-panel">
-          <label>
-            <span data-i18n="pointsToday"></span>
-            <input id="quickCurrentPoints" type="number" inputmode="numeric" min="0" step="10000" value="0">
-          </label>
-          <div class="quick-target-card">
-            <span data-simple-i18n="targetWithMargin"></span>
-            <strong id="quickRecommendedTarget">7 500 000</strong>
-          </div>
-          <label class="point-profile-card">
-            <span id="pointProfileLabel"></span>
-            <select id="pointProfileSelect"></select>
-            <small id="pointProfileHelp"></small>
-          </label>
-        </section>
-
-
-
-        <section class="panel simple-points-panel" id="simplePointsPanel">
-          <div class="result-header simple-points-heading">
-            <div><p class="eyebrow" data-pointbox-i18n="eyebrow"></p><h2 data-pointbox-i18n="title"></h2></div>
-            <span class="result-badge warning" id="simplePointsStatus"></span>
-          </div>
-          <p class="help-text" data-pointbox-i18n="intro"></p>
-          <div class="simple-points-summary">
-            <article><span data-pointbox-i18n="resourceTotal"></span><strong id="simpleResourceTotal">0</strong></article>
-            <article><span data-pointbox-i18n="maximumToday"></span><strong id="simpleMaximumToday">0</strong></article>
-            <article class="selected"><span data-pointbox-i18n="selectedPoints"></span><strong id="simpleSelectedPoints">0</strong></article>
-            <article class="final"><span data-pointbox-i18n="finalTotal"></span><strong id="simpleFinalTotal">0</strong></article>
-          </div>
-          <p class="simple-current-note" data-pointbox-i18n="currentIncluded"></p>
-          <div class="simple-points-actions">
-            <button class="primary-btn" id="simpleAutoBtn" data-pointbox-i18n="autoPlan"></button>
-            <button class="secondary-btn" id="simpleRecapBtn" data-pointbox-i18n="showRecap"></button>
-            <button class="secondary-btn" id="simpleZeroBtn" data-pointbox-i18n="zero"></button>
-          </div>
-          <div class="simple-resource-boxes" id="simpleResourceBoxes"></div>
-          <button class="primary-btn simple-apply-btn" id="simpleApplyBtn" data-pointbox-i18n="apply"></button>
-        </section>
-
-        <section class="panel inventory-status-panel" id="inventoryStatusPanel">
-          <div class="section-heading inventory-status-heading">
-            <div><p class="eyebrow" data-inv-i18n="trackingEyebrow"></p><h2 data-inv-i18n="trackingTitle"></h2></div>
-          </div>
-          <p class="help-text" data-inv-i18n="trackingIntro"></p>
-          <div class="inventory-metrics">
-            <article><span data-inv-i18n="totalInventory"></span><strong id="inventoryTotalPoints">0</strong></article>
-            <article><span data-inv-i18n="usableInventory"></span><strong id="inventoryUsablePoints">0</strong></article>
-            <article><span data-inv-i18n="lastReference"></span><strong id="inventoryReferenceDate"></strong></article>
-            <article><span data-inv-i18n="lastDetected"></span><strong id="inventoryLastDetected">0</strong></article>
-          </div>
-          <div class="inventory-actions">
-            <button class="secondary-btn" id="saveReferenceBtn" data-inv-i18n="saveReference"></button>
-            <button class="secondary-btn" id="clearReferenceBtn" data-inv-i18n="clearReference"></button>
-          </div>
-          <details class="inventory-history-details">
-            <summary data-inv-i18n="historyTitle"></summary>
-            <div id="inventoryHistoryList" class="inventory-history-list"></div>
-          </details>
-        </section>
-
-        <section class="panel scanner-upload-panel">
-          <div class="scanner-actions simplified-actions">
-            <label class="primary-btn file-btn scanner-file-btn"><span data-ocr-i18n="importScreenshots"></span><input id="ocrInput" type="file" accept="image/*" multiple></label>
-            <label class="secondary-btn file-btn scanner-file-btn"><span data-ocr-i18n="takePhoto"></span><input id="ocrCameraInput" type="file" accept="image/*" capture="environment"></label>
-            <button class="secondary-btn" id="ocrStartBtn" data-ocr-i18n="startReading" disabled></button>
-            <button class="secondary-btn" id="ocrClearBtn" data-ocr-i18n="clearScreenshots" disabled></button>
-          </div>
-          <p class="help-text" data-simple-i18n="photoHelp"></p>
-          <div id="ocrPreviewList" class="ocr-preview-list"></div>
-          <div id="ocrProgressBox" class="ocr-progress-box hidden" aria-live="polite">
-            <div class="ocr-progress-top"><strong id="ocrProgressLabel"></strong><span id="ocrProgressPct">0%</span></div>
-            <progress id="ocrProgress" max="100" value="0"></progress>
-          </div>
-        </section>
-
-        <section class="panel hidden" id="ocrReviewPanel">
-          <div class="section-heading scanner-review-heading">
-            <div><p class="eyebrow" data-ocr-i18n="reviewEyebrow"></p><h2 data-simple-i18n="quickReviewTitle"></h2></div>
-            <span class="result-badge" id="ocrResultBadge"></span>
-          </div>
-          <p class="help-text" data-simple-i18n="quickReviewIntro"></p>
-          <div class="ocr-review-list" id="ocrReviewList"></div>
-          <div class="result-actions assistant-primary-action">
-            <button class="primary-btn" id="ocrApplyBtn" data-ocr-i18n="applyValues"></button>
-          </div>
-          <details class="ocr-raw-details"><summary data-ocr-i18n="rawText"></summary><pre id="ocrRawText"></pre></details>
-        </section>
-
-        <section class="panel inventory-comparison-panel hidden" id="inventoryComparisonPanel" aria-live="polite">
-          <div class="result-header">
-            <div><p class="eyebrow" data-inv-i18n="compareEyebrow"></p><h2 data-inv-i18n="compareTitle"></h2></div>
-            <span class="result-badge" id="inventoryComparisonBadge">0</span>
-          </div>
-          <p class="help-text" data-inv-i18n="compareIntro"></p>
-          <div id="inventoryComparisonRows" class="inventory-comparison-rows"></div>
-          <div class="result-note" id="inventoryComparisonNote"></div>
-          <div class="result-actions inventory-comparison-actions">
-            <button class="primary-btn" id="confirmInventoryComparisonBtn" data-inv-i18n="confirmConsumption"></button>
-            <button class="secondary-btn" id="referenceOnlyBtn" data-inv-i18n="referenceOnly"></button>
-            <button class="secondary-btn" id="cancelInventoryComparisonBtn" data-inv-i18n="cancelComparison"></button>
-          </div>
-        </section>
-
-        <section class="panel result-panel hidden quick-result-panel" id="quickResultPanel" aria-live="polite">
-          <div class="result-header">
-            <div><p class="eyebrow" data-simple-i18n="yourPlan"></p><h2 id="quickResultTitle"></h2></div>
-            <span class="result-badge" id="quickResultBadge"></span>
-          </div>
-          <div class="result-metrics" id="quickResultMetrics"></div>
-          <div class="plan-adjust-heading"><div><strong data-adjust-i18n="title"></strong><p data-adjust-i18n="intro"></p><small data-adjust-i18n="baseValues"></small></div><button class="secondary-btn compact-btn" data-reset-plan data-adjust-i18n="reset"></button></div>
-          <div class="plan-adjuster" id="quickPlanSteps"></div>
-          <div class="result-note" id="quickResultNote"></div>
-          <div class="result-actions">
-            <button class="primary-btn" id="quickApplyPlanBtn" data-i18n="markUsed"></button>
-            <button class="secondary-btn" id="quickCopyDebriefBtn" data-i18n="copyDebrief"></button>
-          </div>
-        </section>
-
-        <details class="panel privacy-panel compact-details">
-          <summary data-simple-i18n="privacyAndInternet"></summary>
-          <p data-ocr-i18n="privacyText"></p>
-          <p class="help-text" data-ocr-i18n="firstScanNote"></p>
-        </details>
-      </section>
-
-      <section id="plannerView" class="view">
-        <section class="panel manual-intro">
-          <p class="eyebrow" data-simple-i18n="manualMode"></p>
-          <h2 data-simple-i18n="manualTitle"></h2>
-          <p data-simple-i18n="manualIntro"></p>
-        </section>
-
-        <section class="panel profile-panel">
-          <div class="field-grid profile-grid">
-            <label><span data-i18n="player"></span><input id="playerName" type="text" autocomplete="name" data-i18n-placeholder="playerPlaceholder"></label>
-            <label><span data-i18n="minimumTarget"></span><input id="targetPoints" type="number" inputmode="numeric" min="0" step="10000"></label>
-            <label><span data-i18n="safetyMargin"></span><input id="marginPoints" type="number" inputmode="numeric" min="0" step="10000"></label>
-            <label><span data-i18n="vsBonus"></span><div class="suffix-input"><input id="bonusPct" type="number" inputmode="decimal" min="0" max="500" step="1"><span>%</span></div></label>
-          </div>
-        </section>
-
-        <section class="day-controls panel">
-          <label class="toggle-line"><input id="autoDay" type="checkbox"><span data-i18n="automaticDay"></span></label>
-          <button class="secondary-btn" id="nextDayBtn" data-i18n="nextDay"></button>
-        </section>
-
-        <section class="day-strip" id="dayStrip" aria-label="VS day"></section>
-
-        <section class="summary-grid">
-          <article class="summary-card"><span data-i18n="recommendedTarget"></span><strong id="recommendedTarget">7 500 000</strong></article>
-          <article class="summary-card"><span data-i18n="alreadyEarned"></span><strong id="currentPointsSummary">0</strong></article>
-          <article class="summary-card"><span data-i18n="stillNeeded"></span><strong id="missingPointsSummary">7 500 000</strong></article>
-          <article class="summary-card"><span data-i18n="availablePotential"></span><strong id="potentialPointsSummary">0</strong></article>
-        </section>
-
-        <section class="panel day-info-panel">
-          <div>
-            <p class="eyebrow" id="dayEyebrow"></p>
-            <h2 id="dayTitle"></h2>
-            <p id="dayDescription"></p>
-          </div>
-          <div class="do-save-grid">
-            <div><strong data-i18n="useToday"></strong><p id="useToday"></p></div>
-            <div><strong data-i18n="saveForLater"></strong><p id="saveForLater"></p></div>
-          </div>
-        </section>
-
-        <section class="panel">
-          <div class="field-grid plan-grid">
-            <label><span data-i18n="pointsToday"></span><input id="currentPoints" type="number" inputmode="numeric" min="0" step="10000"></label>
-            <label><span data-i18n="strategy"></span><select id="strategy"></select></label>
-            <label><span data-i18n="speedLimit"></span><div class="suffix-input"><input id="speedupLimitDays" type="number" inputmode="decimal" min="0" max="365" step="0.5"><span data-i18n="daysUnit"></span></div></label>
-          </div>
-          <p class="help-text" id="strategyHelp"></p>
-        </section>
-
-        <div class="section-heading">
-          <div><p class="eyebrow" data-i18n="playerStock"></p><h2 data-i18n="availableResources"></h2></div>
-          <button class="secondary-btn" id="clearDayBtn" data-i18n="clearDay"></button>
-        </div>
-        <p class="points-warning" data-i18n="editablePointsWarning"></p>
-        <section id="resourceList" class="resource-list"></section>
-
-        <section class="sticky-actions">
-          <button class="primary-btn" id="analyzeBtn" data-i18n="calculatePlan"></button>
-          <button class="secondary-btn" id="demoBtn" data-i18n="automaticExample"></button>
-        </section>
-
-        <section class="panel result-panel hidden" id="resultPanel" aria-live="polite">
-          <div class="result-header"><div><p class="eyebrow" data-i18n="automaticDebrief"></p><h2 id="resultTitle"></h2></div><span class="result-badge" id="resultBadge"></span></div>
-          <div class="result-metrics" id="resultMetrics"></div>
-          <div class="plan-adjust-heading"><div><strong data-adjust-i18n="title"></strong><p data-adjust-i18n="intro"></p><small data-adjust-i18n="baseValues"></small></div><button class="secondary-btn compact-btn" data-reset-plan data-adjust-i18n="reset"></button></div>
-          <div class="plan-adjuster" id="planSteps"></div>
-          <div class="result-note" id="resultNote"></div>
-          <div class="result-actions">
-            <button class="primary-btn" id="applyPlanBtn" data-i18n="markUsed"></button>
-            <button class="secondary-btn" id="copyDebriefBtn" data-i18n="copyDebrief"></button>
-          </div>
-        </section>
-      </section>
-
-      <section id="guideView" class="view">
-        <section class="panel guide-intro"><p class="eyebrow" data-i18n="mainRule"></p><h2 data-i18n="rightResourceRightDay"></h2><p data-i18n="guideIntro"></p></section>
-        <section id="weeklyGuide" class="weekly-guide"></section>
-      </section>
-
-      <section id="settingsView" class="view">
-        <section class="panel"><p class="eyebrow" data-i18n="backup"></p><h2 data-i18n="savedOnDevice"></h2><p data-i18n="storageInfo"></p><div class="settings-actions"><button class="secondary-btn" id="exportBtn" data-i18n="exportBackup"></button><label class="secondary-btn file-btn"><span data-i18n="importBackup"></span><input id="importInput" type="file" accept="application/json"></label></div></section>
-        <section class="panel"><p class="eyebrow" data-i18n="pointValues"></p><h2 data-i18n="editableValues"></h2><p data-i18n="pointInfo"></p><button class="secondary-btn" id="restorePointsBtn" data-i18n="restoreBaseValues"></button></section>
-        <section class="panel"><p class="eyebrow">IPHONE</p><h2 data-i18n="addHomeScreen"></h2><p data-i18n="iphoneInfo"></p></section>
-        <section class="danger-panel panel"><p class="eyebrow" data-i18n="reset"></p><h2 data-i18n="eraseAllData"></h2><p data-i18n="resetInfo"></p><button class="danger-btn" id="resetAllBtn" data-i18n="fullReset"></button></section>
-      </section>
-    </main>
-  </div>
-
-  <div class="modal-backdrop hidden" id="confirmModal" role="dialog" aria-modal="true" aria-labelledby="confirmTitle">
-    <div class="modal-card"><h2 id="confirmTitle"></h2><p id="confirmMessage"></p><div class="modal-actions"><button class="secondary-btn" id="confirmCancel" data-i18n="cancel"></button><button class="danger-btn" id="confirmOk" data-i18n="confirm"></button></div></div>
-  </div>
-
-  <div class="recap-backdrop hidden" id="simpleRecapModal" role="dialog" aria-modal="true" aria-labelledby="simpleRecapTitle">
-    <section class="recap-sheet">
-      <header class="recap-header">
-        <div><p class="eyebrow" data-pointbox-i18n="recapEyebrow"></p><h2 id="simpleRecapTitle" data-pointbox-i18n="recapTitle"></h2></div>
-        <button class="recap-close" id="simpleRecapClose" type="button" aria-label="Fermer">×</button>
-      </header>
-      <p class="recap-help" data-pointbox-i18n="recapHelp"></p>
-      <div class="recap-player" id="simpleRecapPlayer"></div>
-      <div class="recap-metrics" id="simpleRecapMetrics"></div>
-      <div class="recap-list" id="simpleRecapList"></div>
-      <div class="recap-total" id="simpleRecapTotal"></div>
-      <button class="secondary-btn recap-bottom-close" id="simpleRecapBottomClose" data-pointbox-i18n="closeRecap"></button>
-    </section>
-  </div>
-  <div class="toast hidden" id="toast" role="status"></div>
-  <script src="app.js"></script>
+<section class="panel inventory-status-panel assistant-hidden" id="inventoryStatusPanel">
+<div class="section-heading inventory-status-heading">
+<div><p class="eyebrow" data-inv-i18n="trackingEyebrow"></p><h2 data-inv-i18n="trackingTitle"></h2></div>
+</div>
+<p class="help-text" data-inv-i18n="trackingIntro"></p>
+<div class="inventory-metrics">
+<article><span data-inv-i18n="totalInventory"></span><strong id="inventoryTotalPoints">0</strong></article>
+<article><span data-inv-i18n="usableInventory"></span><strong id="inventoryUsablePoints">0</strong></article>
+<article><span data-inv-i18n="lastReference"></span><strong id="inventoryReferenceDate"></strong></article>
+<article><span data-inv-i18n="lastDetected"></span><strong id="inventoryLastDetected">0</strong></article>
+</div>
+<div class="inventory-actions">
+<button class="secondary-btn" data-inv-i18n="saveReference" id="saveReferenceBtn"></button>
+<button class="secondary-btn" data-inv-i18n="clearReference" id="clearReferenceBtn"></button>
+</div>
+<details class="inventory-history-details">
+<summary data-inv-i18n="historyTitle"></summary>
+<div class="inventory-history-list" id="inventoryHistoryList"></div>
+</details>
+</section>
+<section class="panel scanner-upload-panel">
+<div class="scanner-actions simplified-actions">
+<label class="primary-btn file-btn scanner-file-btn"><span data-ocr-i18n="importScreenshots"></span><input accept="image/*" id="ocrInput" multiple="" type="file"/></label>
+<label class="secondary-btn file-btn scanner-file-btn"><span data-ocr-i18n="takePhoto"></span><input accept="image/*" capture="environment" id="ocrCameraInput" type="file"/></label>
+<button class="secondary-btn" data-ocr-i18n="startReading" disabled="" id="ocrStartBtn"></button>
+<button class="secondary-btn" data-ocr-i18n="clearScreenshots" disabled="" id="ocrClearBtn"></button>
+</div>
+<p class="help-text" data-simple-i18n="photoHelp"></p>
+<div class="ocr-preview-list" id="ocrPreviewList"></div>
+<div aria-live="polite" class="ocr-progress-box hidden" id="ocrProgressBox">
+<div class="ocr-progress-top"><strong id="ocrProgressLabel"></strong><span id="ocrProgressPct">0%</span></div>
+<progress id="ocrProgress" max="100" value="0"></progress>
+</div>
+</section><section aria-live="polite" class="panel auto-scan-status hidden" id="autoScanStatus">
+<div class="auto-scan-status-head">
+<div><p class="eyebrow" data-auto-i18n="scanComplete"></p><h2 data-auto-i18n="proposalReady"></h2></div>
+<span class="result-badge" id="autoScanBadge"></span>
+</div>
+<p id="autoScanSummary"></p>
+</section><section class="panel simple-points-panel auto-plan-panel" id="simplePointsPanel">
+<div class="result-header auto-plan-heading">
+<div><p class="eyebrow" data-auto-i18n="eyebrow"></p><h2 data-auto-i18n="title"></h2></div>
+<span class="result-badge warning" id="simplePointsStatus"></span>
+</div>
+<p class="help-text auto-plan-intro" data-auto-i18n="intro"></p>
+<div class="simple-points-summary auto-plan-summary">
+<article><span data-auto-i18n="alreadyDone"></span><strong id="simpleCurrentPoints">0</strong></article>
+<article><span data-auto-i18n="proposedPoints"></span><strong id="simpleSelectedPoints">0</strong></article>
+<article class="final"><span data-auto-i18n="finalTotal"></span><strong id="simpleFinalTotal">0</strong></article>
+<article><span data-auto-i18n="maximumToday"></span><strong id="simpleMaximumToday">0</strong></article>
+</div>
+<div class="simple-points-actions auto-plan-actions">
+<button class="primary-btn" data-auto-i18n="recalculate" id="simpleAutoBtn"></button>
+<button class="secondary-btn" data-auto-i18n="showRecap" id="simpleRecapBtn"></button>
+</div>
+<div class="simple-resource-boxes auto-resource-boxes" id="simpleResourceBoxes"></div>
+<div class="auto-plan-footer">
+<p data-auto-i18n="acceptHelp"></p>
+<button class="primary-btn simple-apply-btn" data-auto-i18n="acceptPlan" id="simpleApplyBtn"></button>
+</div>
+<!-- compatibility nodes kept hidden -->
+<span class="hidden" id="simpleResourceTotal">0</span>
+<button class="hidden" id="simpleZeroBtn" type="button"></button>
+</section>
+<section class="panel hidden assistant-hidden" id="ocrReviewPanel">
+<div class="section-heading scanner-review-heading">
+<div><p class="eyebrow" data-ocr-i18n="reviewEyebrow"></p><h2 data-simple-i18n="quickReviewTitle"></h2></div>
+<span class="result-badge" id="ocrResultBadge"></span>
+</div>
+<p class="help-text" data-simple-i18n="quickReviewIntro"></p>
+<div class="ocr-review-list" id="ocrReviewList"></div>
+<div class="result-actions assistant-primary-action">
+<button class="primary-btn" data-ocr-i18n="applyValues" id="ocrApplyBtn"></button>
+</div>
+<details class="ocr-raw-details"><summary data-ocr-i18n="rawText"></summary><pre id="ocrRawText"></pre></details>
+</section>
+<section aria-live="polite" class="panel inventory-comparison-panel hidden assistant-hidden" id="inventoryComparisonPanel">
+<div class="result-header">
+<div><p class="eyebrow" data-inv-i18n="compareEyebrow"></p><h2 data-inv-i18n="compareTitle"></h2></div>
+<span class="result-badge" id="inventoryComparisonBadge">0</span>
+</div>
+<p class="help-text" data-inv-i18n="compareIntro"></p>
+<div class="inventory-comparison-rows" id="inventoryComparisonRows"></div>
+<div class="result-note" id="inventoryComparisonNote"></div>
+<div class="result-actions inventory-comparison-actions">
+<button class="primary-btn" data-inv-i18n="confirmConsumption" id="confirmInventoryComparisonBtn"></button>
+<button class="secondary-btn" data-inv-i18n="referenceOnly" id="referenceOnlyBtn"></button>
+<button class="secondary-btn" data-inv-i18n="cancelComparison" id="cancelInventoryComparisonBtn"></button>
+</div>
+</section>
+<section aria-live="polite" class="panel result-panel hidden quick-result-panel assistant-hidden" id="quickResultPanel">
+<div class="result-header">
+<div><p class="eyebrow" data-simple-i18n="yourPlan"></p><h2 id="quickResultTitle"></h2></div>
+<span class="result-badge" id="quickResultBadge"></span>
+</div>
+<div class="result-metrics" id="quickResultMetrics"></div>
+<div class="plan-adjust-heading"><div><strong data-adjust-i18n="title"></strong><p data-adjust-i18n="intro"></p><small data-adjust-i18n="baseValues"></small></div><button class="secondary-btn compact-btn" data-adjust-i18n="reset" data-reset-plan=""></button></div>
+<div class="plan-adjuster" id="quickPlanSteps"></div>
+<div class="result-note" id="quickResultNote"></div>
+<div class="result-actions">
+<button class="primary-btn" data-i18n="markUsed" id="quickApplyPlanBtn"></button>
+<button class="secondary-btn" data-i18n="copyDebrief" id="quickCopyDebriefBtn"></button>
+</div>
+</section>
+<details class="panel privacy-panel compact-details">
+<summary data-simple-i18n="privacyAndInternet"></summary>
+<p data-ocr-i18n="privacyText"></p>
+<p class="help-text" data-ocr-i18n="firstScanNote"></p>
+</details>
+</section>
+<section class="view" id="plannerView">
+<section class="panel manual-intro">
+<p class="eyebrow" data-simple-i18n="manualMode"></p>
+<h2 data-simple-i18n="manualTitle"></h2>
+<p data-simple-i18n="manualIntro"></p>
+</section>
+<section class="panel profile-panel">
+<div class="field-grid profile-grid">
+<label><span data-i18n="player"></span><input autocomplete="name" data-i18n-placeholder="playerPlaceholder" id="playerName" type="text"/></label>
+<label><span data-i18n="minimumTarget"></span><input id="targetPoints" inputmode="numeric" min="0" step="10000" type="number"/></label>
+<label><span data-i18n="safetyMargin"></span><input id="marginPoints" inputmode="numeric" min="0" step="10000" type="number"/></label>
+<label><span data-i18n="vsBonus"></span><div class="suffix-input"><input id="bonusPct" inputmode="decimal" max="500" min="0" step="1" type="number"/><span>%</span></div></label>
+</div>
+</section>
+<section class="day-controls panel">
+<label class="toggle-line"><input id="autoDay" type="checkbox"/><span data-i18n="automaticDay"></span></label>
+<button class="secondary-btn" data-i18n="nextDay" id="nextDayBtn"></button>
+</section>
+<section aria-label="VS day" class="day-strip" id="dayStrip"></section>
+<section class="summary-grid">
+<article class="summary-card"><span data-i18n="recommendedTarget"></span><strong id="recommendedTarget">7 500 000</strong></article>
+<article class="summary-card"><span data-i18n="alreadyEarned"></span><strong id="currentPointsSummary">0</strong></article>
+<article class="summary-card"><span data-i18n="stillNeeded"></span><strong id="missingPointsSummary">7 500 000</strong></article>
+<article class="summary-card"><span data-i18n="availablePotential"></span><strong id="potentialPointsSummary">0</strong></article>
+</section>
+<section class="panel day-info-panel">
+<div>
+<p class="eyebrow" id="dayEyebrow"></p>
+<h2 id="dayTitle"></h2>
+<p id="dayDescription"></p>
+</div>
+<div class="do-save-grid">
+<div><strong data-i18n="useToday"></strong><p id="useToday"></p></div>
+<div><strong data-i18n="saveForLater"></strong><p id="saveForLater"></p></div>
+</div>
+</section>
+<section class="panel">
+<div class="field-grid plan-grid">
+<label><span data-i18n="pointsToday"></span><input id="currentPoints" inputmode="numeric" min="0" step="10000" type="number"/></label>
+<label><span data-i18n="strategy"></span><select id="strategy"></select></label>
+<label><span data-i18n="speedLimit"></span><div class="suffix-input"><input id="speedupLimitDays" inputmode="decimal" max="365" min="0" step="0.5" type="number"/><span data-i18n="daysUnit"></span></div></label>
+</div>
+<p class="help-text" id="strategyHelp"></p>
+</section>
+<div class="section-heading">
+<div><p class="eyebrow" data-i18n="playerStock"></p><h2 data-i18n="availableResources"></h2></div>
+<button class="secondary-btn" data-i18n="clearDay" id="clearDayBtn"></button>
+</div>
+<p class="points-warning" data-i18n="editablePointsWarning"></p>
+<section class="resource-list" id="resourceList"></section>
+<section class="sticky-actions">
+<button class="primary-btn" data-i18n="calculatePlan" id="analyzeBtn"></button>
+<button class="secondary-btn" data-i18n="automaticExample" id="demoBtn"></button>
+</section>
+<section aria-live="polite" class="panel result-panel hidden" id="resultPanel">
+<div class="result-header"><div><p class="eyebrow" data-i18n="automaticDebrief"></p><h2 id="resultTitle"></h2></div><span class="result-badge" id="resultBadge"></span></div>
+<div class="result-metrics" id="resultMetrics"></div>
+<div class="plan-adjust-heading"><div><strong data-adjust-i18n="title"></strong><p data-adjust-i18n="intro"></p><small data-adjust-i18n="baseValues"></small></div><button class="secondary-btn compact-btn" data-adjust-i18n="reset" data-reset-plan=""></button></div>
+<div class="plan-adjuster" id="planSteps"></div>
+<div class="result-note" id="resultNote"></div>
+<div class="result-actions">
+<button class="primary-btn" data-i18n="markUsed" id="applyPlanBtn"></button>
+<button class="secondary-btn" data-i18n="copyDebrief" id="copyDebriefBtn"></button>
+</div>
+</section>
+</section>
+<section class="view" id="guideView">
+<section class="panel guide-intro"><p class="eyebrow" data-i18n="mainRule"></p><h2 data-i18n="rightResourceRightDay"></h2><p data-i18n="guideIntro"></p></section>
+<section class="weekly-guide" id="weeklyGuide"></section>
+</section>
+<section class="view" id="settingsView">
+<section class="panel"><p class="eyebrow" data-i18n="backup"></p><h2 data-i18n="savedOnDevice"></h2><p data-i18n="storageInfo"></p><div class="settings-actions"><button class="secondary-btn" data-i18n="exportBackup" id="exportBtn"></button><label class="secondary-btn file-btn"><span data-i18n="importBackup"></span><input accept="application/json" id="importInput" type="file"/></label></div></section>
+<section class="panel"><p class="eyebrow" data-i18n="pointValues"></p><h2 data-i18n="editableValues"></h2><p data-i18n="pointInfo"></p><button class="secondary-btn" data-i18n="restoreBaseValues" id="restorePointsBtn"></button></section>
+<section class="panel"><p class="eyebrow">IPHONE</p><h2 data-i18n="addHomeScreen"></h2><p data-i18n="iphoneInfo"></p></section>
+<section class="danger-panel panel"><p class="eyebrow" data-i18n="reset"></p><h2 data-i18n="eraseAllData"></h2><p data-i18n="resetInfo"></p><button class="danger-btn" data-i18n="fullReset" id="resetAllBtn"></button></section>
+</section>
+</main>
+</div>
+<div aria-labelledby="confirmTitle" aria-modal="true" class="modal-backdrop hidden" id="confirmModal" role="dialog">
+<div class="modal-card"><h2 id="confirmTitle"></h2><p id="confirmMessage"></p><div class="modal-actions"><button class="secondary-btn" data-i18n="cancel" id="confirmCancel"></button><button class="danger-btn" data-i18n="confirm" id="confirmOk"></button></div></div>
+</div>
+<div aria-labelledby="simpleRecapTitle" aria-modal="true" class="recap-backdrop hidden" id="simpleRecapModal" role="dialog">
+<section class="recap-sheet">
+<header class="recap-header">
+<div><p class="eyebrow" data-pointbox-i18n="recapEyebrow"></p><h2 data-pointbox-i18n="recapTitle" id="simpleRecapTitle"></h2></div>
+<button aria-label="Fermer" class="recap-close" id="simpleRecapClose" type="button">×</button>
+</header>
+<p class="recap-help" data-pointbox-i18n="recapHelp"></p>
+<div class="recap-player" id="simpleRecapPlayer"></div>
+<div class="recap-metrics" id="simpleRecapMetrics"></div>
+<div class="recap-list" id="simpleRecapList"></div>
+<div class="recap-total" id="simpleRecapTotal"></div>
+<button class="secondary-btn recap-bottom-close" data-pointbox-i18n="closeRecap" id="simpleRecapBottomClose"></button>
+</section>
+</div>
+<div class="toast hidden" id="toast" role="status"></div>
+<script src="app.js"></script>
 </body>
 </html>
