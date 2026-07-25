@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="theme-color" content="#081510">
+  <meta name="theme-color" content="#071522">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="VS Planner">
@@ -16,8 +16,8 @@
   <div class="app-shell">
     <header class="hero">
       <div class="hero-main">
-        <p class="eyebrow">LAST WAR · ALLIANCE DUEL</p>
-        <h1>GoMo VS Planner</h1>
+        <p class="eyebrow">GoMo Forever · LAST WAR</p>
+        <h1>GoMo VS Planner</h1><div class="gomo-hero-tags"><span>7,2 M</span><span>Inventaire</span><span>Calcul automatique</span></div>
         <p class="hero-copy" data-i18n="heroCopy"></p>
       </div>
       <div class="hero-tools">
@@ -74,6 +74,56 @@
             <span data-simple-i18n="targetWithMargin"></span>
             <strong id="quickRecommendedTarget">7 500 000</strong>
           </div>
+          <label class="point-profile-card">
+            <span id="pointProfileLabel"></span>
+            <select id="pointProfileSelect"></select>
+            <small id="pointProfileHelp"></small>
+          </label>
+        </section>
+
+
+
+        <section class="panel simple-points-panel" id="simplePointsPanel">
+          <div class="result-header simple-points-heading">
+            <div><p class="eyebrow" data-pointbox-i18n="eyebrow"></p><h2 data-pointbox-i18n="title"></h2></div>
+            <span class="result-badge warning" id="simplePointsStatus"></span>
+          </div>
+          <p class="help-text" data-pointbox-i18n="intro"></p>
+          <div class="simple-points-summary">
+            <article><span data-pointbox-i18n="resourceTotal"></span><strong id="simpleResourceTotal">0</strong></article>
+            <article><span data-pointbox-i18n="maximumToday"></span><strong id="simpleMaximumToday">0</strong></article>
+            <article class="selected"><span data-pointbox-i18n="selectedPoints"></span><strong id="simpleSelectedPoints">0</strong></article>
+            <article class="final"><span data-pointbox-i18n="finalTotal"></span><strong id="simpleFinalTotal">0</strong></article>
+          </div>
+          <p class="simple-current-note" data-pointbox-i18n="currentIncluded"></p>
+          <div class="simple-points-actions">
+            <button class="primary-btn" id="simpleAutoBtn" data-pointbox-i18n="autoPlan"></button>
+            <button class="secondary-btn" id="simpleRecapBtn" data-pointbox-i18n="showRecap"></button>
+            <button class="secondary-btn" id="simpleZeroBtn" data-pointbox-i18n="zero"></button>
+          </div>
+          <div class="simple-resource-boxes" id="simpleResourceBoxes"></div>
+          <button class="primary-btn simple-apply-btn" id="simpleApplyBtn" data-pointbox-i18n="apply"></button>
+        </section>
+
+        <section class="panel inventory-status-panel" id="inventoryStatusPanel">
+          <div class="section-heading inventory-status-heading">
+            <div><p class="eyebrow" data-inv-i18n="trackingEyebrow"></p><h2 data-inv-i18n="trackingTitle"></h2></div>
+          </div>
+          <p class="help-text" data-inv-i18n="trackingIntro"></p>
+          <div class="inventory-metrics">
+            <article><span data-inv-i18n="totalInventory"></span><strong id="inventoryTotalPoints">0</strong></article>
+            <article><span data-inv-i18n="usableInventory"></span><strong id="inventoryUsablePoints">0</strong></article>
+            <article><span data-inv-i18n="lastReference"></span><strong id="inventoryReferenceDate"></strong></article>
+            <article><span data-inv-i18n="lastDetected"></span><strong id="inventoryLastDetected">0</strong></article>
+          </div>
+          <div class="inventory-actions">
+            <button class="secondary-btn" id="saveReferenceBtn" data-inv-i18n="saveReference"></button>
+            <button class="secondary-btn" id="clearReferenceBtn" data-inv-i18n="clearReference"></button>
+          </div>
+          <details class="inventory-history-details">
+            <summary data-inv-i18n="historyTitle"></summary>
+            <div id="inventoryHistoryList" class="inventory-history-list"></div>
+          </details>
         </section>
 
         <section class="panel scanner-upload-panel">
@@ -102,6 +152,21 @@
             <button class="primary-btn" id="ocrApplyBtn" data-ocr-i18n="applyValues"></button>
           </div>
           <details class="ocr-raw-details"><summary data-ocr-i18n="rawText"></summary><pre id="ocrRawText"></pre></details>
+        </section>
+
+        <section class="panel inventory-comparison-panel hidden" id="inventoryComparisonPanel" aria-live="polite">
+          <div class="result-header">
+            <div><p class="eyebrow" data-inv-i18n="compareEyebrow"></p><h2 data-inv-i18n="compareTitle"></h2></div>
+            <span class="result-badge" id="inventoryComparisonBadge">0</span>
+          </div>
+          <p class="help-text" data-inv-i18n="compareIntro"></p>
+          <div id="inventoryComparisonRows" class="inventory-comparison-rows"></div>
+          <div class="result-note" id="inventoryComparisonNote"></div>
+          <div class="result-actions inventory-comparison-actions">
+            <button class="primary-btn" id="confirmInventoryComparisonBtn" data-inv-i18n="confirmConsumption"></button>
+            <button class="secondary-btn" id="referenceOnlyBtn" data-inv-i18n="referenceOnly"></button>
+            <button class="secondary-btn" id="cancelInventoryComparisonBtn" data-inv-i18n="cancelComparison"></button>
+          </div>
         </section>
 
         <section class="panel result-panel hidden quick-result-panel" id="quickResultPanel" aria-live="polite">
@@ -218,6 +283,21 @@
 
   <div class="modal-backdrop hidden" id="confirmModal" role="dialog" aria-modal="true" aria-labelledby="confirmTitle">
     <div class="modal-card"><h2 id="confirmTitle"></h2><p id="confirmMessage"></p><div class="modal-actions"><button class="secondary-btn" id="confirmCancel" data-i18n="cancel"></button><button class="danger-btn" id="confirmOk" data-i18n="confirm"></button></div></div>
+  </div>
+
+  <div class="recap-backdrop hidden" id="simpleRecapModal" role="dialog" aria-modal="true" aria-labelledby="simpleRecapTitle">
+    <section class="recap-sheet">
+      <header class="recap-header">
+        <div><p class="eyebrow" data-pointbox-i18n="recapEyebrow"></p><h2 id="simpleRecapTitle" data-pointbox-i18n="recapTitle"></h2></div>
+        <button class="recap-close" id="simpleRecapClose" type="button" aria-label="Fermer">×</button>
+      </header>
+      <p class="recap-help" data-pointbox-i18n="recapHelp"></p>
+      <div class="recap-player" id="simpleRecapPlayer"></div>
+      <div class="recap-metrics" id="simpleRecapMetrics"></div>
+      <div class="recap-list" id="simpleRecapList"></div>
+      <div class="recap-total" id="simpleRecapTotal"></div>
+      <button class="secondary-btn recap-bottom-close" id="simpleRecapBottomClose" data-pointbox-i18n="closeRecap"></button>
+    </section>
   </div>
   <div class="toast hidden" id="toast" role="status"></div>
   <script src="app.js"></script>
