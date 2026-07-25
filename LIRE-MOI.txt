@@ -1,22 +1,18 @@
-GoMo VS Planner v1.4 — Calcul automatique ajustable
+GoMo VS Planner v2.0 — Assistant automatique simplifié
 
-Nouveautés :
-1. Le site calcule automatiquement les ressources utiles du jour avec les valeurs de base du jeu.
-2. Le bonus de recherche VS est appliqué automatiquement au calcul.
-3. Chaque quantité du plan peut être diminuée ou augmentée avec les boutons – / +, ou saisie directement.
-4. À chaque modification, les autres ressources sont recalculées immédiatement pour viser au minimum 7,2 millions de points avec la marge choisie.
-5. Une ressource peut être désactivée avec « Ne pas utiliser », puis réactivée.
-6. Le bouton « Revenir au calcul automatique » efface les choix manuels du jour.
-7. Les stocks, réserves et valeurs personnalisées restent conservés dans le navigateur.
+NOUVEAU
+- Les captures sont lues et appliquées automatiquement.
+- Le programme choisit lui-même les ressources et les quantités pour atteindre 7,2 M avec la marge.
+- Plus de liste compliquée à vérifier dans le mode Assistant.
+- Pour chaque ressource proposée : Ne pas utiliser, Diminuer, Garder ou Augmenter.
+- Dès qu’un choix change, le reste du plan est recalculé automatiquement pour rester au plus près de l’objectif.
+- Un seul bouton permet d’accepter le plan et de déduire les ressources.
+- Le récapitulatif plein écran pour capture d’écran reste disponible.
 
-La saisie par captures, la saisie manuelle, les sept langues et le fonctionnement hors ligne sont conservés.
+La saisie manuelle et les réglages avancés restent accessibles dans l’onglet « Saisie manuelle ».
 
-Langues : français, anglais, allemand, roumain, ukrainien, coréen et croate.
-Hébergement : GitHub Pages, sans crédit d’utilisation.
-Données : conservées uniquement dans le navigateur de l’appareil.
-OCR : la première lecture nécessite Internet pour charger Tesseract.js. Les images ne sont pas envoyées dans une base de données.
-
-Mise en ligne sur GitHub Pages :
-- Remplacer les anciens fichiers du dépôt par tous les fichiers de cette archive.
-- Conserver le fichier .nojekyll.
-- Attendre la mise à jour de GitHub Pages, puis actualiser le site.
+Installation GitHub Pages
+1. Décompresser l’archive.
+2. Envoyer tous les fichiers à la racine du dépôt.
+3. Remplacer les anciens fichiers puis attendre la mise à jour de GitHub Pages.
+4. Sur iPhone, actualiser la page ; si nécessaire fermer puis rouvrir le raccourci.
