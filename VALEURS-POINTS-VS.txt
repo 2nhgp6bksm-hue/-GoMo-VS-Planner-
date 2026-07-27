@@ -1,51 +1,13 @@
-VALEURS DE BASE DU JEU — SANS BONUS DE RECHERCHE
+VALEURS VÉRIFIÉES SUR LES CAPTURES — PROFIL PAR DÉFAUT
 
-Jour 1
-- 1 endurance : 150
-- 1 mission radar : 10 000
-- 660 EXP héros : 1
-- 1 donnée de combat drone : 3
-- 1 pièce de drone : 2 500
-- 100 nourriture récoltée : 20
-- 100 fer récolté : 20
-- 60 or récolté : 20
-- 1 point de puce de compétence drone : 1 000
+Jour 1 : endurance 375 ; radar 30 000 ; 660 EXP héros 2,5 ; donnée drone 7,5 ; pièce drone 6 250 ; diamant de pack 30 ; collecte nourriture/fer/pièces 50 ; coffre puce premium 2 812,5 ; fragment UR 25 000 ; SSR 8 750 ; R 2 500.
 
-Jour 2
-- 1 min accélération construction : 50
-- 1 point de puissance bâtiment : 10
-- 1 camion UR : 100 000
-- 1 tâche secrète légendaire : 75 000
-- 1 recrutement survivant : 1 500
+Jour 2 : construction 150/min ; puissance bâtiment 30 ; camion UR 300 000 (maximum 5) ; tâche secrète UR 225 000 ; diamant de pack 80 ; recrutement survivant 4 500.
 
-Jour 3
-- 1 min accélération recherche : 50
-- 1 point de puissance technologique : 10
-- 1 badge de bravoure : 300
-- 1 mission radar : 10 000
-- Coffres composants drone N1 à N7 : 1 100 / 3 300 / 10 000 / 30 000 / 90 000 / 270 000 / 810 000
+Jour 3 : recherche 150/min ; puissance technologie 30 ; badge de bravoure 750 ; radar 30 000 ; diamant de pack 80 ; coffres composants drone N1 à N7 : 2 750 / 8 250 / 25 000 / 75 000 / 225 000 / 675 000 / 2 025 000.
 
-Jour 4
-- 1 recrutement élite : 1 500
-- 660 EXP héros : 1
-- 1 fragment UR : 10 000
-- 1 fragment SSR : 3 500
-- 1 fragment SR : 1 000
-- 1 médaille de compétence : 10
-- 1 fragment d’arme exclusive : 10 000
+Jour 4 : recrutement héros 4 500 ; 660 EXP héros 2,5 ; fragments UR 25 000 ; SSR 8 750 ; R 2 500 ; médaille compétence 25 ; diamant de pack 80 ; fragment arme exclusive 25 000.
 
-Jour 5
-- 1 mission radar : 10 000
-- 1 min accélération construction/recherche/entraînement : 50
-- 1 point puissance bâtiment/recherche : 10
-- 1 troupe N1 à N10 : 20 / 30 / 40 / 50 / 60 / 70 / 80 / 90 / 100 / 110
+Jour 5 : radar 30 000 ; accélérations construction/recherche/formation 150/min ; puissance bâtiment/technologie 30 ; troupes N1 à N10 : 60, 90, 120, 150, 180, 210, 240, 270, 300, 330.
 
-Jour 6
-- 1 camion UR : 100 000
-- 1 tâche secrète légendaire : 75 000
-- 1 min accélération construction/recherche/entraînement/soins : 50
-- Unité adverse VS N1 à N10 : 10 / 15 / 20 / 25 / 30 / 35 / 40 / 45 / 50 / 55
-- Autre unité N1 à N10 : 2 / 3 / 4 / 5 / 6 / 7 / 8 / 9 / 10 / 11
-- Unité perdue N1 à N10 : 2 / 3 / 4 / 5 / 6 / 7 / 8 / 9 / 10 / 11
-
-Le profil de recherche choisi dans le site applique ensuite les bonus automatiquement.
+Jour 6 : camion UR 300 000 (maximum 5) ; tâche secrète UR 225 000 ; accélérations construction/recherche/formation/soin 150/min ; éliminations alliance rivale N1 à N10 : 30 à 165 ; autres éliminations N1 à N10 : 6 à 33 ; pertes N1 à N10 : 5 à 27,5 ; diamant de pack 80.
