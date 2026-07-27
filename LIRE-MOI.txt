@@ -1,3 +1,5 @@
+VS Planner v2.4 — Valeurs vérifiées par captures
+
 GoMo VS Planner v2.3 — GitHub Pages
 
 CORRECTION PRINCIPALE
@@ -26,3 +28,10 @@ Installation GitHub Pages
 2. Envoyer tous les fichiers à la racine du dépôt.
 3. Remplacer les anciens fichiers puis attendre la mise à jour de GitHub Pages.
 4. Sur iPhone, fermer puis rouvrir le raccourci. Si l’ancienne version reste affichée, actualiser la page une fois.
+
+Nouveautés v2.4 :
+- valeurs des jours 1 à 6 relevées sur les captures du Duel d’alliances ;
+- doublons retirés dans chaque journée ;
+- profil de points vérifié sélectionné automatiquement ;
+- camions commerciaux UR limités à 5 par jour ;
+- ajout des fragments du Jour 1, diamants de packs et coffres de puce premium.
