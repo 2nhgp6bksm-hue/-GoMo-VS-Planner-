@@ -1,18 +1,17 @@
-GoMo VS Planner v2.0 — Assistant automatique simplifié
+GoMo VS Planner v2.1 — Lecture des ressources corrigée
 
-NOUVEAU
-- Les captures sont lues et appliquées automatiquement.
-- Le programme choisit lui-même les ressources et les quantités pour atteindre 7,2 M avec la marge.
-- Plus de liste compliquée à vérifier dans le mode Assistant.
-- Pour chaque ressource proposée : Ne pas utiliser, Diminuer, Garder ou Augmenter.
-- Dès qu’un choix change, le reste du plan est recalculé automatiquement pour rester au plus près de l’objectif.
-- Un seul bouton permet d’accepter le plan et de déduire les ressources.
-- Le récapitulatif plein écran pour capture d’écran reste disponible.
+CORRECTIONS
+- Les ressources sont désormais reconnues dans tout l’inventaire, même lorsqu’elles ne correspondent pas au jour VS actuellement sélectionné.
+- Les durées d’accélération affichées en jours, heures et minutes sont converties automatiquement en minutes.
+- Les libellés Last War « Accélération Universelle », « Construction », « Recherche » et « Formation » sont mieux reconnus.
+- Le lecteur associe aussi un nom de ressource à sa valeur lorsque l’OCR les sépare sur deux lignes.
+- Le moteur utilise le français et l’anglais lorsque l’interface est en français, avec une seconde lecture de secours si nécessaire.
+- Un message indique clairement lorsque des ressources ont été reconnues mais ne donnent aucun point pour le jour VS sélectionné.
 
-La saisie manuelle et les réglages avancés restent accessibles dans l’onglet « Saisie manuelle ».
+L’assistant automatique, la saisie manuelle, la comparaison d’inventaire et le calcul de l’objectif 7,2 M restent disponibles.
 
 Installation GitHub Pages
 1. Décompresser l’archive.
 2. Envoyer tous les fichiers à la racine du dépôt.
 3. Remplacer les anciens fichiers puis attendre la mise à jour de GitHub Pages.
-4. Sur iPhone, actualiser la page ; si nécessaire fermer puis rouvrir le raccourci.
+4. Sur iPhone, fermer puis rouvrir le raccourci. Si l’ancienne version reste affichée, actualiser la page une fois.
