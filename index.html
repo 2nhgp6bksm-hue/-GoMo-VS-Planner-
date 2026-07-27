@@ -37,50 +37,64 @@
 </nav>
 <main>
 <section class="view active" id="scannerView">
-<section aria-label="Étapes" class="assistant-steps">
-<article><span>1</span><div><strong data-simple-i18n="step1"></strong><p data-simple-i18n="step1Text"></p></div></article>
-<article><span>2</span><div><strong data-simple-i18n="step2"></strong><p data-simple-i18n="step2Text"></p></div></article>
-<article><span>3</span><div><strong data-simple-i18n="step3"></strong><p data-simple-i18n="step3Text"></p></div></article>
-</section>
-<section class="panel assistant-day-panel">
-<div class="assistant-day-heading">
+<section class="panel ultra-welcome">
 <div>
-<p class="eyebrow" data-simple-i18n="chooseDay"></p>
-<h2 id="assistantDayTitle"></h2>
+<p class="eyebrow" data-ultra-i18n="modeLabel"></p>
+<h2 data-ultra-i18n="welcomeTitle"></h2>
+<p data-ultra-i18n="welcomeText"></p>
 </div>
+<div class="ultra-flow" aria-label="3 étapes">
+<span><b>1</b><em data-ultra-i18n="flowDay"></em></span>
+<span><b>2</b><em data-ultra-i18n="flowPhotos"></em></span>
+<span><b>3</b><em data-ultra-i18n="flowPlan"></em></span>
+</div>
+</section>
+
+<section class="panel ultra-step-card" id="simpleDayStep">
+<div class="ultra-step-heading">
+<span class="ultra-step-number">1</span>
+<div><p class="eyebrow" data-ultra-i18n="stepOne"></p><h2 data-ultra-i18n="chooseDayTitle"></h2></div>
+</div>
+<div class="ultra-current-day">
+<div><span data-ocr-i18n="scanDay"></span><strong id="assistantDayTitle"></strong><small class="sr-only" id="scannerDayLabel"></small></div>
+<button class="secondary-btn compact-btn" data-ultra-i18n="changeDay" id="simpleDayToggle" type="button"></button>
+</div>
+<div class="simple-day-options hidden" id="simpleDayOptions">
 <label class="toggle-line compact-toggle"><input id="quickAutoDay" type="checkbox"/><span data-i18n="automaticDay"></span></label>
-</div>
 <section aria-label="VS day" class="day-strip" id="assistantDayStrip"></section>
 <button class="secondary-btn full-mobile" data-i18n="nextDay" id="quickNextDayBtn"></button>
-</section>
-<section class="panel scanner-intro">
-<div>
-<p class="eyebrow" data-simple-i18n="simpleMode"></p>
-<h2 data-simple-i18n="assistantTitle"></h2>
-<p data-simple-i18n="assistantIntro"></p>
 </div>
-<div class="scanner-day-chip"><span data-ocr-i18n="scanDay"></span><strong id="scannerDayLabel"></strong></div>
 </section>
-<section class="panel quick-score-panel">
-<label>
-<span data-i18n="pointsToday"></span>
-<input id="quickCurrentPoints" inputmode="numeric" min="0" step="10000" type="number" value="0"/>
-</label>
-<div class="quick-target-card">
-<span data-simple-i18n="targetWithMargin"></span>
-<strong id="quickRecommendedTarget">7 500 000</strong>
+
+<section class="panel ultra-step-card ultra-upload-card" id="simplePhotoStep">
+<div class="ultra-step-heading">
+<span class="ultra-step-number">2</span>
+<div><p class="eyebrow" data-ultra-i18n="stepTwo"></p><h2 data-ultra-i18n="addPhotosTitle"></h2><p data-ultra-i18n="addPhotosText"></p></div>
 </div>
-<label class="point-profile-card">
-<span id="pointProfileLabel"></span>
-<select id="pointProfileSelect"></select>
-<small id="pointProfileHelp"></small>
-</label>
+<label class="primary-btn file-btn ultra-upload-btn"><span data-ultra-i18n="addScreenshots"></span><input accept="image/*" id="ocrInput" multiple="" type="file"/></label>
+<p class="ultra-photo-tip" data-ultra-i18n="photoTip"></p>
+<div class="ocr-preview-list" id="ocrPreviewList"></div>
+<div aria-live="polite" class="ocr-progress-box hidden" id="ocrProgressBox">
+<div class="ocr-progress-top"><strong id="ocrProgressLabel"></strong><span id="ocrProgressPct">0%</span></div>
+<progress id="ocrProgress" max="100" value="0"></progress>
+</div>
+<details class="simple-options-details">
+<summary data-ultra-i18n="optionalSettings"></summary>
+<div class="scanner-actions optional-scanner-actions">
+<label class="secondary-btn file-btn scanner-file-btn"><span data-ocr-i18n="takePhoto"></span><input accept="image/*" capture="environment" id="ocrCameraInput" type="file"/></label>
+<button class="secondary-btn" data-ocr-i18n="startReading" disabled="" id="ocrStartBtn"></button>
+<button class="secondary-btn" data-ocr-i18n="clearScreenshots" disabled="" id="ocrClearBtn"></button>
+</div>
+<div class="quick-score-panel optional-score-panel">
+<label><span data-i18n="pointsToday"></span><input id="quickCurrentPoints" inputmode="numeric" min="0" step="10000" type="number" value="0"/></label>
+<div class="quick-target-card"><span data-simple-i18n="targetWithMargin"></span><strong id="quickRecommendedTarget">7 500 000</strong></div>
+<label class="point-profile-card"><span id="pointProfileLabel"></span><select id="pointProfileSelect"></select><small id="pointProfileHelp"></small></label>
+</div>
+</details>
 </section>
 
 <section class="panel inventory-status-panel assistant-hidden" id="inventoryStatusPanel">
-<div class="section-heading inventory-status-heading">
-<div><p class="eyebrow" data-inv-i18n="trackingEyebrow"></p><h2 data-inv-i18n="trackingTitle"></h2></div>
-</div>
+<div class="section-heading inventory-status-heading"><div><p class="eyebrow" data-inv-i18n="trackingEyebrow"></p><h2 data-inv-i18n="trackingTitle"></h2></div></div>
 <p class="help-text" data-inv-i18n="trackingIntro"></p>
 <div class="inventory-metrics">
 <article><span data-inv-i18n="totalInventory"></span><strong id="inventoryTotalPoints">0</strong></article>
@@ -88,56 +102,40 @@
 <article><span data-inv-i18n="lastReference"></span><strong id="inventoryReferenceDate"></strong></article>
 <article><span data-inv-i18n="lastDetected"></span><strong id="inventoryLastDetected">0</strong></article>
 </div>
-<div class="inventory-actions">
-<button class="secondary-btn" data-inv-i18n="saveReference" id="saveReferenceBtn"></button>
-<button class="secondary-btn" data-inv-i18n="clearReference" id="clearReferenceBtn"></button>
-</div>
-<details class="inventory-history-details">
-<summary data-inv-i18n="historyTitle"></summary>
-<div class="inventory-history-list" id="inventoryHistoryList"></div>
-</details>
+<div class="inventory-actions"><button class="secondary-btn" data-inv-i18n="saveReference" id="saveReferenceBtn"></button><button class="secondary-btn" data-inv-i18n="clearReference" id="clearReferenceBtn"></button></div>
+<details class="inventory-history-details"><summary data-inv-i18n="historyTitle"></summary><div class="inventory-history-list" id="inventoryHistoryList"></div></details>
 </section>
-<section class="panel scanner-upload-panel">
-<div class="scanner-actions simplified-actions">
-<label class="primary-btn file-btn scanner-file-btn"><span data-ocr-i18n="importScreenshots"></span><input accept="image/*" id="ocrInput" multiple="" type="file"/></label>
-<label class="secondary-btn file-btn scanner-file-btn"><span data-ocr-i18n="takePhoto"></span><input accept="image/*" capture="environment" id="ocrCameraInput" type="file"/></label>
-<button class="secondary-btn" data-ocr-i18n="startReading" disabled="" id="ocrStartBtn"></button>
-<button class="secondary-btn" data-ocr-i18n="clearScreenshots" disabled="" id="ocrClearBtn"></button>
-</div>
-<p class="help-text" data-simple-i18n="photoHelp"></p>
-<div class="ocr-preview-list" id="ocrPreviewList"></div>
-<div aria-live="polite" class="ocr-progress-box hidden" id="ocrProgressBox">
-<div class="ocr-progress-top"><strong id="ocrProgressLabel"></strong><span id="ocrProgressPct">0%</span></div>
-<progress id="ocrProgress" max="100" value="0"></progress>
-</div>
-</section><section aria-live="polite" class="panel auto-scan-status hidden" id="autoScanStatus">
-<div class="auto-scan-status-head">
-<div><p class="eyebrow" data-auto-i18n="scanComplete"></p><h2 data-auto-i18n="proposalReady"></h2></div>
-<span class="result-badge" id="autoScanBadge"></span>
-</div>
+
+<section aria-live="polite" class="panel auto-scan-status hidden" id="autoScanStatus">
+<div class="auto-scan-status-head"><div><p class="eyebrow" data-auto-i18n="scanComplete"></p><h2 data-auto-i18n="proposalReady"></h2></div><span class="result-badge" id="autoScanBadge"></span></div>
 <p id="autoScanSummary"></p>
-</section><section class="panel simple-points-panel auto-plan-panel" id="simplePointsPanel">
-<div class="result-header auto-plan-heading">
-<div><p class="eyebrow" data-auto-i18n="eyebrow"></p><h2 data-auto-i18n="title"></h2></div>
+</section>
+
+<section class="panel simple-points-panel ultra-step-card ultra-plan-card" id="simplePointsPanel">
+<div class="ultra-step-heading">
+<span class="ultra-step-number">3</span>
+<div><p class="eyebrow" data-ultra-i18n="stepThree"></p><h2 data-ultra-i18n="planTitle"></h2><p data-ultra-i18n="planText"></p></div>
 <span class="result-badge warning" id="simplePointsStatus"></span>
 </div>
-<p class="help-text auto-plan-intro" data-auto-i18n="intro"></p>
-<div class="simple-points-summary auto-plan-summary">
+<div class="ultra-plan-summary">
 <article><span data-auto-i18n="alreadyDone"></span><strong id="simpleCurrentPoints">0</strong></article>
 <article><span data-auto-i18n="proposedPoints"></span><strong id="simpleSelectedPoints">0</strong></article>
 <article class="final"><span data-auto-i18n="finalTotal"></span><strong id="simpleFinalTotal">0</strong></article>
-<article><span data-auto-i18n="maximumToday"></span><strong id="simpleMaximumToday">0</strong></article>
+<article class="hidden"><span data-auto-i18n="maximumToday"></span><strong id="simpleMaximumToday">0</strong></article>
 </div>
+<div class="ultra-plan-list" id="simplePlanList"></div>
+<div class="ultra-plan-footer">
+<p data-ultra-i18n="usedHelp"></p>
+<button class="primary-btn simple-apply-btn" data-ultra-i18n="usedButton" id="simpleApplyBtn"></button>
+</div>
+<details class="simple-options-details plan-options-details">
+<summary data-ultra-i18n="adjustPlanOptional"></summary>
 <div class="simple-points-actions auto-plan-actions">
 <button class="primary-btn" data-auto-i18n="recalculate" id="simpleAutoBtn"></button>
 <button class="secondary-btn" data-auto-i18n="showRecap" id="simpleRecapBtn"></button>
 </div>
 <div class="simple-resource-boxes auto-resource-boxes" id="simpleResourceBoxes"></div>
-<div class="auto-plan-footer">
-<p data-auto-i18n="acceptHelp"></p>
-<button class="primary-btn simple-apply-btn" data-auto-i18n="acceptPlan" id="simpleApplyBtn"></button>
-</div>
-<!-- compatibility nodes kept hidden -->
+</details>
 <span class="hidden" id="simpleResourceTotal">0</span>
 <button class="hidden" id="simpleZeroBtn" type="button"></button>
 </section>
