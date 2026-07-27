@@ -1,3 +1,15 @@
+GoMo VS Planner v2.3 — GitHub Pages
+
+CORRECTION PRINCIPALE
+- Les camions commerciaux UR sont maintenant limités à 5 par jour.
+- Le calculateur ne peut plus proposer 30 camions lorsque le stock contient plusieurs milliers d’unités.
+- Dès que les 5 camions sont utilisés dans le plan, le calcul passe automatiquement aux autres ressources disponibles du jour.
+- Les boutons Diminuer/Augmenter respectent également cette limite.
+
+INSTALLATION
+Décompressez l’archive puis remplacez les fichiers à la racine du dépôt GitHub Pages.
+Validez avec « Commit changes », puis actualisez le site.
+
 GoMo VS Planner v2.2 — Mode ultra simple
 
 NOUVEAUTÉS
