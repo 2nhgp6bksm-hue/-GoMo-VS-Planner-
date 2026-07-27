@@ -133,7 +133,7 @@ body.recap-open{overflow:hidden}
 @media(max-width:390px){.recap-metrics{grid-template-columns:1fr}.recap-backdrop{padding:7px}.recap-sheet{max-height:calc(100vh - 14px);padding:13px}.recap-resource-row{padding:9px 10px}}
 
 
-/* v2.0 — assistant automatique simplifié */
+/* v2.1 — lecture des ressources corrigée */
 .assistant-hidden{display:none!important}
 .auto-scan-status{border-color:#59d4ff;background:linear-gradient(135deg,#0c4564,#10344b)}
 .auto-scan-status-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}.auto-scan-status h2{margin:.15rem 0 .45rem}.auto-scan-status p{margin:0;color:#d6edf8;line-height:1.5}
