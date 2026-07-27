@@ -1,14 +1,13 @@
-GoMo VS Planner v2.1 — Lecture des ressources corrigée
+GoMo VS Planner v2.2 — Mode ultra simple
 
-CORRECTIONS
-- Les ressources sont désormais reconnues dans tout l’inventaire, même lorsqu’elles ne correspondent pas au jour VS actuellement sélectionné.
-- Les durées d’accélération affichées en jours, heures et minutes sont converties automatiquement en minutes.
-- Les libellés Last War « Accélération Universelle », « Construction », « Recherche » et « Formation » sont mieux reconnus.
-- Le lecteur associe aussi un nom de ressource à sa valeur lorsque l’OCR les sépare sur deux lignes.
-- Le moteur utilise le français et l’anglais lorsque l’interface est en français, avec une seconde lecture de secours si nécessaire.
-- Un message indique clairement lorsque des ressources ont été reconnues mais ne donnent aucun point pour le jour VS sélectionné.
-
-L’assistant automatique, la saisie manuelle, la comparaison d’inventaire et le calcul de l’objectif 7,2 M restent disponibles.
+NOUVEAUTÉS
+- Écran principal réduit à 3 étapes : vérifier le jour, ajouter les captures, suivre le plan.
+- La lecture OCR et le calcul démarrent automatiquement après l'ajout des captures.
+- Le plan affiche une liste très claire et numérotée des ressources à utiliser.
+- Gros bouton « J’ai utilisé ces ressources » après l’exécution du plan.
+- Les profils de points, le score manuel, la relance OCR et les ajustements sont cachés dans des options facultatives.
+- Le mode manuel complet, le guide et les réglages restent disponibles.
+- Les corrections OCR de la v2.1 sont conservées.
 
 Installation GitHub Pages
 1. Décompresser l’archive.
