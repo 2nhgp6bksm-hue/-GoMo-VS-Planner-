@@ -1,3 +1,36 @@
+VS Planner v2.9 — Image GoMo traduite automatiquement
+
+NOUVEAUTÉS v2.9
+- les textes de l’image changent automatiquement avec la langue du site ;
+- objectif et six journées traduits en français, anglais, allemand, roumain, ukrainien, coréen et croate ;
+- l’illustration GoMo reste identique dans toutes les langues.
+
+VS Planner v2.8 — Image d’accueil GoMo
+
+NOUVEAUTÉS v2.8
+- ajout de l’illustration GoMo VS Planner en haut du site ;
+- planning en français clairement affiché : Radar, Base, Science, Héros, Mobilisation et Ennemi ;
+- objectif 7,2 M conservé sur l’image ;
+- image ajoutée au cache pour fonctionner également après installation sur iPhone.
+
+VS Planner v2.7 — Mode simple pour tous
+
+NOUVEAUTÉS v2.7
+- le mode simple est pensé pour être compris comme par un enfant de 10 ans ;
+- les réglages et boutons compliqués sont retirés de l’écran simple ;
+- l’utilisateur choisit le jour, ajoute ses photos, suit la liste puis confirme ;
+- sans coffre d’EXP, une consigne demande la capture d’un héros montrant l’EXP disponible.
+
+VS Planner v2.6 — Lecture adaptée aux captures Last War
+
+NOUVEAUTÉS v2.6
+- reconnaissance du suffixe G pour les milliards d’EXP ;
+- reconnaissance de l’appellation française « Badge de Valeur » ;
+- lecture renforcée des objets sélectionnés avec bordure jaune ;
+- lecture des totaux des coffres d’EXP de héros ;
+- prise en charge des tickets de héros, tickets de survivants, pièces de drone et fragments d’arme exclusive ;
+- lecture conservée pour le tableau récapitulatif des accélérateurs.
+
 VS Planner v2.5 — Correction du calcul automatique à 7,2 M
 
 CORRECTION PRINCIPALE v2.5
