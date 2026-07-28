@@ -11,7 +11,7 @@
 <title>GoMo VS Planner</title>
 <link href="manifest.webmanifest" rel="manifest"/>
 <link href="icon-192.png" rel="apple-touch-icon"/>
-<link href="styles.css?v=2.22.0" rel="stylesheet"/>
+<link href="styles.css?v=2.25.0" rel="stylesheet"/>
 </head>
 <body>
 <div class="app-shell">
@@ -150,7 +150,7 @@
 <span data-auto-i18n="alreadyDone"></span>
 <div class="editable-score-value">
 <strong id="simpleCurrentPoints">0</strong>
-<button class="score-edit-btn" id="simpleEditPointsBtn" type="button">✏️ Modifier</button>
+<button class="score-edit-btn" data-score-i18n="edit" id="simpleEditPointsBtn" type="button">✏️ Modifier</button>
 </div>
 <div class="score-editor hidden" id="simplePointsEditor">
 <div class="score-editor-row">
@@ -158,7 +158,7 @@
 <input aria-label="Points déjà obtenus" id="simpleCurrentPointsInput" inputmode="numeric" min="0" step="100000" type="number"/>
 <button class="score-delta-btn" data-score-delta="100000" type="button">+100 000</button>
 </div>
-<button class="primary-btn score-save-btn" id="simpleSavePointsBtn" type="button">Valider</button>
+<button class="primary-btn score-save-btn" data-score-i18n="save" id="simpleSavePointsBtn" type="button">Valider</button>
 </div>
 </article>
 <article><span data-auto-i18n="proposedPoints"></span><strong id="simpleSelectedPoints">0</strong></article>
@@ -336,6 +336,6 @@
 </section>
 </div>
 <div class="toast hidden" id="toast" role="status"></div>
-<script src="app.js?v=2.22.0"></script>
+<script src="app.js?v=2.25.0"></script>
 </body>
 </html>
