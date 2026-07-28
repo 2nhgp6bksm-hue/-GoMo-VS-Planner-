@@ -211,3 +211,10 @@ body.recap-open{overflow:hidden}
 .score-delta-btn{min-height:48px;padding:7px 9px;border:1px solid #4e8eae;border-radius:12px;background:#123f5c;color:#fff;font-weight:900}
 .score-save-btn{width:100%;min-height:48px}
 @media(max-width:520px){.score-editor-row{grid-template-columns:1fr 1fr}.score-editor input{grid-column:1/-1;grid-row:1}.score-delta-btn{grid-row:2}}
+
+/* v2.25 — quantités exactes visibles avec les points et appui long sur + / − */
+.ultra-plan-values{display:grid;gap:4px;justify-items:end;min-width:150px;text-align:right}
+.ultra-plan-values b{color:#7bd7ff}
+.ultra-plan-values strong{color:#fff;font-size:1.02rem}
+.multi-step-btn,.plan-step-btn{touch-action:none;-webkit-user-select:none;user-select:none}
+@media(max-width:760px){.ultra-plan-values{grid-column:3;justify-items:start;min-width:0;text-align:left}}
