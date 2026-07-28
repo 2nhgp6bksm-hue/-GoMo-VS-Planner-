@@ -1,5 +1,5 @@
-const CACHE='gomo-vs-planner-v2.13.0';
-const ASSETS=['./','./index.html','./styles.css?v=2.13.0','./app.js?v=2.13.0','./manifest.webmanifest','./icon-192.png','./icon-512.png','./gomo-vs-planner.png?v=2.13.0'];
+const CACHE='gomo-vs-planner-v2.20.0';
+const ASSETS=['./','./index.html','./styles.css?v=2.20.0','./app.js?v=2.20.0','./manifest.webmanifest','./icon-192.png','./icon-512.png','./gomo-vs-planner.png?v=2.20.0'];
 self.addEventListener('install',event=>event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(ASSETS)).then(()=>self.skipWaiting())));
 self.addEventListener('activate',event=>event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(key=>key!==CACHE).map(key=>caches.delete(key)))).then(()=>self.clients.claim()).then(()=>self.clients.matchAll({type:'window'})).then(windows=>Promise.all(windows.map(client=>client.navigate(client.url))))));
 self.addEventListener('fetch',event=>{
