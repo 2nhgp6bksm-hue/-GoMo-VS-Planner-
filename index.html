@@ -11,12 +11,12 @@
 <title>GoMo VS Planner</title>
 <link href="manifest.webmanifest" rel="manifest"/>
 <link href="icon-192.png" rel="apple-touch-icon"/>
-<link href="styles.css?v=2.10.0" rel="stylesheet"/>
+<link href="styles.css?v=2.13.0" rel="stylesheet"/>
 </head>
 <body>
 <div class="app-shell">
 <figure class="gomo-cover">
-<img alt="GoMo VS Planner — objectif 7,2 M et programme VS du lundi au samedi" src="gomo-vs-planner.png?v=2.10.0"/>
+<img alt="GoMo VS Planner — objectif 7,2 M et programme VS du lundi au samedi" src="gomo-vs-planner.png?v=2.13.0"/>
 <div class="cover-goal"><span id="coverGoalLabel">OBJECTIF</span><strong id="coverGoalValue">7,2 M</strong></div>
 <div class="cover-day-labels" aria-label="Programme VS">
 <span data-cover-day="0">LUNDI — RADAR</span>
@@ -135,6 +135,11 @@
 <article class="final"><span data-auto-i18n="finalTotal"></span><strong id="simpleFinalTotal">0</strong></article>
 <article class="hidden"><span data-auto-i18n="maximumToday"></span><strong id="simpleMaximumToday">0</strong></article>
 </div>
+<section class="multi-resource-panel">
+<h3 id="multiResourceTitle">Choisis les ressources à utiliser</h3>
+<p id="multiResourceHelp">Coche plusieurs ressources, puis ajuste les quantités avec − et +.</p>
+<div class="simple-resource-boxes auto-resource-boxes" id="simpleResourceBoxes"></div>
+</section>
 <div class="ultra-plan-list" id="simplePlanList"></div>
 <div class="ultra-plan-footer">
 <p data-ultra-i18n="usedHelp"></p>
@@ -146,7 +151,6 @@
 <button class="primary-btn" data-auto-i18n="recalculate" id="simpleAutoBtn"></button>
 <button class="secondary-btn" data-auto-i18n="showRecap" id="simpleRecapBtn"></button>
 </div>
-<div class="simple-resource-boxes auto-resource-boxes" id="simpleResourceBoxes"></div>
 </details>
 <span class="hidden" id="simpleResourceTotal">0</span>
 <button class="hidden" id="simpleZeroBtn" type="button"></button>
@@ -293,6 +297,6 @@
 </section>
 </div>
 <div class="toast hidden" id="toast" role="status"></div>
-<script src="app.js?v=2.10.0"></script>
+<script src="app.js?v=2.13.0"></script>
 </body>
 </html>
