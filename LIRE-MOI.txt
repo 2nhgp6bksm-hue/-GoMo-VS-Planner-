@@ -1,3 +1,27 @@
+VS Planner v2.13 — Bouton « Ne pas utiliser »
+
+NOUVEAUTÉS v2.13
+- bouton rouge « Ne pas utiliser » ajouté à côté de chaque ressource ;
+- une ressource désactivée est retirée immédiatement du calcul ;
+- le bouton devient vert « Réutiliser » pour pouvoir la remettre facilement.
+
+VS Planner v2.12 — Choix multiple des ressources
+
+NOUVEAUTÉS v2.12
+- toutes les ressources disponibles du jour sont proposées dans le mode simple ;
+- plusieurs ressources peuvent être cochées en même temps ;
+- chaque quantité possède de grands boutons − et + ;
+- le total et la liste des actions sont recalculés immédiatement ;
+- la question spéciale limitée à l’EXP est remplacée par ce choix multiple.
+
+VS Planner v2.11 — Confirmation avant d’utiliser uniquement l’EXP
+
+NOUVEAUTÉS v2.11
+- lorsqu’un plan utilise uniquement l’EXP de héros, le site demande d’abord si cela convient ;
+- « Oui » conserve le plan d’EXP ;
+- « Non » retire l’EXP et recalcule automatiquement avec les autres ressources disponibles ;
+- le bouton de confirmation reste bloqué tant que le choix n’a pas été fait.
+
 VS Planner v2.10 — Affichage EXP et mise à jour automatique
 
 NOUVEAUTÉS v2.10
