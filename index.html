@@ -11,12 +11,12 @@
 <title>GoMo VS Planner</title>
 <link href="manifest.webmanifest" rel="manifest"/>
 <link href="icon-192.png" rel="apple-touch-icon"/>
-<link href="styles.css?v=2.13.0" rel="stylesheet"/>
+<link href="styles.css?v=2.20.0" rel="stylesheet"/>
 </head>
 <body>
 <div class="app-shell">
 <figure class="gomo-cover">
-<img alt="GoMo VS Planner — objectif 7,2 M et programme VS du lundi au samedi" src="gomo-vs-planner.png?v=2.13.0"/>
+<img alt="GoMo VS Planner — objectif 7,2 M et programme VS du lundi au samedi" src="gomo-vs-planner.png?v=2.20.0"/>
 <div class="cover-goal"><span id="coverGoalLabel">OBJECTIF</span><strong id="coverGoalValue">7,2 M</strong></div>
 <div class="cover-day-labels" aria-label="Programme VS">
 <span data-cover-day="0">LUNDI — RADAR</span>
@@ -43,10 +43,10 @@
 </header>
 <nav aria-label="Navigation" class="main-nav">
 <button class="nav-btn active" data-simple-i18n="assistantNav" data-view="scanner"></button>
-<button class="nav-btn" data-i18n="calculator" data-view="planner"></button>
 <button class="nav-btn" data-i18n="weekGuide" data-view="guide"></button>
 <button class="nav-btn" data-i18n="settings" data-view="settings"></button>
 </nav>
+<button class="smart-help-btn" id="smartHelpBtn" type="button">🤔 Je ne sais pas quoi faire</button>
 <main>
 <section class="view active" id="scannerView">
 <section class="panel ultra-welcome">
@@ -55,10 +55,11 @@
 <h2 data-ultra-i18n="welcomeTitle"></h2>
 <p data-ultra-i18n="welcomeText"></p>
 </div>
-<div class="ultra-flow" aria-label="3 étapes">
+<div class="ultra-flow" aria-label="4 étapes">
 <span><b>1</b><em data-ultra-i18n="flowDay"></em></span>
 <span><b>2</b><em data-ultra-i18n="flowPhotos"></em></span>
-<span><b>3</b><em data-ultra-i18n="flowPlan"></em></span>
+<span><b>3</b><em id="workflowFlowResources">Ressources</em></span>
+<span><b>4</b><em data-ultra-i18n="flowPlan"></em></span>
 </div>
 </section>
 
@@ -123,10 +124,25 @@
 <p id="autoScanSummary"></p>
 </section>
 
-<section class="panel simple-points-panel ultra-step-card ultra-plan-card" id="simplePointsPanel">
+<section class="panel ultra-step-card" id="simpleResourceStep">
 <div class="ultra-step-heading">
 <span class="ultra-step-number">3</span>
-<div><p class="eyebrow" data-ultra-i18n="stepThree"></p><h2 data-ultra-i18n="planTitle"></h2><p data-ultra-i18n="planText"></p></div>
+<div><p class="eyebrow" id="workflowStepThree">ÉTAPE 3</p><h2 id="workflowChooseTitle">Choisis les ressources à utiliser</h2><p id="workflowChooseHelp">Coche plusieurs ressources, puis ajuste les quantités avec − et +.</p></div>
+</div>
+<button aria-pressed="false" class="economy-week-btn" id="economyWeekBtn" type="button">
+<span class="economy-week-icon">🛡️</span>
+<span><strong id="economyWeekTitle">Semaine d’économie</strong><small id="economyWeekHelp">Garder les ressources importantes et viser 7,2 M.</small></span>
+<b id="economyWeekStatus">Désactivée</b>
+</button>
+<section class="multi-resource-panel">
+<div class="simple-resource-boxes auto-resource-boxes" id="simpleResourceBoxes"></div>
+</section>
+</section>
+
+<section class="panel simple-points-panel ultra-step-card ultra-plan-card" id="simplePointsPanel">
+<div class="ultra-step-heading">
+<span class="ultra-step-number">4</span>
+<div><p class="eyebrow" id="workflowStepFour">ÉTAPE 4</p><h2 data-ultra-i18n="planTitle"></h2><p data-ultra-i18n="planText"></p></div>
 <span class="result-badge warning" id="simplePointsStatus"></span>
 </div>
 <div class="ultra-plan-summary">
@@ -135,15 +151,13 @@
 <article class="final"><span data-auto-i18n="finalTotal"></span><strong id="simpleFinalTotal">0</strong></article>
 <article class="hidden"><span data-auto-i18n="maximumToday"></span><strong id="simpleMaximumToday">0</strong></article>
 </div>
-<section class="multi-resource-panel">
-<h3 id="multiResourceTitle">Choisis les ressources à utiliser</h3>
-<p id="multiResourceHelp">Coche plusieurs ressources, puis ajuste les quantités avec − et +.</p>
-<div class="simple-resource-boxes auto-resource-boxes" id="simpleResourceBoxes"></div>
-</section>
 <div class="ultra-plan-list" id="simplePlanList"></div>
 <div class="ultra-plan-footer">
 <p data-ultra-i18n="usedHelp"></p>
-<button class="primary-btn simple-apply-btn" data-ultra-i18n="usedButton" id="simpleApplyBtn"></button>
+<div class="plan-validation-buttons">
+<button class="primary-btn simple-apply-btn" id="simpleApplyBtn">Valider</button>
+<button class="secondary-btn" id="simpleRejectBtn">Non, modifier</button>
+</div>
 </div>
 <details class="simple-options-details plan-options-details">
 <summary data-ultra-i18n="adjustPlanOptional"></summary>
@@ -201,7 +215,7 @@
 <p class="help-text" data-ocr-i18n="firstScanNote"></p>
 </details>
 </section>
-<section class="view" id="plannerView">
+<section aria-hidden="true" class="view manual-legacy-view" id="plannerView">
 <section class="panel manual-intro">
 <p class="eyebrow" data-simple-i18n="manualMode"></p>
 <h2 data-simple-i18n="manualTitle"></h2>
@@ -282,6 +296,17 @@
 <div aria-labelledby="confirmTitle" aria-modal="true" class="modal-backdrop hidden" id="confirmModal" role="dialog">
 <div class="modal-card"><h2 id="confirmTitle"></h2><p id="confirmMessage"></p><div class="modal-actions"><button class="secondary-btn" data-i18n="cancel" id="confirmCancel"></button><button class="danger-btn" data-i18n="confirm" id="confirmOk"></button></div></div>
 </div>
+<div aria-labelledby="smartHelpTitle" aria-modal="true" class="modal-backdrop hidden" id="smartHelpModal" role="dialog">
+<div class="modal-card smart-help-card">
+<span aria-hidden="true" class="smart-help-icon">💡</span>
+<h2 id="smartHelpTitle"></h2>
+<p id="smartHelpMessage"></p>
+<div class="modal-actions smart-help-actions">
+<button class="primary-btn" id="smartHelpAction" type="button"></button>
+<button class="secondary-btn" id="smartHelpClose" type="button"></button>
+</div>
+</div>
+</div>
 <div aria-labelledby="simpleRecapTitle" aria-modal="true" class="recap-backdrop hidden" id="simpleRecapModal" role="dialog">
 <section class="recap-sheet">
 <header class="recap-header">
@@ -297,6 +322,6 @@
 </section>
 </div>
 <div class="toast hidden" id="toast" role="status"></div>
-<script src="app.js?v=2.13.0"></script>
+<script src="app.js?v=2.20.0"></script>
 </body>
 </html>
