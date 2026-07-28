@@ -1,3 +1,11 @@
+VS Planner v2.10 — Affichage EXP et mise à jour automatique
+
+NOUVEAUTÉS v2.10
+- les grandes quantités d’EXP sont simplifiées : 1 980 000 000 devient 1,98 G EXP ;
+- le calcul exact des points ne change pas ;
+- le site force maintenant le chargement de la nouvelle image et des nouveaux fichiers ;
+- les anciennes versions conservées par Safari sont remplacées automatiquement après la mise à jour.
+
 VS Planner v2.9 — Image GoMo traduite automatiquement
 
 NOUVEAUTÉS v2.9
