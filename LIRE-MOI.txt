@@ -1,4 +1,14 @@
-VS Planner v2.23 — Modification des points déjà obtenus
+VS Planner v2.25 — Quantités exactes et appui long
+
+NOUVEAUTÉS v2.25
+- Le plan affiche maintenant la quantité exacte juste à côté des points.
+- Un appui long sur les boutons + ou − fait défiler rapidement les quantités.
+
+NOUVEAUTÉS v2.24
+- Traduction du bouton « Modifier » dans les 7 langues disponibles.
+- Traduction du bouton « Valider » dans les 7 langues disponibles.
+- Description accessible du champ de points adaptée à la langue choisie.
+- Fonctionnement conservé sur iPhone, iPad, Android et ordinateur.
 
 NOUVEAUTÉS v2.23
 - Bouton « ✏️ Modifier » directement dans la case « Déjà obtenu ».
