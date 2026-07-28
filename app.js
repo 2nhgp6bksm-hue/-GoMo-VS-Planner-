@@ -1,7 +1,7 @@
 'use strict';
 
 const STORAGE_KEY = 'gomo_vs_planner_v1_1';
-const VERSION = '2.4.0';
+const VERSION = '2.5.0';
 const LANGS = { fr:'Français', en:'English', de:'Deutsch', ro:'Română', uk:'Українська', ko:'한국어', hr:'Hrvatski' };
 const LOCALES = { fr:'fr-FR', en:'en-GB', de:'de-DE', ro:'ro-RO', uk:'uk-UA', ko:'ko-KR', hr:'hr-HR' };
 
@@ -326,7 +326,7 @@ function strategyComparator(strategy){return(a,b)=>{if(strategy==='score')return
 function strategyCost(c,strategy,qty){const scarcity=c.item.scarcity*5000,action=Math.min(qty,100000)*.01;if(strategy==='score')return c.item.scarcity*100;if(strategy==='progress')return(6-c.item.progression)*4000+c.item.scarcity*1000;if(strategy==='prudent')return scarcity*2+c.item.eco*2500+action;return scarcity+c.item.eco*1500+action;}
 function dayAdjustments(dayId=state.selectedDay){const key=String(dayId);if(!state.planAdjustments||typeof state.planAdjustments!=='object')state.planAdjustments={};if(!state.planAdjustments[key]||typeof state.planAdjustments[key]!=='object')state.planAdjustments[key]={fixed:{},excluded:{}};const a=state.planAdjustments[key];if(!a.fixed||typeof a.fixed!=='object')a.fixed={};if(!a.excluded||typeof a.excluded!=='object')a.excluded={};return a;}
 function calculatePlan(){
-  const d=day(),current=Number(state.currentPoints[d.id]||0),goal=target(),needed=Math.max(0,goal-current),speedLimit=Math.max(0,Number(state.profile.speedupLimitDays||0)*1440),adjustments=dayAdjustments(d.id);
+  const d=day(),current=Number(state.currentPoints[d.id]||0),goal=target(),needed=Math.max(0,goal-current),speedLimit=state.view==='scanner'?Number.POSITIVE_INFINITY:Math.max(0,Number(state.profile.speedupLimitDays||0)*1440),adjustments=dayAdjustments(d.id);
   let speedUsed=0;
   if(needed<=0)return{dayId:d.id,goal,current,totalPoints:0,finalPoints:current,steps:[],reached:true,overshoot:current-goal,missing:0,strategy:state.profile.strategy,speedUsed:0};
   const candidates=d.items.map(i=>({item:i,available:Math.floor(usable(i)),ppu:effectivePoints(d.id,i)})).filter(c=>c.available>0&&c.ppu>0).sort(strategyComparator(state.profile.strategy));
