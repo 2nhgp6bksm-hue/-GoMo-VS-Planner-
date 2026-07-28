@@ -1,3 +1,10 @@
+VS Planner v2.5 — Correction du calcul automatique à 7,2 M
+
+CORRECTION PRINCIPALE v2.5
+- En mode simple, la limite manuelle de 10 jours d’accélérateurs ne bloque plus la proposition.
+- Si le stock reconnu est suffisant, le calcul continue automatiquement jusqu’à 7,2 M avec la marge.
+- La limite d’accélérateurs reste disponible dans la saisie manuelle avancée.
+
 VS Planner v2.4 — Valeurs vérifiées par captures
 
 GoMo VS Planner v2.3 — GitHub Pages
