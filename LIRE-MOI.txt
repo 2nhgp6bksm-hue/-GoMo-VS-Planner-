@@ -1,3 +1,57 @@
+VS Planner v2.20 — Semaine d’économie
+
+NOUVEAUTÉS v2.20
+- bouton « Semaine d’économie » ajouté à l’étape 3 ;
+- le planner vise le minimum de 7,2 M sans ajouter la marge habituelle ;
+- les ressources faciles à remplacer sont utilisées en priorité ;
+- les ressources rares et importantes sont gardées autant que possible ;
+- bouton et explication traduits dans les 7 langues.
+
+VS Planner v2.19 — Images des ressources
+
+NOUVEAUTÉS v2.19
+- une image reconnaissable est associée à chaque type de ressource ;
+- les images apparaissent dans le choix des ressources et dans le plan final ;
+- les ressources restent faciles à identifier sur le petit écran d’un iPhone.
+
+VS Planner v2.18 — Aide intelligente
+
+NOUVEAUTÉS v2.18
+- bouton « Je ne sais pas quoi faire » ajouté sous le menu ;
+- le conseil s’adapte automatiquement à l’état du plan ;
+- un bouton conduit directement vers les captures, les ressources ou le plan ;
+- aide traduite dans les 7 langues de l’application.
+
+VS Planner v2.17 — Parcours en 4 étapes
+
+NOUVEAUTÉS v2.17
+- étape 3 : choisir les ressources à utiliser ;
+- étape 4 : suivre le plan calculé ;
+- boutons « Valider » et « Non, modifier » ajoutés à la fin ;
+- « Non, modifier » ramène directement au choix des ressources.
+
+VS Planner v2.16 — Texte du plan raccourci
+
+NOUVEAUTÉS v2.16
+- l’explication devient « Choisis tes ressources pour atteindre l’objectif. » ;
+- le texte est raccourci dans toutes les langues ;
+- la disposition mobile empêche désormais les mots de se retrouver seuls sur chaque ligne.
+
+VS Planner v2.15 — Saisie manuelle retirée
+
+NOUVEAUTÉS v2.15
+- l’onglet « Saisie manuelle » est retiré du menu ;
+- le site reste centré sur le mode simple ;
+- le menu contient uniquement Mode simple, Guide semaine et Réglages.
+
+VS Planner v2.14 — Quantité saisissable
+
+NOUVEAUTÉS v2.14
+- le nombre entre les boutons − et + devient une case numérique ;
+- la quantité exacte peut être écrite directement avec le clavier du téléphone ;
+- le planner recalcule le plan dès que la valeur est validée ;
+- les boutons − et + restent disponibles.
+
 VS Planner v2.13 — Bouton « Ne pas utiliser »
 
 NOUVEAUTÉS v2.13
