@@ -1,3 +1,31 @@
+VS Planner v2.23 — Modification des points déjà obtenus
+
+NOUVEAUTÉS v2.23
+- Bouton « ✏️ Modifier » directement dans la case « Déjà obtenu ».
+- Saisie numérique des points actuels.
+- Boutons −100 000 et +100 000 pour une correction rapide.
+- Bouton « Valider » avec recalcul automatique du plan et des ressources.
+
+NOUVEAUTÉS v2.22
+- Les missions secrètes UR sont ajoutées clairement au calcul du mardi.
+- Les camions et les missions ne donnent des points que lorsqu’ils sont de qualité UR.
+- Une alerte visible rappelle de saisir uniquement le nombre de camions UR réellement envoyés et de missions UR réellement prises.
+- Les camions ou missions SSR/R ne sont jamais comptés dans ces deux lignes.
+- La lecture automatique ne transforme plus un simple nombre de transactions en camions UR sans preuve de la qualité UR.
+- Les missions UR sont proposées avant les accélérateurs afin d’économiser les ressources importantes.
+
+VS Planner v2.21 — Correction du mardi
+
+NOUVEAUTÉS v2.21
+- Les camions commerciaux UR sont maintenant reconnus et calculés le mardi.
+- Les tickets de recrutement survivant sont maintenant reconnus et calculés le mardi.
+- Ces deux ressources sont proposées avant les accélérateurs pour mieux économiser ceux-ci.
+- La limite reste fixée à 5 camions UR par jour.
+- La réserve automatique de 50 tickets survivants a été retirée.
+- Le bouton « Ne pas utiliser » reste disponible pour protéger chaque ressource.
+- Les anciennes exclusions mémorisées pour ces deux ressources sont supprimées lors de la mise à jour.
+- Lecture des captures améliorée pour les camions UR et les tickets survivants.
+
 VS Planner v2.20 — Semaine d’économie
 
 NOUVEAUTÉS v2.20
