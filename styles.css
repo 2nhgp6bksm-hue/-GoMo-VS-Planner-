@@ -218,3 +218,12 @@ body.recap-open{overflow:hidden}
 .ultra-plan-values strong{color:#fff;font-size:1.02rem}
 .multi-step-btn,.plan-step-btn{touch-action:none;-webkit-user-select:none;user-select:none}
 @media(max-width:760px){.ultra-plan-values{grid-column:3;justify-items:start;min-width:0;text-align:left}}
+
+/* v2.26 — petits points d'information multilingues */
+.title-info-line{display:flex;align-items:center;gap:8px}
+.title-info-line h2{margin-right:0}
+.mini-info-btn{display:grid;place-items:center;flex:0 0 24px;width:24px;height:24px;padding:0;border:1px solid #83dcff;border-radius:50%;background:#0c4564;color:#dff7ff;font:inherit;font-size:.9rem;font-weight:950;line-height:1;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.22)}
+.mini-info-btn:active{transform:scale(.94)}
+.mini-info-card{text-align:center;border:2px solid #59d4ff;background:linear-gradient(180deg,#103d58,#071c2c)}
+.mini-info-large{display:grid;place-items:center;width:48px;height:48px;margin:0 auto 10px;border-radius:50%;background:#59d4ff;color:#062033;font-size:1.65rem;font-weight:950}
+.mini-info-card h2{color:#fff}.mini-info-card p{color:#d6edf8}.mini-info-card button{width:100%}
