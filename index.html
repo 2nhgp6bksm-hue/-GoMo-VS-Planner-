@@ -11,7 +11,7 @@
 <title>GoMo VS Planner</title>
 <link href="manifest.webmanifest" rel="manifest"/>
 <link href="icon-192.png" rel="apple-touch-icon"/>
-<link href="styles.css?v=2.25.0" rel="stylesheet"/>
+<link href="styles.css?v=2.26.0" rel="stylesheet"/>
 </head>
 <body>
 <div class="app-shell">
@@ -66,7 +66,7 @@
 <section class="panel ultra-step-card" id="simpleDayStep">
 <div class="ultra-step-heading">
 <span class="ultra-step-number">1</span>
-<div><p class="eyebrow" data-ultra-i18n="stepOne"></p><h2 data-ultra-i18n="chooseDayTitle"></h2></div>
+<div><p class="eyebrow" data-ultra-i18n="stepOne"></p><div class="title-info-line"><h2 data-ultra-i18n="chooseDayTitle"></h2><button class="mini-info-btn" data-info-step="day" type="button">ⓘ</button></div></div>
 </div>
 <div class="ultra-current-day">
 <div><span data-ocr-i18n="scanDay"></span><strong id="assistantDayTitle"></strong><small class="sr-only" id="scannerDayLabel"></small></div>
@@ -82,7 +82,7 @@
 <section class="panel ultra-step-card ultra-upload-card" id="simplePhotoStep">
 <div class="ultra-step-heading">
 <span class="ultra-step-number">2</span>
-<div><p class="eyebrow" data-ultra-i18n="stepTwo"></p><h2 data-ultra-i18n="addPhotosTitle"></h2><p data-ultra-i18n="addPhotosText"></p></div>
+<div><p class="eyebrow" data-ultra-i18n="stepTwo"></p><div class="title-info-line"><h2 data-ultra-i18n="addPhotosTitle"></h2><button class="mini-info-btn" data-info-step="photos" type="button">ⓘ</button></div><p data-ultra-i18n="addPhotosText"></p></div>
 </div>
 <label class="primary-btn file-btn ultra-upload-btn"><span data-ultra-i18n="addScreenshots"></span><input accept="image/*" id="ocrInput" multiple="" type="file"/></label>
 <p class="ultra-photo-tip" data-ultra-i18n="photoTip"></p>
@@ -127,7 +127,7 @@
 <section class="panel ultra-step-card" id="simpleResourceStep">
 <div class="ultra-step-heading">
 <span class="ultra-step-number">3</span>
-<div><p class="eyebrow" id="workflowStepThree">ÉTAPE 3</p><h2 id="workflowChooseTitle">Choisis les ressources à utiliser</h2><p id="workflowChooseHelp">Coche plusieurs ressources, puis ajuste les quantités avec − et +.</p></div>
+<div><p class="eyebrow" id="workflowStepThree">ÉTAPE 3</p><div class="title-info-line"><h2 id="workflowChooseTitle">Choisis les ressources à utiliser</h2><button class="mini-info-btn" data-info-step="resources" type="button">ⓘ</button></div><p id="workflowChooseHelp">Coche plusieurs ressources, puis ajuste les quantités avec − et +.</p></div>
 </div>
 <button aria-pressed="false" class="economy-week-btn" id="economyWeekBtn" type="button">
 <span class="economy-week-icon">🛡️</span>
@@ -142,7 +142,7 @@
 <section class="panel simple-points-panel ultra-step-card ultra-plan-card" id="simplePointsPanel">
 <div class="ultra-step-heading">
 <span class="ultra-step-number">4</span>
-<div><p class="eyebrow" id="workflowStepFour">ÉTAPE 4</p><h2 data-ultra-i18n="planTitle"></h2><p data-ultra-i18n="planText"></p></div>
+<div><p class="eyebrow" id="workflowStepFour">ÉTAPE 4</p><div class="title-info-line"><h2 data-ultra-i18n="planTitle"></h2><button class="mini-info-btn" data-info-step="plan" type="button">ⓘ</button></div><p data-ultra-i18n="planText"></p></div>
 <span class="result-badge warning" id="simplePointsStatus"></span>
 </div>
 <div class="ultra-plan-summary">
@@ -321,6 +321,14 @@
 </div>
 </div>
 </div>
+<div aria-labelledby="miniInfoTitle" aria-modal="true" class="modal-backdrop hidden" id="miniInfoModal" role="dialog">
+<div class="modal-card mini-info-card">
+<span aria-hidden="true" class="mini-info-large">ⓘ</span>
+<h2 id="miniInfoTitle"></h2>
+<p id="miniInfoMessage"></p>
+<button class="primary-btn" id="miniInfoClose" type="button"></button>
+</div>
+</div>
 <div aria-labelledby="simpleRecapTitle" aria-modal="true" class="recap-backdrop hidden" id="simpleRecapModal" role="dialog">
 <section class="recap-sheet">
 <header class="recap-header">
@@ -336,6 +344,6 @@
 </section>
 </div>
 <div class="toast hidden" id="toast" role="status"></div>
-<script src="app.js?v=2.25.0"></script>
+<script src="app.js?v=2.26.0"></script>
 </body>
 </html>
