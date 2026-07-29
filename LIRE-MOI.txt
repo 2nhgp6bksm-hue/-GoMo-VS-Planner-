@@ -1,6 +1,12 @@
-VS Planner v2.25 — Quantités exactes et appui long
+VS Planner v2.26 — Petits points d’information multilingues
 
-NOUVEAUTÉS v2.25
+NOUVEAUTÉS v2.26
+
+- Un petit bouton ⓘ apparaît à côté de chacune des 4 étapes.
+- Chaque bouton explique clairement ce qu’il faut faire.
+- Les explications sont disponibles en français, anglais, allemand,
+  roumain, ukrainien, coréen et croate.
+- Les quantités exactes et l’appui long de la v2.25 sont conservés.
 - Le plan affiche maintenant la quantité exacte juste à côté des points.
 - Un appui long sur les boutons + ou − fait défiler rapidement les quantités.
 
