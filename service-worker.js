@@ -1,9 +1,10 @@
-const CACHE='gomo-vs-planner-v2.30.0';
-const ASSETS=['./','./index.html','./styles.css?v=2.26.0','./app.js?v=2.26.0','./upgrade-v2.30.js','./manifest.webmanifest','./icon-192.png','./icon-512.png','./gomo-vs-planner.png?v=2.22.0'];
+const CACHE='gomo-vs-planner-v2.31.0';
+const ASSETS=['./','./index.html','./styles.css?v=2.26.0','./app.js?v=2.26.0','./upgrade-v2.30.js','./upgrade-v2.31.js','./manifest.webmanifest','./icon-192.png','./icon-512.png','./gomo-vs-planner.png?v=2.22.0'];
 
 const CENTRAL_URL='https://gomo-central-site.gjp86wh7p2.workers.dev/';
 const CENTRAL_MARKER='data-gomo-central-back';
-const UPGRADE_MARKER='data-gomo-v230';
+const V230_MARKER='data-gomo-v230';
+const V231_MARKER='data-gomo-v231';
 
 async function decorateHtml(response){
   if(!response) return response;
@@ -20,53 +21,32 @@ async function decorateHtml(response){
     html=html.replace('</head>',style+'</head>');
     html=html.replace(/<body([^>]*)>/i,`<body$1><a ${CENTRAL_MARKER} class="gomo-central-back" href="${CENTRAL_URL}" aria-label="Retour à GoMo Central">⌂ <span class="gomo-central-back-text">GoMo Central</span></a>`);
   }
-  if(!html.includes(UPGRADE_MARKER)){
-    html=html.replace('</body>',`<script ${UPGRADE_MARKER} src="./upgrade-v2.30.js"></script></body>`);
-  }
+  if(!html.includes(V230_MARKER))html=html.replace('</body>',`<script ${V230_MARKER} src="./upgrade-v2.30.js"></script></body>`);
+  if(!html.includes(V231_MARKER))html=html.replace('</body>',`<script ${V231_MARKER} src="./upgrade-v2.31.js"></script></body>`);
 
   const headers=new Headers(response.headers);
-  headers.delete('content-length');
-  headers.delete('content-encoding');
-  headers.delete('etag');
+  headers.delete('content-length');headers.delete('content-encoding');headers.delete('etag');
   return new Response(html,{status:response.status,statusText:response.statusText,headers});
 }
 
 self.addEventListener('install',event=>event.waitUntil(
   caches.open(CACHE).then(cache=>cache.addAll(ASSETS)).then(()=>self.skipWaiting())
 ));
-
 self.addEventListener('activate',event=>event.waitUntil(
-  caches.keys()
-    .then(keys=>Promise.all(keys.filter(key=>key!==CACHE).map(key=>caches.delete(key))))
+  caches.keys().then(keys=>Promise.all(keys.filter(key=>key!==CACHE).map(key=>caches.delete(key))))
     .then(()=>self.clients.claim())
     .then(()=>self.clients.matchAll({type:'window'}))
     .then(windows=>Promise.all(windows.map(client=>client.navigate(client.url))))
 ));
-
 self.addEventListener('fetch',event=>{
-  if(event.request.method!=='GET'||!event.request.url.startsWith(self.location.origin)) return;
-
+  if(event.request.method!=='GET'||!event.request.url.startsWith(self.location.origin))return;
   if(event.request.mode==='navigate'){
-    event.respondWith(
-      fetch(event.request,{cache:'no-store'})
-        .then(decorateHtml)
-        .then(response=>{
-          const copy=response.clone();
-          caches.open(CACHE).then(cache=>cache.put('./index.html',copy));
-          return response;
-        })
-        .catch(()=>caches.match('./index.html').then(decorateHtml))
-    );
+    event.respondWith(fetch(event.request,{cache:'no-store'}).then(decorateHtml).then(response=>{
+      const copy=response.clone();caches.open(CACHE).then(cache=>cache.put('./index.html',copy));return response;
+    }).catch(()=>caches.match('./index.html').then(decorateHtml)));
     return;
   }
-
-  event.respondWith(
-    fetch(event.request)
-      .then(response=>{
-        const copy=response.clone();
-        caches.open(CACHE).then(cache=>cache.put(event.request,copy));
-        return response;
-      })
-      .catch(()=>caches.match(event.request))
-  );
+  event.respondWith(fetch(event.request).then(response=>{
+    const copy=response.clone();caches.open(CACHE).then(cache=>cache.put(event.request,copy));return response;
+  }).catch(()=>caches.match(event.request)));
 });
