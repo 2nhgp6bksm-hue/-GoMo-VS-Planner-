@@ -1,8 +1,9 @@
-const CACHE='gomo-vs-planner-v2.29.0';
-const ASSETS=['./','./index.html','./styles.css?v=2.26.0','./app.js?v=2.26.0','./manifest.webmanifest','./icon-192.png','./icon-512.png','./gomo-vs-planner.png?v=2.22.0'];
+const CACHE='gomo-vs-planner-v2.30.0';
+const ASSETS=['./','./index.html','./styles.css?v=2.26.0','./app.js?v=2.26.0','./upgrade-v2.30.js','./manifest.webmanifest','./icon-192.png','./icon-512.png','./gomo-vs-planner.png?v=2.22.0'];
 
 const CENTRAL_URL='https://gomo-central-site.gjp86wh7p2.workers.dev/';
 const CENTRAL_MARKER='data-gomo-central-back';
+const UPGRADE_MARKER='data-gomo-v230';
 
 async function decorateHtml(response){
   if(!response) return response;
@@ -18,6 +19,9 @@ async function decorateHtml(response){
     </style>`;
     html=html.replace('</head>',style+'</head>');
     html=html.replace(/<body([^>]*)>/i,`<body$1><a ${CENTRAL_MARKER} class="gomo-central-back" href="${CENTRAL_URL}" aria-label="Retour à GoMo Central">⌂ <span class="gomo-central-back-text">GoMo Central</span></a>`);
+  }
+  if(!html.includes(UPGRADE_MARKER)){
+    html=html.replace('</body>',`<script ${UPGRADE_MARKER} src="./upgrade-v2.30.js"></script></body>`);
   }
 
   const headers=new Headers(response.headers);
