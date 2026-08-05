@@ -1,7 +1,7 @@
-const CACHE='gomo-vs-planner-v2.42.0';
+const CACHE='gomo-vs-planner-v3.00.0';
 const ASSETS=[
   './','./index.html','./styles.css?v=2.26.0','./app.js?v=2.26.0',
-  './upgrade-v2.30.js','./upgrade-v2.31.js','./upgrade-v2.32.js','./upgrade-v2.40.js','./upgrade-v2.41.js','./upgrade-v2.42.js',
+  './upgrade-v2.30.js','./upgrade-v2.31.js','./upgrade-v2.32.js','./upgrade-v2.40.js','./upgrade-v2.41.js','./upgrade-v2.42.js','./upgrade-v3.00.js',
   './manifest.webmanifest','./icon-192.png','./icon-512.png','./gomo-vs-planner-v2.42.png?v=2.42.0'
 ];
 
@@ -14,7 +14,8 @@ const MARKERS=[
   ['data-gomo-v232','./upgrade-v2.32.js'],
   ['data-gomo-v240','./upgrade-v2.40.js'],
   ['data-gomo-v241','./upgrade-v2.41.js'],
-  ['data-gomo-v242','./upgrade-v2.42.js']
+  ['data-gomo-v242','./upgrade-v2.42.js'],
+  ['data-gomo-v300','./upgrade-v3.00.js']
 ];
 
 async function decorateHtml(response){
