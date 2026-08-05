@@ -1,8 +1,8 @@
-const CACHE='gomo-vs-planner-v2.40.0';
+const CACHE='gomo-vs-planner-v2.41.0';
 const ASSETS=[
   './','./index.html','./styles.css?v=2.26.0','./app.js?v=2.26.0',
-  './upgrade-v2.30.js','./upgrade-v2.31.js','./upgrade-v2.32.js','./upgrade-v2.40.js',
-  './manifest.webmanifest','./icon-192.png','./icon-512.png','./gomo-vs-planner.png?v=2.22.0'
+  './upgrade-v2.30.js','./upgrade-v2.31.js','./upgrade-v2.32.js','./upgrade-v2.40.js','./upgrade-v2.41.js',
+  './manifest.webmanifest','./icon-192.png','./icon-512.png','./gomo-vs-planner.png?v=2.41.0'
 ];
 
 const CENTRAL_URL='https://gomo-central-site.gjp86wh7p2.workers.dev/';
@@ -11,7 +11,8 @@ const MARKERS=[
   ['data-gomo-v230','./upgrade-v2.30.js'],
   ['data-gomo-v231','./upgrade-v2.31.js'],
   ['data-gomo-v232','./upgrade-v2.32.js'],
-  ['data-gomo-v240','./upgrade-v2.40.js']
+  ['data-gomo-v240','./upgrade-v2.40.js'],
+  ['data-gomo-v241','./upgrade-v2.41.js']
 ];
 
 async function decorateHtml(response){
