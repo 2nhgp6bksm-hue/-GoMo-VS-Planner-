@@ -31,5 +31,9 @@ body.gomo-v315-simple .app-shell{color:var(--brown)!important}
 .v318-details{border-top-color:rgba(200,148,45,.22)!important}.v318-day.today{outline-color:rgba(200,148,45,.55)!important}
 .v318-backfill input:focus,.v317-field input:focus,.v317-field select:focus,.v315-field input:focus,.v315-field select:focus{outline:2px solid rgba(200,148,45,.3)!important;outline-offset:1px!important}
 .v315-version,#gomoV240Version{color:#8a6425!important;border-color:rgba(200,148,45,.35)!important;background:rgba(255,250,240,.9)!important}
+/* Derniers accents bleus de la couche v3.16 */
+.v316-target span,.v316-push label,.v316-gain{color:var(--goldDark)!important}
+.v316-step:before{background:linear-gradient(135deg,#e1b84e,#b9851e)!important;color:#fffdf6!important}
+.v316-smart-plan .v316-stat span,.v316-smart-plan .v316-step small{color:var(--goldDark)!important}
 body.gomo-v315-simple .hero{background:transparent!important}
 @media(max-width:580px){.v315-card,.v316-mode-panel,.v316-smart-plan,.v316-done,#gomoV317Arms,#gomoV318Week{border-radius:20px!important}}
