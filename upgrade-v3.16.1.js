@@ -1,17 +1,19 @@
 'use strict';
 
-/* GoMo VS Planner v3.20.1 — finition visuelle ivoire/doré, accents bleus remplacés par doré, moteur v3.19.2 inchangé. */
+/* GoMo VS Planner v3.20.2 — finition visuelle ivoire/doré, derniers accents bleus remplacés par doré, moteur v3.19.2 inchangé. */
 (() => {
-  const VERSION='3.20.1';
+  const VERSION='3.20.2';
   const GUIDE_VERSION=`Guide automatique · v${VERSION}`;
   const LEGACY_VERSION=`Version ${VERSION}`;
   let scheduled=false;
   const SCORE_LABEL={fr:'Score VS réel',en:'Real VS score',de:'Echte VS-Punkte',ro:'Scor VS real',uk:'Реальний рахунок VS',ko:'실제 VS 점수',hr:'Stvarni VS rezultat',pt:'Pontuação VS real'};
 
   function loadTheme(){
-    if(document.querySelector('link[data-gomo-ivory-gold]'))return;
+    const old=document.querySelector('link[data-gomo-ivory-gold]');
+    if(old&&old.getAttribute('href')?.includes('3.20.2'))return;
+    if(old)old.remove();
     const l=document.createElement('link');
-    l.rel='stylesheet';l.href='./theme-ivory-gold.css?v=3.20.1';l.dataset.gomoIvoryGold='1';
+    l.rel='stylesheet';l.href='./theme-ivory-gold.css?v=3.20.2';l.dataset.gomoIvoryGold='1';
     document.head.appendChild(l);
   }
   function lang(){try{return String(state?.language||document.documentElement.lang||'fr').split('-')[0];}catch{return'fr';}}
@@ -52,7 +54,7 @@
     loadScript('data-gomo-v3192-loader','data-gomo-v3192-ready','./upgrade-v3.19.2.js?v=3.19.2');
   }
 
-  function clean(){scheduled=false;loadTheme();ensureStyle();const legacy=document.getElementById('gomoV241Recap');if(legacy&&document.body.classList.contains('gomo-v315-simple')&&legacy.getAttribute('aria-hidden')!=='true')legacy.setAttribute('aria-hidden','true');const oldVersion=document.getElementById('gomoV240Version');if(oldVersion&&oldVersion.textContent!==LEGACY_VERSION)oldVersion.textContent=LEGACY_VERSION;document.querySelectorAll('.v315-version').forEach(node=>{if(node.textContent!==GUIDE_VERSION)node.textContent=GUIDE_VERSION;});enhanceFinalScore();document.documentElement.setAttribute('data-gomo-v3201-visual-ready','1');}
+  function clean(){scheduled=false;loadTheme();ensureStyle();const legacy=document.getElementById('gomoV241Recap');if(legacy&&document.body.classList.contains('gomo-v315-simple')&&legacy.getAttribute('aria-hidden')!=='true')legacy.setAttribute('aria-hidden','true');const oldVersion=document.getElementById('gomoV240Version');if(oldVersion&&oldVersion.textContent!==LEGACY_VERSION)oldVersion.textContent=LEGACY_VERSION;document.querySelectorAll('.v315-version').forEach(node=>{if(node.textContent!==GUIDE_VERSION)node.textContent=GUIDE_VERSION;});enhanceFinalScore();document.documentElement.setAttribute('data-gomo-v3202-visual-ready','1');}
   function scheduleClean(){if(scheduled)return;scheduled=true;setTimeout(clean,0);}
   function start(){loadTheme();loadModules();clean();const observer=new MutationObserver(scheduleClean);observer.observe(document.documentElement,{childList:true,subtree:true,attributes:true,attributeFilter:['class']});console.info('GoMo VS Planner ivory gold theme',VERSION);}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});else start();
