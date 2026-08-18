@@ -1,17 +1,11 @@
 'use strict';
 
-/* GoMo VS Planner v3.17 — nettoyage visuel iPhone.
-   - conserve le correctif anti-écran noir
-   - compacte l'ancien grand en-tête pendant le guide automatique
-   - masque le récapitulatif historique v2.41 dans le parcours simple
-   - améliore la lisibilité du score final sans modifier sa valeur enregistrée
-*/
+/* GoMo VS Planner v3.17 — nettoyage visuel iPhone + chargement Course aux armements. */
 (() => {
   const VERSION='3.17.0';
   const GUIDE_VERSION=`Guide automatique · v${VERSION}`;
   const LEGACY_VERSION=`Version ${VERSION}`;
   let scheduled=false;
-
   const SCORE_LABEL={fr:'Score VS réel',en:'Real VS score',de:'Echte VS-Punkte',ro:'Scor VS real',uk:'Реальний рахунок VS',ko:'실제 VS 점수',hr:'Stvarni VS rezultat',pt:'Pontuação VS real'};
   function lang(){try{return String(state?.language||document.documentElement.lang||'fr').split('-')[0];}catch{return'fr';}}
   function formatNumber(value){const n=Math.max(0,Number(value)||0),locale={fr:'fr-FR',en:'en-GB',de:'de-DE',ro:'ro-RO',uk:'uk-UA',ko:'ko-KR',hr:'hr-HR',pt:'pt-PT'}[lang()]||'fr-FR';try{return new Intl.NumberFormat(locale,{maximumFractionDigits:0}).format(n);}catch{return String(Math.round(n));}}
@@ -30,8 +24,9 @@
     @media(max-width:580px){body.gomo-v315-simple .hero-tools{grid-template-columns:1fr!important}body.gomo-v315-simple .hero{padding-top:6px!important}}
   `;document.head.appendChild(s);}
   function enhanceFinalScore(){const done=document.querySelector('.v316-done'),input=done?.querySelector('#v316Actual');if(!done||!input)return;const label=input.closest('label')||input.parentElement;if(label&&!label.querySelector('.v316-score-caption')){const caption=document.createElement('span');caption.className='v316-score-caption';caption.textContent=SCORE_LABEL[lang()]||SCORE_LABEL.fr;label.insertBefore(caption,input);}let readable=label?.querySelector('.v316-score-readable');if(label&&!readable){readable=document.createElement('div');readable.className='v316-score-readable';input.insertAdjacentElement('afterend',readable);}const refresh=()=>{if(readable)readable.textContent=`${formatNumber(input.value)} pts`;};refresh();if(!input.dataset.v3163Bound){input.dataset.v3163Bound='1';input.addEventListener('input',refresh,{passive:true});}}
+  function loadV317(){if(document.querySelector('script[data-gomo-v317-loader]')||document.documentElement.hasAttribute('data-gomo-v317-ready'))return;const s=document.createElement('script');s.dataset.gomoV317Loader='1';s.src='./upgrade-v3.17.js?v=3.17.0';s.async=false;document.head.appendChild(s);}
   function clean(){scheduled=false;ensureStyle();const legacy=document.getElementById('gomoV241Recap');if(legacy&&document.body.classList.contains('gomo-v315-simple')&&legacy.getAttribute('aria-hidden')!=='true')legacy.setAttribute('aria-hidden','true');const oldVersion=document.getElementById('gomoV240Version');if(oldVersion&&oldVersion.textContent!==LEGACY_VERSION)oldVersion.textContent=LEGACY_VERSION;document.querySelectorAll('.v315-version').forEach(node=>{if(node.textContent!==GUIDE_VERSION)node.textContent=GUIDE_VERSION;});enhanceFinalScore();document.documentElement.setAttribute('data-gomo-v317-visual-ready','1');}
   function scheduleClean(){if(scheduled)return;scheduled=true;setTimeout(clean,0);}
-  function start(){clean();const observer=new MutationObserver(scheduleClean);observer.observe(document.documentElement,{childList:true,subtree:true,attributes:true,attributeFilter:['class']});console.info('GoMo VS Planner visual cleanup',VERSION);}
+  function start(){loadV317();clean();const observer=new MutationObserver(scheduleClean);observer.observe(document.documentElement,{childList:true,subtree:true,attributes:true,attributeFilter:['class']});console.info('GoMo VS Planner visual cleanup',VERSION);}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});else start();
 })();
