@@ -1,0 +1,18 @@
+:root{--gomo-gold:#c8942d;--gomo-gold-dark:#9a6b16;--gomo-gold-soft:#e4c36f;--gomo-brown:#3c2918;--gomo-brown-soft:#6c563c;--gomo-ivory:#fffaf0}
+/* Finition finale : supprimer les derniers accents bleus sans toucher aux couleurs d'état. */
+.v315-advanced{border-top-color:rgba(200,148,45,.24)!important}
+.v315-advanced summary,.v315-brand,.v315-help,.v315-field>span,.v315-field span,.v315-choice small,.v315-row small,.v315-manual-row small,.v315-stat span,.v315-planline small,.v315-gain,.v315-progress small,.v315-version,.v316-target span,.v316-push label,.v316-stat span,.v316-step small,.v316-gain,.v317-field span,.v317-wait,.v318-details summary,.v318-metric span,.v319-metric span,.v319-today{color:var(--gomo-gold-dark)!important}
+.v316-step:before,.v315-planline:before{background:linear-gradient(135deg,var(--gomo-gold-soft),var(--gomo-gold))!important;color:#fffdf6!important}
+.v315-track{background:#ead9b6!important}
+.v315-fill{background:linear-gradient(90deg,var(--gomo-gold-soft),var(--gomo-gold))!important}
+.v315-day,.v315-upload,.v315-ocr-note{background:rgba(200,148,45,.07)!important;border-color:rgba(200,148,45,.34)!important}
+.v315-upload{color:var(--gomo-gold-dark)!important}
+.v315-ocr-note{color:var(--gomo-brown-soft)!important}
+.v315-row,.v315-choice,.v315-manual-row,.v315-number,.v315-field input,.v315-field select{border-color:rgba(200,148,45,.38)!important}
+.v315-row,.v315-choice{background:rgba(255,250,240,.82)!important;color:var(--gomo-brown)!important}
+.v315-manual-row{border-bottom-color:rgba(200,148,45,.18)!important}
+.v315-field input:focus,.v315-field select:focus,.v317-field input:focus,.v317-field select:focus,.v318-backfill input:focus{outline:2px solid rgba(200,148,45,.28)!important;outline-offset:1px!important}
+.v316-mode.active{box-shadow:0 0 0 1px rgba(200,148,45,.18) inset!important}
+/* Les états restent distincts : vert = réussi, orange = attention. */
+.v316-ok,.v316-keep strong,.v316-keep li,.v317-now,.v318-status:not(.warn):not(.info),.v319-advice:not(.warn):not(.info){color:#466d45!important}
+.v316-warn,.v318-status.warn,.v319-advice.warn,.v315-ocr-warning{color:#9a6411!important}
