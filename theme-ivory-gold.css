@@ -1,0 +1,27 @@
+:root{--ivory:#fffaf0;--ivory2:#f7eddc;--gold:#c8942d;--gold2:#e4c36f;--brown:#3c2918;--brown2:#6c563c;--lineGold:rgba(200,148,45,.38);--shadowSoft:0 14px 34px rgba(87,62,29,.14)}
+html,body{background:linear-gradient(180deg,#fffdf8 0%,#fbf3e6 55%,#f4e6d2 100%)!important;color:var(--brown)!important}
+body.gomo-v315-simple{background:linear-gradient(180deg,#fffdf8 0%,#fbf3e6 55%,#f4e6d2 100%)!important}
+body.gomo-v315-simple .app-shell{color:var(--brown)!important}
+.gomo-central-back{background:rgba(255,250,240,.96)!important;color:var(--brown)!important;border-color:var(--lineGold)!important;box-shadow:var(--shadowSoft)!important}
+.hero-tools select,.save-state,.v315-card,.v316-mode-panel,.v316-smart-plan,.v316-done,#gomoV317Arms,#gomoV318Week,.v319-pilot,.panel,.summary-card,.resource-card,.guide-card{background:linear-gradient(180deg,rgba(255,253,248,.98),rgba(248,238,219,.98))!important;color:var(--brown)!important;border-color:var(--lineGold)!important;box-shadow:var(--shadowSoft)!important}
+.hero-tools select,input,select,.v317-field select,.v317-field input,.v318-backfill input,.v316-push input,.v316-done input{background:#fffaf0!important;color:var(--brown)!important;border-color:rgba(200,148,45,.42)!important}
+.v315-card h1,.v315-card h2,.v315-card h3,.v315-card h4,.v316-mode-panel h4,.v316-smart-plan h3,.v316-done h3,#gomoV317Arms h3,#gomoV318Week h3,.v318-head h3,.v319-metric strong,.v316-step strong,.v318-day span,.v318-day strong{color:var(--brown)!important}
+.v315-card p,.v316-mode-panel p,.v316-smart-plan p,.v316-done p,#gomoV317Arms p,#gomoV318Week small,.v318-head small,.v318-metric span,.v319-metric span,.v319-today,.v316-stat span,.v316-step small,.v318-day small,.help-text,.points-warning{color:var(--brown2)!important}
+.v316-mode{background:#fff8eb!important;color:var(--brown)!important;border-color:rgba(200,148,45,.35)!important}
+.v316-mode.active{background:linear-gradient(135deg,#f6e1ad,#e2b957)!important;color:var(--brown)!important;border-color:#c8942d!important}
+.v316-mode small{color:#795f39!important}
+.v316-target,.v316-stat,.v316-step,.v316-keep,.v316-status,.v317-advice>div,.v318-metric,.v318-day,.v318-backfill,.v319-metric,.v319-advice,.v319-pilot{background:rgba(255,248,235,.9)!important}
+.v316-target strong,.v316-stat.gold strong,.v318-mode{color:#a96e09!important}
+.v318-mode{background:rgba(200,148,45,.12)!important}
+.v316-keep{border-color:rgba(78,137,86,.25)!important}.v316-keep strong,.v316-keep li,.v316-ok,.v317-now,.v318-status,.v319-advice{color:#466d45!important}
+.v316-warn,.v318-status.warn,.v319-advice.warn{color:#9a6411!important}
+.v317-ok{color:#a96e09!important}
+.v318-status.info,.v319-advice.info{color:#6a5941!important;background:rgba(232,216,186,.58)!important}
+.v316-primary,.v318-save,.primary-btn{background:linear-gradient(135deg,#d6a93f,#b9851e)!important;color:#fffdf6!important}
+.v316-secondary,.secondary-btn{background:#fff7e7!important;color:var(--brown)!important;border-color:rgba(200,148,45,.45)!important}
+.v316-ghost{background:transparent!important;color:#8a6425!important;border-color:rgba(200,148,45,.35)!important}
+.v315-card,.v316-mode-panel,.v316-smart-plan,.v316-done,#gomoV317Arms,#gomoV318Week{border-width:1px!important}
+.v315-progress,.v315-progress>span{border-color:rgba(200,148,45,.28)!important}.v315-progress>span{background:#c8942d!important}
+.v315-version,#gomoV240Version{color:#8a6425!important;border-color:rgba(200,148,45,.35)!important;background:rgba(255,250,240,.9)!important}
+body.gomo-v315-simple .hero{background:transparent!important}
+@media(max-width:580px){.v315-card,.v316-mode-panel,.v316-smart-plan,.v316-done,#gomoV317Arms,#gomoV318Week{border-radius:20px!important}}
