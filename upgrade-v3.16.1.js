@@ -1,8 +1,8 @@
 'use strict';
 
-/* GoMo VS Planner v3.19.1 — nettoyage visuel iPhone + modules Course, Semaine et pilotage adaptatif. */
+/* GoMo VS Planner v3.19.2 — nettoyage visuel iPhone + modules Course, Semaine et pilotage adaptatif. */
 (() => {
-  const VERSION='3.19.1';
+  const VERSION='3.19.2';
   const GUIDE_VERSION=`Guide automatique · v${VERSION}`;
   const LEGACY_VERSION=`Version ${VERSION}`;
   let scheduled=false;
@@ -39,24 +39,14 @@
     if(!input.dataset.v3163Bound){input.dataset.v3163Bound='1';input.addEventListener('input',refresh,{passive:true});}
   }
 
-  function loadScript(attr,ready,src){
-    if(document.querySelector(`script[${attr}]`)||document.documentElement.hasAttribute(ready))return;
-    const s=document.createElement('script');s.setAttribute(attr,'1');s.src=src;s.async=false;document.head.appendChild(s);
-  }
+  function loadScript(attr,ready,src){if(document.querySelector(`script[${attr}]`)||document.documentElement.hasAttribute(ready))return;const s=document.createElement('script');s.setAttribute(attr,'1');s.src=src;s.async=false;document.head.appendChild(s);}
   function loadModules(){
     loadScript('data-gomo-v317-loader','data-gomo-v317-ready','./upgrade-v3.17.js?v=3.17.2');
     loadScript('data-gomo-v318-loader','data-gomo-v318-ready','./upgrade-v3.18.js?v=3.18.1');
-    loadScript('data-gomo-v319-loader','data-gomo-v319-ready','./upgrade-v3.19.js?v=3.19.0');
-    loadScript('data-gomo-v3191-loader','data-gomo-v3191-ready','./upgrade-v3.19.1.js?v=3.19.1');
+    loadScript('data-gomo-v3192-loader','data-gomo-v3192-ready','./upgrade-v3.19.2.js?v=3.19.2');
   }
 
-  function clean(){
-    scheduled=false;ensureStyle();
-    const legacy=document.getElementById('gomoV241Recap');if(legacy&&document.body.classList.contains('gomo-v315-simple')&&legacy.getAttribute('aria-hidden')!=='true')legacy.setAttribute('aria-hidden','true');
-    const oldVersion=document.getElementById('gomoV240Version');if(oldVersion&&oldVersion.textContent!==LEGACY_VERSION)oldVersion.textContent=LEGACY_VERSION;
-    document.querySelectorAll('.v315-version').forEach(node=>{if(node.textContent!==GUIDE_VERSION)node.textContent=GUIDE_VERSION;});
-    enhanceFinalScore();document.documentElement.setAttribute('data-gomo-v3191-visual-ready','1');
-  }
+  function clean(){scheduled=false;ensureStyle();const legacy=document.getElementById('gomoV241Recap');if(legacy&&document.body.classList.contains('gomo-v315-simple')&&legacy.getAttribute('aria-hidden')!=='true')legacy.setAttribute('aria-hidden','true');const oldVersion=document.getElementById('gomoV240Version');if(oldVersion&&oldVersion.textContent!==LEGACY_VERSION)oldVersion.textContent=LEGACY_VERSION;document.querySelectorAll('.v315-version').forEach(node=>{if(node.textContent!==GUIDE_VERSION)node.textContent=GUIDE_VERSION;});enhanceFinalScore();document.documentElement.setAttribute('data-gomo-v3192-visual-ready','1');}
   function scheduleClean(){if(scheduled)return;scheduled=true;setTimeout(clean,0);}
   function start(){loadModules();clean();const observer=new MutationObserver(scheduleClean);observer.observe(document.documentElement,{childList:true,subtree:true,attributes:true,attributeFilter:['class']});console.info('GoMo VS Planner visual cleanup',VERSION);}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});else start();
