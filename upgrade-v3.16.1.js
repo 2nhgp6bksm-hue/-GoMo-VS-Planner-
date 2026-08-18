@@ -1,20 +1,28 @@
 'use strict';
 
-/* GoMo VS Planner v3.20.2 — finition visuelle ivoire/doré, derniers accents bleus remplacés par doré, moteur v3.19.2 inchangé. */
+/* GoMo VS Planner v3.20.5 — finition finale ivoire/doré, sans mascotte. Moteur v3.19.2 inchangé. */
 (() => {
-  const VERSION='3.20.2';
+  const VERSION='3.20.5';
   const GUIDE_VERSION=`Guide automatique · v${VERSION}`;
   const LEGACY_VERSION=`Version ${VERSION}`;
   let scheduled=false;
   const SCORE_LABEL={fr:'Score VS réel',en:'Real VS score',de:'Echte VS-Punkte',ro:'Scor VS real',uk:'Реальний рахунок VS',ko:'실제 VS 점수',hr:'Stvarni VS rezultat',pt:'Pontuação VS real'};
 
-  function loadTheme(){
-    const old=document.querySelector('link[data-gomo-ivory-gold]');
-    if(old&&old.getAttribute('href')?.includes('3.20.2'))return;
+  function loadStyle(attr,href){
+    const old=document.querySelector(`link[${attr}]`);
+    if(old&&old.getAttribute('href')===href)return;
     if(old)old.remove();
     const l=document.createElement('link');
-    l.rel='stylesheet';l.href='./theme-ivory-gold.css?v=3.20.2';l.dataset.gomoIvoryGold='1';
+    l.rel='stylesheet';l.href=href;l.setAttribute(attr,'1');
     document.head.appendChild(l);
+  }
+  function loadThemes(){
+    loadStyle('data-gomo-ivory-gold','./theme-ivory-gold.css?v=3.20.5');
+    loadStyle('data-gomo-final-gold','./theme-final-gold.css?v=3.20.5');
+  }
+  function setThemeMeta(){
+    const meta=document.querySelector('meta[name="theme-color"]');
+    if(meta)meta.setAttribute('content','#fffaf0');
   }
   function lang(){try{return String(state?.language||document.documentElement.lang||'fr').split('-')[0];}catch{return'fr';}}
   function formatNumber(value){const n=Math.max(0,Number(value)||0),locale={fr:'fr-FR',en:'en-GB',de:'de-DE',ro:'ro-RO',uk:'uk-UA',ko:'ko-KR',hr:'hr-HR',pt:'pt-PT'}[lang()]||'fr-FR';try{return new Intl.NumberFormat(locale,{maximumFractionDigits:0}).format(n);}catch{return String(Math.round(n));}}
@@ -38,24 +46,38 @@
   }
 
   function enhanceFinalScore(){
-    const done=document.querySelector('.v316-done'),input=done?.querySelector('#v316Actual');if(!done||!input)return;
+    const done=document.querySelector('.v316-done'),input=done?.querySelector('#v316Actual');
+    if(!done||!input)return;
     const label=input.closest('label')||input.parentElement;
     if(label&&!label.querySelector('.v316-score-caption')){const caption=document.createElement('span');caption.className='v316-score-caption';caption.textContent=SCORE_LABEL[lang()]||SCORE_LABEL.fr;label.insertBefore(caption,input);}
     let readable=label?.querySelector('.v316-score-readable');
     if(label&&!readable){readable=document.createElement('div');readable.className='v316-score-readable';input.insertAdjacentElement('afterend',readable);}
-    const refresh=()=>{if(readable)readable.textContent=`${formatNumber(input.value)} pts`;};refresh();
+    const refresh=()=>{if(readable)readable.textContent=`${formatNumber(input.value)} pts`;};
+    refresh();
     if(!input.dataset.v3163Bound){input.dataset.v3163Bound='1';input.addEventListener('input',refresh,{passive:true});}
   }
 
-  function loadScript(attr,ready,src){if(document.querySelector(`script[${attr}]`)||document.documentElement.hasAttribute(ready))return;const s=document.createElement('script');s.setAttribute(attr,'1');s.src=src;s.async=false;document.head.appendChild(s);}
+  function loadScript(attr,ready,src){
+    if(document.querySelector(`script[${attr}]`)||document.documentElement.hasAttribute(ready))return;
+    const s=document.createElement('script');s.setAttribute(attr,'1');s.src=src;s.async=false;document.head.appendChild(s);
+  }
   function loadModules(){
     loadScript('data-gomo-v317-loader','data-gomo-v317-ready','./upgrade-v3.17.js?v=3.17.2');
     loadScript('data-gomo-v318-loader','data-gomo-v318-ready','./upgrade-v3.18.js?v=3.18.1');
     loadScript('data-gomo-v3192-loader','data-gomo-v3192-ready','./upgrade-v3.19.2.js?v=3.19.2');
   }
 
-  function clean(){scheduled=false;loadTheme();ensureStyle();const legacy=document.getElementById('gomoV241Recap');if(legacy&&document.body.classList.contains('gomo-v315-simple')&&legacy.getAttribute('aria-hidden')!=='true')legacy.setAttribute('aria-hidden','true');const oldVersion=document.getElementById('gomoV240Version');if(oldVersion&&oldVersion.textContent!==LEGACY_VERSION)oldVersion.textContent=LEGACY_VERSION;document.querySelectorAll('.v315-version').forEach(node=>{if(node.textContent!==GUIDE_VERSION)node.textContent=GUIDE_VERSION;});enhanceFinalScore();document.documentElement.setAttribute('data-gomo-v3202-visual-ready','1');}
+  function clean(){
+    scheduled=false;loadThemes();setThemeMeta();ensureStyle();
+    const legacy=document.getElementById('gomoV241Recap');
+    if(legacy&&document.body.classList.contains('gomo-v315-simple')&&legacy.getAttribute('aria-hidden')!=='true')legacy.setAttribute('aria-hidden','true');
+    const oldVersion=document.getElementById('gomoV240Version');
+    if(oldVersion&&oldVersion.textContent!==LEGACY_VERSION)oldVersion.textContent=LEGACY_VERSION;
+    document.querySelectorAll('.v315-version').forEach(node=>{if(node.textContent!==GUIDE_VERSION)node.textContent=GUIDE_VERSION;});
+    enhanceFinalScore();
+    document.documentElement.setAttribute('data-gomo-v3205-final-ready','1');
+  }
   function scheduleClean(){if(scheduled)return;scheduled=true;setTimeout(clean,0);}
-  function start(){loadTheme();loadModules();clean();const observer=new MutationObserver(scheduleClean);observer.observe(document.documentElement,{childList:true,subtree:true,attributes:true,attributeFilter:['class']});console.info('GoMo VS Planner ivory gold theme',VERSION);}
+  function start(){loadThemes();setThemeMeta();loadModules();clean();const observer=new MutationObserver(scheduleClean);observer.observe(document.documentElement,{childList:true,subtree:true,attributes:true,attributeFilter:['class']});console.info('GoMo VS Planner final ivory gold',VERSION);}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});else start();
 })();
