@@ -1,8 +1,8 @@
 'use strict';
 
-/* GoMo VS Planner v3.18 — nettoyage visuel iPhone + modules Course et Semaine. */
+/* GoMo VS Planner v3.18.1 — nettoyage visuel iPhone + modules Course et Semaine. */
 (() => {
-  const VERSION='3.18.0';
+  const VERSION='3.18.1';
   const GUIDE_VERSION=`Guide automatique · v${VERSION}`;
   const LEGACY_VERSION=`Version ${VERSION}`;
   let scheduled=false;
@@ -45,7 +45,7 @@
   }
   function loadModules(){
     loadScript('data-gomo-v317-loader','data-gomo-v317-ready','./upgrade-v3.17.js?v=3.17.2');
-    loadScript('data-gomo-v318-loader','data-gomo-v318-ready','./upgrade-v3.18.js?v=3.18.0');
+    loadScript('data-gomo-v318-loader','data-gomo-v318-ready','./upgrade-v3.18.js?v=3.18.1');
   }
 
   function clean(){
