@@ -1,8 +1,8 @@
 'use strict';
 
-/* GoMo VS Planner v3.20.3 — finition ivoire/doré + petite mascotte fixe sur l’accueil, moteur v3.19.2 inchangé. */
+/* GoMo VS Planner v3.20.4 — finition ivoire/doré + mascotte fixe, moteur v3.19.2 inchangé. */
 (() => {
-  const VERSION='3.20.3';
+  const VERSION='3.20.4';
   const GUIDE_VERSION=`Guide automatique · v${VERSION}`;
   const LEGACY_VERSION=`Version ${VERSION}`;
   let scheduled=false;
@@ -10,8 +10,8 @@
 
   function loadStyles(){
     const links=[
-      ['data-gomo-ivory-gold','./theme-ivory-gold.css?v=3.20.3'],
-      ['data-gomo-mascot-gold','./theme-mascot-gold.css?v=3.20.3']
+      ['data-gomo-ivory-gold','./theme-ivory-gold.css?v=3.20.4'],
+      ['data-gomo-mascot-gold','./theme-mascot-gold.css?v=3.20.4']
     ];
     for(const [attr,href] of links){
       const old=document.querySelector(`link[${attr}]`);
@@ -56,10 +56,11 @@
     loadScript('data-gomo-v317-loader','data-gomo-v317-ready','./upgrade-v3.17.js?v=3.17.2');
     loadScript('data-gomo-v318-loader','data-gomo-v318-ready','./upgrade-v3.18.js?v=3.18.1');
     loadScript('data-gomo-v3192-loader','data-gomo-v3192-ready','./upgrade-v3.19.2.js?v=3.19.2');
+    loadScript('data-gomo-v3204-loader','data-gomo-v3204-ready','./upgrade-v3.20.4.js?v=3.20.4');
   }
 
-  function clean(){scheduled=false;loadStyles();ensureStyle();const legacy=document.getElementById('gomoV241Recap');if(legacy&&document.body.classList.contains('gomo-v315-simple')&&legacy.getAttribute('aria-hidden')!=='true')legacy.setAttribute('aria-hidden','true');const oldVersion=document.getElementById('gomoV240Version');if(oldVersion&&oldVersion.textContent!==LEGACY_VERSION)oldVersion.textContent=LEGACY_VERSION;document.querySelectorAll('.v315-version').forEach(node=>{if(node.textContent!==GUIDE_VERSION)node.textContent=GUIDE_VERSION;});enhanceFinalScore();document.documentElement.setAttribute('data-gomo-v3203-visual-ready','1');}
+  function clean(){scheduled=false;loadStyles();ensureStyle();const legacy=document.getElementById('gomoV241Recap');if(legacy&&document.body.classList.contains('gomo-v315-simple')&&legacy.getAttribute('aria-hidden')!=='true')legacy.setAttribute('aria-hidden','true');const oldVersion=document.getElementById('gomoV240Version');if(oldVersion&&oldVersion.textContent!==LEGACY_VERSION)oldVersion.textContent=LEGACY_VERSION;document.querySelectorAll('.v315-version').forEach(node=>{if(node.textContent!==GUIDE_VERSION)node.textContent=GUIDE_VERSION;});enhanceFinalScore();document.documentElement.setAttribute('data-gomo-v3204-visual-ready','1');}
   function scheduleClean(){if(scheduled)return;scheduled=true;setTimeout(clean,0);}
-  function start(){loadStyles();loadModules();clean();const observer=new MutationObserver(scheduleClean);observer.observe(document.documentElement,{childList:true,subtree:true,attributes:true,attributeFilter:['class']});console.info('GoMo VS Planner ivory gold + mascot',VERSION);}
+  function start(){loadStyles();loadModules();clean();const observer=new MutationObserver(scheduleClean);observer.observe(document.documentElement,{childList:true,subtree:true,attributes:true,attributeFilter:['class']});console.info('GoMo VS Planner ivory gold + fixed mascot',VERSION);}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});else start();
 })();
