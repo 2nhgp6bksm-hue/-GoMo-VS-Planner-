@@ -33,7 +33,7 @@
   function ppu(i){try{return Math.max(0,Number(effectivePoints(currentDay().id,i)||0));}catch{return Math.max(0,Number(i.points)||0);}}
   function action(i){const a=new Set(['radarTasks','urTrucks','legendTasks','buildingPower','techPower','survivorRecruit','trainedTroops','rivalKilled','otherKilled','lostTroops','staminaUsed','foodHarvest','ironHarvest','coinHarvest','packDiamonds','skillChipPoints']);return a.has(i?.labelKey)||/^packDiamondsD/.test(String(i?.stockKey||''));}
   function available(i){const n=Math.max(0,stock(i)-reserve(i));return i?.dailyMax==null?n:Math.min(n,Number(i.dailyMax)||0);}
-  function baseTarget(){return Math.max(MIN,Number(state.profile?.target||MIN));}
+  function baseTarget(){return MIN;}
   function target(){if(ui.mode==='economy')return baseTarget();if(ui.mode==='push')return Math.max(baseTarget(),Number(ui.pushTarget)||DEFAULT_PUSH);return baseTarget()+NORMAL_MARGIN;}
   function strategy(){return ui.mode==='economy'?'economy':ui.mode==='push'?'score':'prudent';}
   function modeName(){return tr(ui.mode==='economy'?'economy':ui.mode==='push'?'push':'normal');}
@@ -108,13 +108,16 @@
   }
 
   function enhance(){
-    css();const root=document.getElementById('gomoV315Guide');if(!root)return;const card=root.querySelector('.v315-card');if(!card)return;
+    css();const root=document.getElementById('gomoV315Guide');if(!root)return;
+    if(observer)observer.disconnect();
+    const card=root.querySelector('.v315-card');if(!card){if(observer)observer.observe(root,{childList:true,subtree:true});return;}
     root.querySelectorAll('.v316-mode-panel,.v316-smart-plan,.v316-done').forEach(n=>n.remove());card.classList.remove('v316-plan-screen');
     const progress=card.querySelector(':scope > .v315-progress');
     if(progress){progress.insertAdjacentHTML('afterend',modePanel());}
     const planScreen=!!card.querySelector('#v315Done')&&!card.querySelector('#v315ActualScore');
     if(planScreen){card.classList.add('v316-plan-screen');const mode=card.querySelector('.v316-mode-panel');mode?.insertAdjacentHTML('afterend',ui.finished?donePanel():planPanel());}
     bind(root,card);
+    if(observer)observer.observe(root,{childList:true,subtree:true});
   }
 
   function start(){css();enhance();const root=document.getElementById('gomoV315Guide');if(root){observer=new MutationObserver(()=>queueMicrotask(enhance));observer.observe(root,{childList:true,subtree:true});}document.documentElement.setAttribute('data-gomo-v316-ready','1');console.info('GoMo VS Planner smart layer',VERSION);}
