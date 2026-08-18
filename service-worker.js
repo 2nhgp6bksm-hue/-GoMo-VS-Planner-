@@ -1,10 +1,11 @@
-const CACHE='gomo-vs-planner-v3.20.2';
+const CACHE='gomo-vs-planner-v3.20.3';
 
 const ASSETS=[
   './',
   './index.html',
   './styles.css?v=3.15.0',
-  './theme-ivory-gold.css?v=3.20.2',
+  './theme-ivory-gold.css?v=3.20.3',
+  './theme-mascot-gold.css?v=3.20.3',
   './app.js?v=3.15.0',
   './upgrade-v2.30.js?v=3.15.0',
   './upgrade-v2.31.js?v=3.15.0',
@@ -14,7 +15,7 @@ const ASSETS=[
   './upgrade-v2.42.js?v=3.15.0',
   './upgrade-v3.15.js?v=3.15.0',
   './upgrade-v3.16.js?v=3.16.0',
-  './upgrade-v3.16.1.js?v=3.20.2',
+  './upgrade-v3.16.1.js?v=3.20.3',
   './upgrade-v3.17.js?v=3.17.2',
   './upgrade-v3.18.js?v=3.18.1',
   './upgrade-v3.19.2.js?v=3.19.2',
