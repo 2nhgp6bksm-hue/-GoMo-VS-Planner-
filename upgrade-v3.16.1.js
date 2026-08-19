@@ -1,8 +1,8 @@
 'use strict';
 
-/* GoMo VS Planner v3.20.5 — finition finale ivoire/doré, sans mascotte. Moteur v3.19.2 inchangé. */
+/* GoMo VS Planner v3.20.6 — correctif sélecteur de captures iPhone. Moteur v3.19.2 inchangé. */
 (() => {
-  const VERSION='3.20.5';
+  const VERSION='3.20.6';
   const GUIDE_VERSION=`Guide automatique · v${VERSION}`;
   const LEGACY_VERSION=`Version ${VERSION}`;
   let scheduled=false;
@@ -41,6 +41,9 @@
       .v316-done .v316-score-caption{display:block;margin-top:14px;color:#6c563c;font-size:.82rem;font-weight:900;text-align:left}
       .v316-done .v316-score-readable{margin-top:8px;color:#a96e09;font-size:1.05rem;font-weight:900;text-align:center;letter-spacing:.01em}
       .v316-done #v316Actual{margin-top:6px!important}
+      body.gomo-v315-simple .v315-upload{position:relative!important;overflow:hidden!important}
+      body.gomo-v315-simple #v315Files{display:block!important;position:absolute!important;inset:0!important;width:100%!important;height:100%!important;min-width:100%!important;min-height:100%!important;opacity:0!important;z-index:3!important;cursor:pointer!important;font-size:100px!important}
+      body.gomo-v315-simple #v315CaptureChoice{pointer-events:auto!important;touch-action:manipulation}
       @media(max-width:580px){body.gomo-v315-simple .hero-tools{grid-template-columns:1fr!important}body.gomo-v315-simple .hero{padding-top:6px!important}}
     `;document.head.appendChild(s);
   }
@@ -55,6 +58,28 @@
     const refresh=()=>{if(readable)readable.textContent=`${formatNumber(input.value)} pts`;};
     refresh();
     if(!input.dataset.v3163Bound){input.dataset.v3163Bound='1';input.addEventListener('input',refresh,{passive:true});}
+  }
+
+  function fixCapturePicker(){
+    const choice=document.getElementById('v315CaptureChoice');
+    if(choice&&!choice.dataset.gomoCaptureFix){
+      choice.dataset.gomoCaptureFix='1';
+      choice.addEventListener('click',()=>{
+        const openPicker=()=>{
+          const input=document.getElementById('v315Files');
+          if(!input)return;
+          const host=input.parentElement;
+          if(host){host.style.position='relative';host.style.overflow='hidden';}
+          try{input.click();}catch{}
+        };
+        if(typeof queueMicrotask==='function')queueMicrotask(openPicker);else Promise.resolve().then(openPicker);
+      });
+    }
+    const input=document.getElementById('v315Files');
+    if(input){
+      const host=input.parentElement;
+      if(host){host.style.position='relative';host.style.overflow='hidden';}
+    }
   }
 
   function loadScript(attr,ready,src){
@@ -78,6 +103,7 @@
     if(oldVersion&&oldVersion.textContent!==LEGACY_VERSION)oldVersion.textContent=LEGACY_VERSION;
     document.querySelectorAll('.v315-version').forEach(node=>{if(node.textContent!==GUIDE_VERSION)node.textContent=GUIDE_VERSION;});
     enhanceFinalScore();
+    fixCapturePicker();
     document.documentElement.setAttribute('data-gomo-v3205-final-ready','1');
   }
   function scheduleClean(){if(scheduled)return;scheduled=true;setTimeout(clean,0);}
