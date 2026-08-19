@@ -66,6 +66,7 @@
     loadScript('data-gomo-v318-loader','data-gomo-v318-ready','./upgrade-v3.18.js?v=3.18.1');
     loadScript('data-gomo-v3192-loader','data-gomo-v3192-ready','./upgrade-v3.19.2.js?v=3.19.2');
     loadScript('data-gomo-i18nfix-loader','data-gomo-i18n-fix','./upgrade-v3.20.5-i18n.js?v=3.20.5-i18n1');
+    loadScript('data-gomo-i18nfinal-loader','data-gomo-i18n-final','./upgrade-v3.20.5-i18n-final.js?v=3.20.5-i18n2');
   }
 
   function clean(){
