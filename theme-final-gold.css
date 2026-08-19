@@ -13,6 +13,8 @@
 .v315-manual-row{border-bottom-color:rgba(200,148,45,.18)!important}
 .v315-field input:focus,.v315-field select:focus,.v317-field input:focus,.v317-field select:focus,.v318-backfill input:focus{outline:2px solid rgba(200,148,45,.28)!important;outline-offset:1px!important}
 .v316-mode.active{box-shadow:0 0 0 1px rgba(200,148,45,.18) inset!important}
+/* Correctif v3.20.6 : le dernier encadré bleu du pilotage hebdomadaire passe en ivoire/doré. */
+.v319-floor{background:rgba(200,148,45,.08)!important;color:var(--gomo-gold-dark)!important;border:1px solid rgba(200,148,45,.22)!important}
 /* Les états restent distincts : vert = réussi, orange = attention. */
 .v316-ok,.v316-keep strong,.v316-keep li,.v317-now,.v318-status:not(.warn):not(.info),.v319-advice:not(.warn):not(.info){color:#466d45!important}
 .v316-warn,.v318-status.warn,.v319-advice.warn,.v315-ocr-warning{color:#9a6411!important}
