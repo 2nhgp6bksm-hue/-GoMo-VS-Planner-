@@ -69,6 +69,7 @@
     loadScript('data-gomo-i18nfinal-loader','data-gomo-i18n-final','./upgrade-v3.20.5-i18n-final.js?v=3.20.5-i18n3');
     loadScript('data-gomo-i18nposttest-loader','data-gomo-i18n-posttest','./upgrade-v3.20.5-i18n-posttest.js?v=3.20.5-i18n3');
     loadScript('data-gomo-ocrresources-loader','data-gomo-v3206-ocr-resources','./upgrade-v3.20.6-ocr-resources.js?v=3.20.6-ocr1');
+    loadScript('data-gomo-iospicker-loader','data-gomo-v3206-ios-picker','./upgrade-v3.20.6-ios-picker.js?v=3.20.6-ios1');
   }
 
   function clean(){
